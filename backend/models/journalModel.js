@@ -42,10 +42,6 @@ const JournalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  isPrivate: {
-    type: Boolean,
-    default: true,
-  },
 });
 
 // Update the updatedAt field on save

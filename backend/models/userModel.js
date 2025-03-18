@@ -68,17 +68,13 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  preferences: {
-    notificationsEnabled: {
-      type: Boolean,
-      default: true,
+  journals: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Journal",
     },
-    theme: {
-      type: [String],
-      default: ["simple"],
-    },
-    preferences: [PreferenceSchema],
-  },
+  ],
+
   friends: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -90,12 +86,6 @@ const UserSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "WishingWellPost",
-    },
-  ],
-  likeArticles: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Article",
     },
   ],
 });

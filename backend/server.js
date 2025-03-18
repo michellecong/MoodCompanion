@@ -1,9 +1,10 @@
 const app = require("./app");
-const config = require("config");
+// const config = require("config");
 const http = require("http");
+require("dotenv").config();
 
 // 获取端口
-const PORT = process.env.PORT || config.get("port") || 5000;
+const PORT = process.env.PORT || 3000;
 app.set("port", PORT);
 
 // 创建 HTTP 服务器
