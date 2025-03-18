@@ -1,4 +1,5 @@
 const Journal = require("../models/journalModel");
+
 // const emotionService = require("../services/emotionService");
 
 /**

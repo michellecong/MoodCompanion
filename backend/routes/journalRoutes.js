@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 const journalController = require("../controllers/journalController");
 const { check, validationResult } = require("express-validator");
-
+const auth = require("../middleware/auth");
 /**
  * 验证请求中间件
  */
+
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -14,6 +15,10 @@ const validateRequest = (req, res, next) => {
   next();
 };
 
+console.log(typeof journalController.createJournal); // 应该输出 'function'
+console.log(typeof auth); // 应该输出 'function'
+console.log(typeof validateRequest); // 应该输出 'function'
+
 /**
  * @route   POST api/journals
  * @desc    创建新日记
@@ -21,14 +26,13 @@ const validateRequest = (req, res, next) => {
  */
 router.post(
   "/",
-  [
-    // auth,
-    [
-      check("title", "标题不能为空").not().isEmpty(),
-      check("content", "内容不能为空").not().isEmpty(),
-    ],
-    validateRequest,
-  ],
+
+  auth,
+
+  // check("title", "标题不能为空").not().isEmpty(),
+  // check("content", "内容不能为空").not().isEmpty(),
+
+  validateRequest,
   journalController.createJournal
 );
 
