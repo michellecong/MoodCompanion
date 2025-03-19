@@ -18,7 +18,9 @@ const journalController = {
 
       // Validate input
       if (!title || !content) {
-        return res.status(400).json({ message: "标题和内容不能为空" });
+        return res
+          .status(400)
+          .json({ message: "The title and contentn can not be empty" });
       }
 
       // Detect emotions in the journal content
@@ -30,7 +32,7 @@ const journalController = {
 
       // Generate personalized feedback based on detected emotions
       // const feedback = emotionService.generateFeedback(emotionsDetected);
-      const feedback = "这是一条测试反馈";
+      const feedback = "This is a feed back";
 
       // Create new journal entry
       const newJournal = new Journal({
@@ -51,7 +53,7 @@ const journalController = {
       console.error("Error creating journal:", error);
       res.status(500).json({
         success: false,
-        message: "创建日记失败",
+        message: "Journal creation failed",
         error: error.message,
       });
     }

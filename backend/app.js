@@ -5,28 +5,26 @@ const cors = require("cors");
 const path = require("path");
 const connectDB = require("./utils/db");
 
-// 路由导入
+// routes import
 // const authRoutes = require("./middleware/auth");
 const journalRoutes = require("./routes/journalRoutes");
 // const wishingwellRoutes = require("./routes/wishingwell");
 const userRoutes = require("./routes/userRoutes");
 
-// 创建 Express 应用
+// create express app
 const app = express();
 
-// 中间件
+// middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// 路由
+// routes
 // app.use("/api/auth", authRoutes);
 app.use("/api/journals", journalRoutes);
 // app.use("/api/wishingwell", wishingwellRoutes);
 app.use("/api/users", userRoutes);
 
-// 数据库连接
 connectDB();
 
-// 导出应用实例
 module.exports = app;

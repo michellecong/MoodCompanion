@@ -12,8 +12,4 @@ router.post("/login", userController.login);
 // router.put("/profile", auth, userController.updateProfile);
 // router.post("/friend-request", auth, userController.handleFriendRequest);
 
-// Admin routes
-// 如果需要管理员特定的路由，可以添加额外的权限中间件
-// router.get("/all", [auth, admin], userController.getAllUsers);
-
 module.exports = router;
