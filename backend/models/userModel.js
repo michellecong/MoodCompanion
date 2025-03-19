@@ -1,17 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const PreferenceSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  value: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true,
-  },
-});
-
 const FriendRequestSchema = new mongoose.Schema({
   from: {
     type: mongoose.Schema.Types.ObjectId,
