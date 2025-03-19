@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
 
-const EmotionSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+const EmotionSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    score: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 1,
+    },
   },
-  score: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1,
-  },
-});
+  { _id: false }
+);
 
 const JournalSchema = new mongoose.Schema({
   userId: {

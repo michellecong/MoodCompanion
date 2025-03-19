@@ -18,7 +18,7 @@ module.exports = function (req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // 将用户信息添加到请求对象
-    req.user = decoded.user;
+    req.user = decoded;
     next();
   } catch (err) {
     res.status(401).json({ message: "令牌无效" });

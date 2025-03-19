@@ -9,7 +9,7 @@ const connectDB = require("./utils/db");
 // const authRoutes = require("./middleware/auth");
 const journalRoutes = require("./routes/journalRoutes");
 // const wishingwellRoutes = require("./routes/wishingwell");
-// const userRoutes = require("./routes/users");
+const userRoutes = require("./routes/userRoutes");
 
 // 创建 Express 应用
 const app = express();
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 // app.use("/api/auth", authRoutes);
 app.use("/api/journals", journalRoutes);
 // app.use("/api/wishingwell", wishingwellRoutes);
-// app.use("/api/users", userRoutes);
+app.use("/api/users", userRoutes);
 
 // 数据库连接
 connectDB();
