@@ -113,6 +113,194 @@ const userController = {
       });
     }
   },
+  /**
+   * Get user profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getProfile(req, res) {
+    try {
+      const userId = req.user.id;
+
+      const user = await User.findById(userId)
+        .select("-passwordHash")
+        .populate("journals", "title createdAt");
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch profile",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Update user profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updateProfile(req, res) {
+    try {
+      const userId = req.user.id;
+      const { username, email, profilePicture } = req.body;
+
+      // Prepare update data
+      const updateData = {};
+      if (username) updateData.username = username;
+      if (email) updateData.email = email;
+      if (profilePicture) updateData.profilePicture = profilePicture;
+
+      // Check if username or email already exists
+      if (username || email) {
+        const existingUser = await User.findOne({
+          $and: [
+            { _id: { $ne: userId } },
+            {
+              $or: [
+                ...(username ? [{ username }] : []),
+                ...(email ? [{ email }] : []),
+              ],
+            },
+          ],
+        });
+
+        if (existingUser) {
+          return res.status(400).json({
+            success: false,
+            message:
+              existingUser.username === username
+                ? "Username already taken"
+                : "Email already registered",
+          });
+        }
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: updateData },
+        { new: true, runValidators: true }
+      ).select("-passwordHash");
+
+      res.status(200).json({
+        success: true,
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to update profile",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Change password
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async changePassword(req, res) {
+    try {
+      const userId = req.user.id;
+      const { currentPassword, newPassword } = req.body;
+
+      // Check if inputs exist
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password and new password are required",
+        });
+      }
+
+      const user = await User.findById(userId);
+
+      // Verify current password
+      const isMatch = await user.comparePassword(currentPassword);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Current password is incorrect",
+        });
+      }
+
+      // Update password
+      user.passwordHash = newPassword; // Will be hashed by pre-save middleware
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Password changed successfully",
+      });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to change password",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Delete user account
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async deleteAccount(req, res) {
+    try {
+      const userId = req.user.id;
+      const { password } = req.body;
+
+      // Verify password
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid password",
+        });
+      }
+
+      // Delete all user's journals
+      await Journal.deleteMany({ userId });
+
+      // Delete user
+      await User.findByIdAndDelete(userId);
+
+      res.status(200).json({
+        success: true,
+        message: "Account deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to delete account",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = userController;
