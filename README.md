@@ -1,164 +1,53 @@
-# MoodCompanion
+# AI Mood Companion: A Web-Based Emotional Support Platform
 
-# Mind Companion API Documentation
+## 1. Introduction
+The AI Mood Companion provides a personal space for users to express their feelings, gain emotional insights, and receive positive reinforcement. The platform offers practical support through daily affirmations, personalized advice, and tools for tracking emotional well-being over time. Unlike typical chatbots, our platform promotes emotional resilience and self-awareness, fostering long-term well-being.
 
-This document explains how to test the Mind Companion API using Postman, focusing on user authentication and journal creation.
+## 2. Third-Party APIs
+- **Emotion Analysis**: IBM Watson or Google Cloud Natural Language API for emotion detection.
+- **AI Chatbot**: OpenAI GPT-3 for personalized conversations and emotional support.
 
-## Prerequisites
+## 3. MongoDB Collections
+### Users
+Stores user information, including username, email, profile picture, and preferences.
 
-- [Postman](https://www.postman.com/downloads/) installed on your machine
-- The Mind Companion API server running locally or deployed
+### Journals
+Stores journal entries, detected emotions, and AI-provided feedback.
 
-## Server Environment Variables (.env)
+### WishingWellPosts
+Stores anonymous posts from users in the community for emotional sharing and support.
 
-The server requires the following environment variables in a .env file:
+### WishingWellComments
+Stores comments on WishingWellPosts, allowing users to share encouragement and connect.
 
-```
-PORT=3000
-MONGODB_URI=your-mongoDB-uri
-JWT_SECRET=your_jwt_secret_key_here
-```
+## 4. CRUD Operations
+- **Users**: User registration, login, profile updates, and friend requests.
+- **Journals**: Create, read, update, and delete journal entries with emotion analysis.
+- **WishingWellPosts**: Create, read, and interact with anonymous posts, including upvotes.
+- **WishingWellComments**: Add and manage comments on posts, including upvotes.
 
-## Authentication Flow
+---
+## To-Do List for AI Mood Companion - Iteration 1 (Mar 25)
 
-The API uses JWT (JSON Web Token) for authentication. You must first register or login to receive a token, then use this token in subsequent requests.
+### Frontend
+- [ ] Initialize React project
+- [ ] Set up homepage
+- [ ] Display content for anonymous users
+- [ ] Implement routing (e.g., homepage, registration, login)
+- [ ] Create forms for journal entries and posts
 
-### 1. User Registration
+### Backend
+- [ ] Set up Express and MongoDB
+- [ ] Create MongoDB collections (Users, Journals, WishingWellPosts)
+- [ ] Implement CRUD operations for Users, Journals, and Posts
 
-1. Open Postman and create a new request
-2. Set the request method to `POST`
-3. Set the URL to `http://localhost:3000/api/users/register` (adjust the URL if your server is running on a different host/port)
-4. Go to the `Body` tab, select `raw` and set the format to `JSON`
-5. Enter the registration details:
+### Integration & Testing
+- [ ] Connect frontend to backend
+- [ ] Test CRUD operations
+- [ ] Test user authentication (register, login)
 
-```json
-{
-  "username": "testuser",
-  "email": "test@example.com",
-  "password": "yourpassword123"
-}
-```
+## Iteration 2 - Apr 5
 
-6. Click `Send`
-7. The server will respond with a token and user details if registration is successful:
+## Iteration 3 - Apr 16
 
-```json
-{
-  "success": true,
-  "token": "your-jwt-token-here",
-  "user": {
-    "id": "user-id",
-    "username": "testuser",
-    "email": "test@example.com",
-    "role": ["user"],
-    "profilePicture": "default-avatar.png",
-    "createdAt": "2025-03-19T00:00:00.000Z"
-  }
-}
-```
-
-### 2. User Login
-
-1. Create a new request in Postman
-2. Set the request method to `POST`
-3. Set the URL to `http://localhost:3000/api/users/login`
-4. Go to the `Body` tab, select `raw` and set the format to `JSON`
-5. Enter the login credentials:
-
-```json
-{
-  "email": "test@example.com",
-  "password": "yourpassword123"
-}
-```
-
-6. Click `Send`
-7. The server will respond with a token and user details if login is successful
-
-### 3. Copy the Authentication Token
-
-From either the registration or login response:
-
-1. Find the `token` field in the JSON response
-2. Copy the token value (without the quotes)
-
-## Creating a Journal Entry
-
-Once you have obtained your authentication token, you can use it to create journal entries:
-
-### 1. Set Up the Journal Request
-
-1. Create a new request in Postman
-2. Set the request method to `POST`
-3. Set the URL to `http://localhost:3000/api/journals`
-
-### 2. Add Authentication Header
-
-1. Go to the `Headers` tab
-2. Add a new header with:
-   - Key: `x-auth-token`
-   - Value: [paste your copied token here]
-
-### 3. Add Journal Content
-
-1. Go to the `Body` tab, select `raw` and set the format to `JSON`
-2. Enter the journal details:
-
-```json
-{
-  "title": "My Journal Entry",
-  "content": "Today was a great day. I accomplished many things and feel positive about my progress."
-}
-```
-
-3. Click `Send`
-4. If successful, the server will respond with the created journal entry, including emotion analysis:
-
-```json
-{
-  "success": true,
-  "data": {
-    "userId": "user-id",
-    "title": "My Journal Entry",
-    "content": "Today was a great day...",
-    "emotionsDetected": [
-      {
-        "name": "joy",
-        "score": 0.8
-      },
-      {
-        "name": "satisfaction",
-        "score": 0.6
-      }
-    ],
-    "feedback": "You seem to be in a positive mood today!",
-    "_id": "journal-id",
-    "createdAt": "2025-03-19T02:30:00.000Z",
-    "updatedAt": "2025-03-19T02:30:00.000Z"
-  }
-}
-```
-
-## Troubleshooting
-
-- **401 Unauthorized**: Make sure you're including the correct token in the `x-auth-token` header
-- **400 Bad Request**: Check your request body format and ensure all required fields are included
-- **500 Server Error**: Check the server logs for more detailed information
-
-## Creating Postman Collection (Optional)
-
-For easier testing, you can create a Postman collection:
-
-1. Click the "New" button and select "Collection"
-2. Name your collection (e.g., "Mind Companion API")
-3. Add your requests to this collection
-4. Use environment variables to store and automatically update your token
-
-```
-// In the Tests tab of your login request:
-pm.environment.set("token", pm.response.json().token);
-
-// Then use {{token}} as the value for your x-auth-token header
-```
-
-This makes testing the API more efficient, especially when tokens expire.
+## Final Project submission - Apr 17 (10:45 am)
