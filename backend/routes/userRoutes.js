@@ -9,6 +9,8 @@ const {
   updateProfile,
   changePassword,
   deleteAccount,
+  sendFriendRequest,
+  handleFriendRequest,
 } = require("../controllers/userController");
 const auth = require("../middleware/auth");
 
@@ -16,10 +18,10 @@ const auth = require("../middleware/auth");
 router.post(
   "/register",
   [
-    check("currentPassword", "Current password is required").not().isEmpty(),
-    check("newPassword", "New password must be at least 6 characters").isLength(
-      { min: 6 }
-    ),
+    check("password", "password is required").not().isEmpty(),
+    check("password", "password must be at least 6 characters").isLength({
+      min: 6,
+    }),
   ],
   validateRequest,
   register
@@ -82,6 +84,38 @@ router.delete(
   [check("password", "Password is required").exists()],
   validateRequest,
   deleteAccount
+);
+
+/**
+ * @route   POST api/users/friend-request
+ * @desc    Send a friend request
+ * @access  Private
+ */
+router.post(
+  "/friend-request",
+  auth,
+  [check("toUserId", "User ID to send request to is required").not().isEmpty()],
+  validateRequest,
+  sendFriendRequest
+);
+
+/**
+ * @route   PUT api/users/friend-request
+ * @desc    Handle (accept/reject) a friend request
+ * @access  Private
+ */
+router.put(
+  "/friend-request",
+  auth,
+  [
+    check("requestId", "Request ID is required").not().isEmpty(),
+    check("action", "Action must be 'accept' or 'reject'").isIn([
+      "accept",
+      "reject",
+    ]),
+  ],
+  validateRequest,
+  handleFriendRequest
 );
 
 module.exports = router;
