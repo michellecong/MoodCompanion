@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const journalController = require("../controllers/journalController");
+const {
+  createJournal,
+  getUserJournals,
+} = require("../controllers/journalController");
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
 /**
@@ -29,7 +32,14 @@ router.post(
   // check("content", "content can not be empty").not().isEmpty(),
 
   validateRequest,
-  journalController.createJournal
+  createJournal
 );
+
+/**
+ * @route   GET api/journals
+ * @desc    Get all journals for the authenticated user
+ * @access  Private
+ */
+router.get("/", auth, getUserJournals);
 
 module.exports = router;
