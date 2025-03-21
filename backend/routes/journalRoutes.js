@@ -4,6 +4,8 @@ const {
   createJournal,
   getUserJournals,
   deleteJournal,
+  getJournalById,
+  updateJournal,
 } = require("../controllers/journalController");
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
@@ -49,5 +51,23 @@ router.get("/", auth, getUserJournals);
  * @access  Private
  */
 router.delete("/:id", auth, deleteJournal);
+
+/**
+ * @route   GET api/journals/:id
+ * @desc    Get a single journal by ID
+ * @access  Private
+ */
+router.get("/:id", auth, getJournalById);
+
+router.put(
+  "/:id",
+  auth,
+  [
+    check("title", "Title cannot be empty").optional().not().isEmpty(),
+    check("content", "Content cannot be empty").optional().not().isEmpty(),
+  ],
+  validateRequest,
+  updateJournal
+);
 
 module.exports = router;
