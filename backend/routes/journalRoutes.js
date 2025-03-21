@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   createJournal,
   getUserJournals,
+  deleteJournal,
 } = require("../controllers/journalController");
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
@@ -41,5 +42,12 @@ router.post(
  * @access  Private
  */
 router.get("/", auth, getUserJournals);
+
+/**
+ * @route   DELETE api/journals/:id
+ * @desc    Delete a journal
+ * @access  Private
+ */
+router.delete("/:id", auth, deleteJournal);
 
 module.exports = router;

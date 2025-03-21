@@ -1,4 +1,6 @@
 const Journal = require("../models/journalModel");
+const User = require("../models/userModel");
+const { ObjectId } = require("mongodb");
 
 // const emotionService = require("../services/emotionService");
 
@@ -91,6 +93,60 @@ const journalController = {
       res.status(500).json({
         success: false,
         message: "Journal fetch failed",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Delete a journal entry
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+
+  async deleteJournal(req, res) {
+    try {
+      const journalId = req.params.id;
+      const userId = req.user.id;
+
+      // Find the journal
+      const journal = await Journal.findById(journalId);
+
+      // Check if journal exists
+      if (!journal) {
+        return res.status(404).json({
+          success: false,
+          message: "Journal not found",
+        });
+      }
+
+      // Check if the journal belongs to the authenticated user
+      if (journal.userId.toString() !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: "Not authorized to delete this journal",
+        });
+      }
+
+      // Delete the journal
+      await Journal.findByIdAndDelete(journalId);
+
+      // Remove journal reference from user
+      await User.findByIdAndUpdate(
+        userId,
+        { $pull: { journals: journalId } },
+        { new: true }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Journal deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting journal:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to delete journal",
         error: error.message,
       });
     }
