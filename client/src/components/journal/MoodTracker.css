@@ -1,0 +1,45 @@
+.mood-tracker {
+    margin: 20px 0;
+  }
+  
+  .mood-options {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+  
+  .mood-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: 2px solid var(--primary-light);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    width: 80px;
+  }
+  
+  .mood-option:hover {
+    background-color: var(--primary-light);
+  }
+  
+  .mood-option.selected {
+    background-color: var(--primary-color);
+    border-color: var(--primary-dark);
+  }
+  
+  .mood-emoji {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  
+  .mood-label {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+  
+  .mood-option.selected .mood-label {
+    color: white;
+  }
