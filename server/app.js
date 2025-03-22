@@ -6,9 +6,8 @@ const path = require("path");
 const connectDB = require("./utils/db");
 
 // routes import
-// const authRoutes = require("./middleware/auth");
+
 const journalRoutes = require("./routes/journalRoutes");
-// const wishingwellRoutes = require("./routes/wishingwell");
 const userRoutes = require("./routes/userRoutes");
 const wishingWellPostRoutes = require("./routes/wishingWellPostRoutes");
 const wishingWellCommentRoutes = require("./routes/wishingWellCommentRoutes");
