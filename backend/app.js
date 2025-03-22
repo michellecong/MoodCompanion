@@ -10,6 +10,8 @@ const connectDB = require("./utils/db");
 const journalRoutes = require("./routes/journalRoutes");
 // const wishingwellRoutes = require("./routes/wishingwell");
 const userRoutes = require("./routes/userRoutes");
+const wishingWellPostRoutes = require("./routes/wishingWellPostRoutes");
+const wishingWellCommentRoutes = require("./routes/wishingWellCommentRoutes");
 
 // create express app
 const app = express();
@@ -24,6 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/journals", journalRoutes);
 // app.use("/api/wishingwell", wishingwellRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/wishing-well/posts", wishingWellPostRoutes);
+app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
 
 connectDB();
 
