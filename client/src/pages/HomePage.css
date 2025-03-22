@@ -112,3 +112,55 @@
     margin-bottom: 16px;
     color: var(--primary-color);
   }
+
+  /* User Dashboard */
+.user-dashboard {
+    margin-top: 40px;
+  }
+  
+  .dashboard-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .dashboard-card {
+    background-color: var(--background-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    flex: 1;
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .view-all {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+  }
+  
+  .mood-card h2 {
+    margin-bottom: 20px;
+  }
+  
+  .new-entry-btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 16px;
+    border-radius: var(--border-radius);
+    margin-top: 16px;
+    text-decoration: none;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+  }
