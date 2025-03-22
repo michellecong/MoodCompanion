@@ -1,0 +1,68 @@
+.navbar {
+    background-color: var(--background-white);
+    height: 80px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+  
+  .navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .navbar-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+  }
+  
+  .nav-item {
+    margin-left: 24px;
+  }
+  
+  .nav-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+  }
+  
+  .nav-link:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  
+  .register-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+  }
+  
+  .register-btn:hover {
+    background-color: var(--primary-dark);
+    color: white;
+  }
+  
+  .logout-btn {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  .user-welcome {
+    font-weight: 500;
+  }
