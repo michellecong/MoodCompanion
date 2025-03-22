@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import HomePage from './pages/HomePage';
 import './App.css';
 
 function App() {
@@ -30,12 +31,11 @@ function App() {
       <div className="app-container">
         <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} user={user} />
         <main className="main-content">
-          <div className="container">
-            <h1>Welcome to AI Mood Companion</h1>
-            <p>This is a placeholder for our application content.</p>
-          </div>
+          <Routes>
+            <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} user={user} />} />
+          </Routes>
         </main>
-        <Footer/>
+        <Footer />
       </div>
     </Router>
   );
