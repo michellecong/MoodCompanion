@@ -66,7 +66,6 @@ function HomePage({ isAuthenticated, user }) {
 
   const handleMoodSelection = (mood) => {
     setCurrentMood(mood);
-    // 在实际实现中，这将保存到数据库
   };
 
   return (
