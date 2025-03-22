@@ -27,8 +27,8 @@ const UserSchema = new mongoose.Schema({
     maxlength: 30,
   },
   role: {
-    type: [String],
-    default: ["user"],
+    type: String,
+    default: "user",
   },
   profilePicture: {
     type: String,
