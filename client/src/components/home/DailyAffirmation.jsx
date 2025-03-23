@@ -1,5 +1,5 @@
-// src/components/home/DailyAffirmation.jsx
 import { useState, useEffect } from "react";
+import affirmationBg from "../../assets/images/affirmationBg.jpg"; // 假设有这个图片，如果没有请替换为实际图片路径
 
 function DailyAffirmation() {
   const [dailyAffirmation, setDailyAffirmation] = useState("");
@@ -21,8 +21,13 @@ function DailyAffirmation() {
 
   return (
     <div className="daily-affirmation">
-      <h3>Today's Affirmation</h3>
-      <p>{dailyAffirmation}</p>
+      <div className="affirmation-image">
+        <img src={affirmationBg} alt="Inspirational background" />
+      </div>
+      <div className="affirmation-content">
+        <h3>Today's Affirmation</h3>
+        <p>{dailyAffirmation}</p>
+      </div>
     </div>
   );
 }
