@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import './App.css';
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} user={user} />} />
+            <Route path="/login" element={<LoginPage onLogin={setIsAuthenticated} onUser={setUser} />} />
+            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </main>
         <Footer />
