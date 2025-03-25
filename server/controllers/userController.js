@@ -5,6 +5,14 @@ const userController = {
   async register(req, res) {
     try {
       const { username, email, password } = req.body;
+      console.log("req.body", req.body);
+      // Check if all fields are provided
+      if (!username || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "All fields (username, email, password) are required",
+        });
+      }
 
       // Check if user already exists
       let user = await User.findOne({ $or: [{ email }, { username }] });

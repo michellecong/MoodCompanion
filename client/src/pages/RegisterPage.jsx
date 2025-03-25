@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
