@@ -14,18 +14,17 @@ const userController = {
           message: "All fields (username, email, password) are required",
         });
       }
-      
+      // Check if user already exists
+      let user = await User.findOne({ $or: [{ email }, { username }] });
       if (user) {
         return res.status(400).json({
           success: false,
-          message: user.email === email
-            ? "Email already registered"
-            : "Username already taken",
+          message:
+            user.email === email
+              ? "Email already registered"
+              : "Username already taken",
         });
       }
-
-      // Check if user already exists
-      let user = await User.findOne({ $or: [{ email }, { username }] });
 
       if (user) {
         return res.status(400).json({
