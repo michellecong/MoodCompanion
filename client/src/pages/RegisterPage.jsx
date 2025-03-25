@@ -38,6 +38,7 @@ const RegisterPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          username: formData.username,
           email: formData.email,
           password: formData.password,
         }),
@@ -59,6 +60,18 @@ const RegisterPage = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div className="form-group">
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter your username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
+      </div>
       <div className="form-group">
         <label htmlFor="email">Email</label>
         <input
