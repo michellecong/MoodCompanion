@@ -52,6 +52,10 @@ const RegisterPage = () => {
       const data = await response.json();
       console.log("Registration successful:", data);
       // Handle successful registration (redirect, show message, etc.)
+      // Notifying the user that registration was successful
+      alert("Registration successful!");
+      // Redirecting the user to the login page
+      window.location.href = "/login";
     } catch (err) {
       console.error("Error during registration:", err); // Log the error to the console
       setError("Error: " + err.message); // Display the error to the user  
