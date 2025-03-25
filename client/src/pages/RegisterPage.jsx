@@ -1,19 +1,15 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./RegisterPage.css";
-const { register } = require("../../../server/controllers/userController");
+import React, { useState } from "react";
 
-function RegisterPage({ onRegister }) {
+const RegisterPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
-
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Handle input changes
+  // Handle form input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -22,77 +18,89 @@ function RegisterPage({ onRegister }) {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form behavior (refresh)
 
+    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match!");
+      setError("Passwords do not match");
       return;
     }
 
     setLoading(true);
-    onRegister(formData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    setError(""); // Reset previous errors
+
+    try {
+      // Make a POST request to the backend
+      const response = await fetch("http://localhost:3000/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+
+      const data = await response.json();
+      console.log("Registration successful:", data);
+      // Handle successful registration (redirect, show message, etc.)
+    } catch (err) {
+      setError("Error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="register-page">
-      <section className="register-section">
-        <div className="register-content">
-          <h1>Register</h1>
-          <p>Create an account to start tracking your emotions and journaling your thoughts</p>
-
-          {error && <p className="error-message">{error}</p>} {/* Display error message */}
-
-          <form onSubmit={register}>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <button type="submit" disabled={loading}>
-              {loading ? "Registering..." : "Register"}
-            </button>
-          </form>
-
-          <p>Already have an account? <Link to="/login">Login</Link></p>
-        </div>
-      </section>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <div className="form-group">
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          placeholder="Confirm your password"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      {error && <div className="error">{error}</div>}
+      <button type="submit" disabled={loading}>
+        {loading ? "Registering..." : "Register"}
+      </button>
+    </form>
   );
-}
+};
 
 export default RegisterPage;
