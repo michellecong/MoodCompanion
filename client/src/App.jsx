@@ -5,6 +5,8 @@ import Footer from './components/common/Footer';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import JournalsPage from './pages/JournalsPage';
+import SingleJournalPage from './pages/SingleJournalPage';
 import './App.css';
 
 function App() {
@@ -37,6 +39,8 @@ function App() {
             <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} user={user} />} />
             <Route path="/login" element={<LoginPage onLogin={setIsAuthenticated} onUser={setUser} />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/journals" element={<JournalsPage />} />
+            <Route path="/journal/:id" element={<SingleJournalPage />} />
           </Routes>
         </main>
         <Footer />
