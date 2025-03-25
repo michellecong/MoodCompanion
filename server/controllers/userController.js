@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const userController = {
   async register(req, res) {
     try {
+      console.log("Req sent to register");
       const { username, email, password } = req.body;
       console.log("req.body", req.body);
       // Check if all fields are provided
@@ -11,6 +12,15 @@ const userController = {
         return res.status(400).json({
           success: false,
           message: "All fields (username, email, password) are required",
+        });
+      }
+      
+      if (user) {
+        return res.status(400).json({
+          success: false,
+          message: user.email === email
+            ? "Email already registered"
+            : "Username already taken",
         });
       }
 

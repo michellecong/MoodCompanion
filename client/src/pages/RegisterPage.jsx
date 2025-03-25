@@ -53,7 +53,8 @@ const RegisterPage = () => {
       console.log("Registration successful:", data);
       // Handle successful registration (redirect, show message, etc.)
     } catch (err) {
-      setError("Error: " + err.message);
+      console.error("Error during registration:", err); // Log the error to the console
+      setError("Error: " + err.message); // Display the error to the user  
     } finally {
       setLoading(false);
     }
