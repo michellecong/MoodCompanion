@@ -4,19 +4,30 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
+    flex-direction: column; /* Ensure elements stack vertically */
     justify-content: center;
     align-items: center;
     height: 100vh;
+    gap: 20px; /* Adds space between header and form */
 }
 
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
 
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .form-group label {
