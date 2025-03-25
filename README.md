@@ -15,6 +15,12 @@ MoodCompanion is a personal AI-powered application that helps users track their 
 - **AI Companion**: Get emotional support and personalized advice
 - **Community Support**: Share thoughts anonymously with others
 
+## Server
+Start server:
+```bash
+nodemon server.js
+```
+
 ## Client
 
 1. Install dependencies:
