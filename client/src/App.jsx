@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import PostDetailPage from "./pages/PostDetailPage";
+import PostsListPage from "./pages/PostsListPage";
 import "./App.css";
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
             />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/post/:id" element={<PostDetailPage />} />
+            <Route path="/posts" element={<PostsListPage />} />
           </Routes>
         </main>
         <Footer />

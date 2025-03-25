@@ -1,37 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axios";
 import "./PostsListPage.css";
 
 const PostsListPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [selectedTag, setSelectedTag] = useState("");
-  const [sortBy, setSortBy] = useState("recent"); // 'recent' or 'trending'
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
+        const endpoint = "/wishing-well/posts";
 
-        // Determine API endpoint based on sort selection
-        const endpoint =
-          sortBy === "trending"
-            ? "/api/wishing-well/posts/trending"
-            : "/api/wishing-well/posts";
+        // 获取所有帖子，不使用后端标签筛选
+        const response = await api.get(endpoint);
 
-        // Add tag filter if a tag is selected
-        const tagParam = selectedTag ? `&tag=${selectedTag}` : "";
-
-        const response = await axios.get(
-          `${endpoint}?page=${currentPage}&limit=10${tagParam}`
-        );
-
-        setPosts(response.data.data);
-        setTotalPages(response.data.totalPages);
+        // 如果选中了标签，在前端进行筛选
+        const allPosts = response.data.data;
+        const filteredPosts = selectedTag
+          ? allPosts.filter(
+              (post) => post.tags && post.tags.includes(selectedTag)
+            )
+          : allPosts;
+        setPosts(filteredPosts);
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch posts. Please try again later.");
@@ -41,26 +35,13 @@ const PostsListPage = () => {
     };
 
     fetchPosts();
-  }, [currentPage, selectedTag, sortBy]);
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-      window.scrollTo(0, 0);
-    }
-  };
+  }, [selectedTag]);
 
   const handleTagClick = (tag) => {
     setSelectedTag(tag === selectedTag ? "" : tag);
-    setCurrentPage(1);
   };
 
-  const handleSortChange = (sort) => {
-    setSortBy(sort);
-    setCurrentPage(1);
-  };
-
-  // Format date to a readable format
+  // 格式化日期
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -82,30 +63,15 @@ const PostsListPage = () => {
         space.
       </p>
 
-      {/* Sort controls */}
-      <div className="sort-controls">
-        <button
-          className={`sort-button ${sortBy === "recent" ? "active" : ""}`}
-          onClick={() => handleSortChange("recent")}
-        >
-          Recent
-        </button>
-        <button
-          className={`sort-button ${sortBy === "trending" ? "active" : ""}`}
-          onClick={() => handleSortChange("trending")}
-        >
-          Trending
-        </button>
-
-        {selectedTag && (
-          <div className="selected-tag">
-            Filtering by: <span>{selectedTag}</span>
-            <button onClick={() => setSelectedTag("")} className="clear-tag">
-              ✕
-            </button>
-          </div>
-        )}
-      </div>
+      {/* 当前选中的标签显示 */}
+      {selectedTag && (
+        <div className="selected-tag">
+          Filtering by: <span>{selectedTag}</span>
+          <button onClick={() => setSelectedTag("")} className="clear-tag">
+            ✕
+          </button>
+        </div>
+      )}
 
       {posts.length === 0 ? (
         <div className="no-posts">No posts found.</div>
@@ -145,29 +111,6 @@ const PostsListPage = () => {
               </Link>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          <button
-            className="pagination-button"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            Previous
-          </button>
-          <span className="page-info">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            className="pagination-button"
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            Next
-          </button>
         </div>
       )}
     </div>
