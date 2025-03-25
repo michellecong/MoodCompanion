@@ -1,56 +1,55 @@
-// src/pages/Login Page.jsx
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import DailyAffirmation from "../components/home/DailyAffirmation";
-import Dashboard from "../components/home/Dashboard";
-import LandingPage from "../components/home/LandingPage";
-import { useUserData } from "../hooks/useUserData";
-import "./HomePage.css";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./LoginPage.css";
 
-function HomePage({ isAuthenticated, user }) {
-  const { recentJournals, currentMood, setCurrentMood, isLoading } =
-    useUserData(isAuthenticated);
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    fetch("http://localhost:3000/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          navigate("/"); 
+        } else {
+          setError("Invalid credentials");
+        }
+      })
+      .catch(() => setError("Login failed"));
+  };
 
   return (
-    <div className="home-page">
-      {/* Hero section - visible to all users */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1>Your Personal AI Mood Companion</h1>
-          <p>
-            Track your emotions, journal your thoughts, and find support in our
-            community
-          </p>
-
-          {!isAuthenticated && (
-            <div className="cta-buttons">
-              <Link to="/register" className="cta-primary">
-                Get Started
-              </Link>
-              <Link to="/login" className="cta-secondary">
-                Login
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Daily affirmation - visible to all users */}
-      <DailyAffirmation />
-
-      {/* Render different content based on authentication status */}
-      {isAuthenticated ? (
-        <Dashboard
-          isLoading={isLoading}
-          recentJournals={recentJournals}
-          currentMood={currentMood}
-          onMoodSelect={setCurrentMood}
+    <div className="login-page">
+      <div className="login-card">
+        <h2>Login</h2>
+        {error && <p className="error-text">{error}</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-      ) : (
-        <LandingPage />
-      )}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={handleLogin}>Sign In</button>
+        <p className="register-link">
+          Don't have an account? <a href="/register">Register here</a>
+        </p>
+      </div>
     </div>
   );
 }
 
-export default HomePage;
+export default Login;
