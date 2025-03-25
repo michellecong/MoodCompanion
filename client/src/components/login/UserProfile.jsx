@@ -11,7 +11,7 @@ function UserProfile() {
       return;
     }
 
-    fetch("http://localhost:5000/api/user", {
+    fetch("http://localhost:3000/api/user", {
       headers: { Authorization: token },
     })
       .then((res) => res.json())
