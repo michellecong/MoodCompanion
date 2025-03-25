@@ -1,20 +1,21 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import Navbar from './components/common/Navbar';
-import Footer from './components/common/Footer';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import PostDetailPage from "./pages/PostDetailPage";
+import "./App.css";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
     if (token && userData) {
       setIsAuthenticated(true);
       setUser(JSON.parse(userData));
@@ -22,8 +23,8 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
   };
@@ -31,12 +32,27 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} user={user} />
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          onLogout={handleLogout}
+          user={user}
+        />
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} user={user} />} />
-            <Route path="/login" element={<LoginPage onLogin={setIsAuthenticated} onUser={setUser} />} />
+            <Route
+              path="/"
+              element={
+                <HomePage isAuthenticated={isAuthenticated} user={user} />
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
+              }
+            />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/post/:id" element={<PostDetailPage />} />
           </Routes>
         </main>
         <Footer />

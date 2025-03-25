@@ -2,7 +2,10 @@ import axios from "axios";
 
 // 创建一个axios实例
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "/api", // 从环境变量获取API URL，否则默认使用'/api'
+  baseURL:
+    import.meta.env?.VITE_API_URL ||
+    window.env?.REACT_APP_API_URL ||
+    "http://localhost:3000/api", // server api
   timeout: 10000, // 请求超时时间
   headers: {
     "Content-Type": "application/json",
