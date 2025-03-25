@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./RegisterPage.css";
+const { register } = require("../../../server/controllers/userController");
 
 function RegisterPage({ onRegister }) {
   const [formData, setFormData] = useState({
@@ -45,7 +46,7 @@ function RegisterPage({ onRegister }) {
 
           {error && <p className="error-message">{error}</p>} {/* Display error message */}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={register}>
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
