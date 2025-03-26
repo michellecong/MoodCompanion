@@ -67,7 +67,9 @@ npx vitest
 ![Local Image](readme_images/img-website.png)
 
 ## Contributions
-
+Minchao Cong:
+Fang Liu:
+Shurui Liu: Implemented the register functionality
 
 ## License
 
