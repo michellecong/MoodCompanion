@@ -1,3 +1,5 @@
+
+import { Link } from 'react-router-dom'; 
 import journalImg from "../../assets/images/journal.jpg";
 import chatImg from "../../assets/images/chat.jpg";
 import diagramImg from "../../assets/images/diagram.jpg";
@@ -18,6 +20,7 @@ function LandingPage() {
             Record your thoughts and emotions with our AI-powered journal that
             provides emotional insights.
           </p>
+          <Link to="/journals">Go to Journals</Link>
         </div>
 
         <div className="feature-card">
