@@ -67,7 +67,7 @@ npx vitest
 ![Local Image](readme_images/img-website.png)
 
 ## Contributions
-Minchao Cong:
+Minchao Cong:Implement the backend, which includes four collections and the CRUD operations for the API, as well as the implementation of the posts list page and post detail page.
 Fang Liu:
 Shurui Liu: Implemented the register functionality
 
