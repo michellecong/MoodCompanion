@@ -63,6 +63,14 @@ npx vitest
 - Iteration 3 - Apr 16
 - Final Project submission - Apr 17 (10:45 am)
 
+## Current state
+![Local Image](readme_images/img-website.png)
+
+## Contributions
+Minchao Cong:
+Fang Liu:
+Shurui Liu: Implemented the register functionality
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
