@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JournalsPage from './pages/JournalsPage';
 import SingleJournalPage from './pages/SingleJournalPage';
+import PostDetailPage from "./pages/PostDetailPage";
+import PostsListPage from "./pages/PostsListPage";
 import './App.css';
 
 function App() {
@@ -14,9 +16,9 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
     if (token && userData) {
       setIsAuthenticated(true);
       setUser(JSON.parse(userData));
@@ -24,8 +26,8 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
   };
@@ -33,14 +35,30 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} user={user} />
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          onLogout={handleLogout}
+          user={user}
+        />
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} user={user} />} />
-            <Route path="/login" element={<LoginPage onLogin={setIsAuthenticated} onUser={setUser} />} />
+            <Route
+              path="/"
+              element={
+                <HomePage isAuthenticated={isAuthenticated} user={user} />
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
+              }
+            />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/journals" element={<JournalsPage />} />
             <Route path="/journal/:id" element={<SingleJournalPage />} />
+            <Route path="/post/:id" element={<PostDetailPage />} />
+            <Route path="/posts" element={<PostsListPage />} />
           </Routes>
         </main>
         <Footer />
