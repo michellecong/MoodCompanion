@@ -16,7 +16,7 @@ const wishingWellCommentRoutes = require("./routes/wishingWellCommentRoutes");
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
-      ? [process.env.FRONTEND_URL || "https://yourproductionsite.com"]
+      ? [process.env.FRONTEND_URL || " https://moodcompanion.onrender.com"]
       : ["http://localhost:5173"], // Allow your frontend dev server
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

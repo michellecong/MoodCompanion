@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// 创建一个axios实例
+// create a new axios instance
 const api = axios.create({
   baseURL:
     import.meta.env?.VITE_API_URL ||
