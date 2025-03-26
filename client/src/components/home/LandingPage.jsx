@@ -54,6 +54,7 @@ function LandingPage() {
             Share thoughts anonymously and connect with others facing similar
             experiences.
           </p>
+          <Link to="/posts">Go to posts</Link>
         </div>
       </div>
     </div>
