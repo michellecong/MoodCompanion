@@ -44,6 +44,19 @@ app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
+const fs = require("fs");
+console.log("Current directory:", __dirname);
+console.log("Directory contents:", fs.readdirSync(__dirname));
+
+// 如果build目录应该存在，检查它
+try {
+  console.log(
+    "Build directory contents:",
+    fs.readdirSync(path.join(__dirname, "build"))
+  );
+} catch (err) {
+  console.log("Error reading build directory:", err.message);
+}
 
 connectDB();
 
