@@ -5,14 +5,14 @@ const api = axios.create({
   baseURL:
     import.meta.env?.VITE_API_URL ||
     window.env?.REACT_APP_API_URL ||
-    "http://localhost:3000/api", // server api
-  timeout: 10000, // 请求超时时间
+    "https://moodcompanion-api.onrender.com/api", // api base_url
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 请求拦截器 - 添加认证令牌
+// ask axios to send cookies
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -26,13 +26,13 @@ api.interceptors.request.use(
   }
 );
 
-// 响应拦截器 - 处理常见错误
+// the response interceptor
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
-    // 处理401错误（未授权）
+    // do something with the response error
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
