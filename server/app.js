@@ -42,7 +42,6 @@ app.use("/api/wishing-well/posts", wishingWellPostRoutes);
 app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
 
 const fs = require("fs");
-const path = require("path");
 
 console.log("Current directory:", __dirname);
 console.log("Directory contents:", fs.readdirSync(__dirname));
