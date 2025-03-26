@@ -63,6 +63,14 @@ npx vitest
 - Iteration 3 - Apr 16
 - Final Project submission - Apr 17 (10:45 am)
 
+## Current state
+![Local Image](readme_images/img-website.png)
+
+## Contributions
+- Minchao Cong:Implement the backend, which includes four collections and the CRUD operations for the API, as well as the implementation of the posts list page and post detail page.
+- Fang Liu: Implement the client side, including initializing the App file, deploying the homepage and journals page to support CRUD operations, and creating the login page for authentication.
+- Shurui Liu: Implemented the register functionality.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
