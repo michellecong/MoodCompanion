@@ -55,6 +55,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/post/:id" element={<PostDetailPage />} />
             <Route path="/posts" element={<PostsListPage />} />
+            <Route path="/create-post" element={<CreatePostPage />} />
           </Routes>
         </main>
         <Footer />
