@@ -6,7 +6,7 @@ const api = axios.create({
     import.meta.env?.VITE_API_URL ||
     window.env?.REACT_APP_API_URL ||
     "https://moodcompanion-api.onrender.com/api", // api base_url
-  timeout: 10000,
+
   headers: {
     "Content-Type": "application/json",
   },
