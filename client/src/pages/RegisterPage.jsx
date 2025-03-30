@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./RegisterPage.css";
+import api from "../api/axios";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,6 @@ const RegisterPage = () => {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form behavior (refresh)
 
@@ -33,25 +33,14 @@ const RegisterPage = () => {
     setError(""); // Reset previous errors
 
     try {
-      // Make a POST request to the backend
-      const response = await fetch("http://localhost:3000/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
+      // Make a POST request to the backend using the axios instance
+      const response = await api.post("/users/register", {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
       });
 
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
-
-      const data = await response.json();
-      console.log("Registration successful:", data);
+      console.log("Registration successful:", response.data);
       // Handle successful registration (redirect, show message, etc.)
       // Notifying the user that registration was successful
       alert("Registration successful!");
@@ -59,7 +48,9 @@ const RegisterPage = () => {
       window.location.href = "/login";
     } catch (err) {
       console.error("Error during registration:", err); // Log the error to the console
-      setError("Error: " + err.message); // Display the error to the user  
+      // Display more specific error message if available from the API
+      const errorMessage = err.response?.data?.message || err.message;
+      setError("Error: " + errorMessage);
     } finally {
       setLoading(false);
     }
@@ -123,7 +114,7 @@ const RegisterPage = () => {
         </button>
       </form>
     </div>
-  );  
+  );
 };
 
 export default RegisterPage;
