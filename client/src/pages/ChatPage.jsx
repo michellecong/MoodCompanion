@@ -1,64 +1,61 @@
 import { useState } from "react";
-import axios from "axios";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Send } from "lucide-react";
-import "./Chat.css";
+import { useParams } from "react-router-dom";
+import "./ChatPage.css";
+import ChatsPreview from "../components/ChatsPreview";
+import Navbar from "../components/common/Navbar";
+import Footer from "../components/common/Footer";
 
-const ChatPage = () => {
+function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
-    // State updater
     if (!input.trim()) return;
-    const newMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, newMessage]);
-    setInput("");
-    setLoading(true);
-    
+
+    const userMessage = { sender: "user", text: input };
+    setMessages([...messages, userMessage]);
+
     try {
-        // API call Placeholder
-      const response = await axios.post("/api/chat", { messages: [...messages, newMessage] });
-      setMessages((prev) => [...prev, { role: "ai", content: response.data.reply }]);
+      const response = await fetch("https://api.example.com/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: input }),
+      });
+
+      const data = await response.json();
+      const aiMessage = { sender: "ai", text: data.reply };
+
+      setMessages((prevMessages) => [...prevMessages, aiMessage]);
     } catch (error) {
-      console.error("Error fetching AI response:", error);
+      console.error("Error sending message:", error);
     }
-    
-    setLoading(false);
+
+    setInput("");
   };
 
   return (
     <div className="chat-container">
-      <Card className="chat-box">
-        <CardContent className="chat-content">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`message ${msg.role === "user" ? "user-message" : "ai-message"}`}
-            >
-              {msg.content}
-            </div>
-          ))}
-          {loading && <div className="loading-text">AI is typing...</div>}
-        </CardContent>
-      </Card>
-      <div className="input-container">
-        <Input
+      <div className="chat-messages">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.sender}`}>
+            {msg.text}
+          </div>
+        ))}
+      </div>
+
+      <div className="chat-input">
+        <input
           type="text"
-          placeholder="Type a message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Type a message..."
         />
-        <Button onClick={sendMessage} disabled={loading}>
-          <Send className="icon" />
-        </Button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );
-};
+}
 
 export default ChatPage;
