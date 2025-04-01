@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import "./ChatPage.css";
+import "./ChatPage.css"; // Import the CSS file
 
 function ChatPage() {
   const [messages, setMessages] = useState([]);
