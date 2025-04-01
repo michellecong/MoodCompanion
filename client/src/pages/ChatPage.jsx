@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import "./ChatPage.css";
-import ChatsPreview from "../components/ChatsPreview";
-import Navbar from "../components/common/Navbar";
-import Footer from "../components/common/Footer";
 
 function ChatPage() {
   const [messages, setMessages] = useState([]);
