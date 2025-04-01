@@ -9,6 +9,7 @@ import JournalsPage from "./pages/JournalsPage";
 import SingleJournalPage from "./pages/SingleJournalPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostsListPage from "./pages/PostsListPage";
+import ChatPage from "./pages/ChatPage";
 
 import "./App.css";
 
@@ -60,6 +61,7 @@ function App() {
             <Route path="/journal/:id" element={<SingleJournalPage />} />
             <Route path="/post/:id" element={<PostDetailPage />} />
             <Route path="/posts" element={<PostsListPage />} />
+            <Route path="/chat" element={<ChatPage />} />
           </Routes>
         </main>
         <Footer />
