@@ -32,6 +32,7 @@ function LandingPage() {
             Chat with our AI assistant for emotional support, encouragement, and
             personalized advice.
           </p>
+          <Link to="/chat">Go to Chat</Link>
         </div>
 
         <div className="feature-card">
