@@ -1,39 +1,35 @@
-import { useState, useEffect } from 'react';
-import JournalPreview from '../components/journal/JournalPreview';
-import './JournalsPage.css';
+import { useState, useEffect } from "react";
+import JournalPreview from "../components/journal/JournalPreview";
+import "./JournalsPage.css";
+import api from "../api/axios";
 
 function JournalsPage() {
   const [newJournal, setNewJournal] = useState({
-    title: '',
-    content: '',
+    title: "",
+    content: "",
   });
   const [journals, setJournals] = useState([]);
   const [filteredJournals, setFilteredJournals] = useState([]);
   const [tempFilter, setTempFilter] = useState({
-    emotion: '',
-    startDate: '',
-    endDate: '',
+    emotion: "",
+    startDate: "",
+    endDate: "",
   });
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchJournals = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/journals', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const data = await response.json();
-        if (data.success) {
-          setJournals(data.data);
-          setFilteredJournals(data.data);
+        const response = await api.get("/journals");
+        if (response.data.success) {
+          setJournals(response.data.data);
+          setFilteredJournals(response.data.data);
         } else {
-          setError('Failed to fetch journals');
+          setError("Failed to fetch journals");
         }
       } catch (err) {
-        setError('Error fetching journals');
+        setError("Error fetching journals");
+        console.error("Error fetching journals:", err);
       }
     };
 
@@ -45,59 +41,50 @@ function JournalsPage() {
     if (!validateForm()) return;
 
     try {
-      const response = await fetch('http://localhost:3000/api/journals', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: newJournal.title,
-          content: newJournal.content,
-        }),
+      const response = await api.post("/journals", {
+        title: newJournal.title,
+        content: newJournal.content,
       });
-      const data = await response.json();
 
-      if (data.success) {
-        setJournals([data.data, ...journals]);
-        setNewJournal({ title: '', content: '' });
+      if (response.data.success) {
+        setJournals([response.data.data, ...journals]);
+        setNewJournal({ title: "", content: "" });
         setError(null);
       } else {
-        setError('Error creating journal');
+        setError("Error creating journal");
       }
     } catch (err) {
-      setError('Error creating journal');
+      setError("Error creating journal");
+      console.error("Error creating journal:", err);
     }
   };
 
   const handleDelete = async (journalId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/journals/${journalId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const data = await response.json();
+      const response = await api.delete(`/journals/${journalId}`);
 
-      if (data.success) {
-        setJournals(journals.filter(journal => journal._id !== journalId));
+      if (response.data.success) {
+        setJournals(journals.filter((journal) => journal._id !== journalId));
+        setFilteredJournals(
+          filteredJournals.filter((journal) => journal._id !== journalId)
+        );
       } else {
-        setError('Error deleting journal');
+        setError("Error deleting journal");
       }
     } catch (err) {
-      setError('Error deleting journal');
+      setError("Error deleting journal");
+      console.error("Error deleting journal:", err);
     }
   };
 
   const validateForm = () => {
     const { title, content } = newJournal;
     if (!title.trim()) {
-      setError('Title cannot be empty');
+      setError("Title cannot be empty");
       return false;
     }
     if (!content.trim()) {
-      setError('Content cannot be empty');
+      setError("Content cannot be empty");
       return false;
     }
     return true;
@@ -105,15 +92,16 @@ function JournalsPage() {
 
   const handleTempFilterChange = (e) => {
     const { name, value } = e.target;
-    setTempFilter(prev => ({ ...prev, [name]: value }));
+    setTempFilter((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleApplyFilter = () => {
     let filtered = [...journals];
 
     if (tempFilter.emotion) {
-      filtered = filtered.filter(journal => {
-        if (!journal.emotionsDetected || journal.emotionsDetected.length === 0) return false;
+      filtered = filtered.filter((journal) => {
+        if (!journal.emotionsDetected || journal.emotionsDetected.length === 0)
+          return false;
         const topEmotion = journal.emotionsDetected.reduce((prev, current) =>
           prev.score > current.score ? prev : current
         );
@@ -122,13 +110,13 @@ function JournalsPage() {
     }
 
     if (tempFilter.startDate || tempFilter.endDate) {
-      filtered = filtered.filter(journal => {
+      filtered = filtered.filter((journal) => {
         const journalDate = new Date(journal.createdAt);
         // ensure journalDate is a valid date
         if (isNaN(journalDate.getTime())) return false;
 
         // convert journalDate to YYYY-MM-DD format
-        const journalDateStr = journalDate.toISOString().split('T')[0];
+        const journalDateStr = journalDate.toISOString().split("T")[0];
 
         // if there is startDate, compare if greater than or equal
         let afterStart = true;
@@ -151,9 +139,9 @@ function JournalsPage() {
 
   const handleResetFilter = () => {
     setTempFilter({
-      emotion: '',
-      startDate: '',
-      endDate: '',
+      emotion: "",
+      startDate: "",
+      endDate: "",
     });
     setFilteredJournals(journals);
   };
@@ -168,24 +156,34 @@ function JournalsPage() {
             type="text"
             placeholder="Title"
             value={newJournal.title}
-            onChange={(e) => setNewJournal({ ...newJournal, title: e.target.value })}
+            onChange={(e) =>
+              setNewJournal({ ...newJournal, title: e.target.value })
+            }
           />
         </div>
         <div className="form-group">
           <textarea
             placeholder="Write your journal entry..."
             value={newJournal.content}
-            onChange={(e) => setNewJournal({ ...newJournal, content: e.target.value })}
+            onChange={(e) =>
+              setNewJournal({ ...newJournal, content: e.target.value })
+            }
           />
         </div>
-        <button type="submit" className="submit-button">Create Journal</button>
+        <button type="submit" className="submit-button">
+          Create Journal
+        </button>
       </form>
       {error && <p className="error">{error}</p>}
 
       <div className="filter-section">
         <div className="filter-group">
           <label>Emotion:</label>
-          <select name="emotion" value={tempFilter.emotion} onChange={handleTempFilterChange}>
+          <select
+            name="emotion"
+            value={tempFilter.emotion}
+            onChange={handleTempFilterChange}
+          >
             <option value="">All Emotions</option>
             <option value="joy">Joy</option>
             <option value="sadness">Sadness</option>
@@ -212,10 +210,18 @@ function JournalsPage() {
             onChange={handleTempFilterChange}
           />
         </div>
-        <button type="button" className="filter-button" onClick={handleApplyFilter}>
+        <button
+          type="button"
+          className="filter-button"
+          onClick={handleApplyFilter}
+        >
           Filter
         </button>
-        <button type="button" className="reset-button" onClick={handleResetFilter}>
+        <button
+          type="button"
+          className="reset-button"
+          onClick={handleResetFilter}
+        >
           Reset
         </button>
       </div>
