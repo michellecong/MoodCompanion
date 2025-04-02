@@ -1,7 +1,6 @@
 const Journal = require("../models/journalModel");
 const User = require("../models/userModel");
-
-// const emotionService = require("../services/emotionService");
+const emotionService = require("../services/emotionService");
 
 /**
  * Journal controller for handling journal-related operations
@@ -16,26 +15,16 @@ const journalController = {
     try {
       const { title, content } = req.body;
       const userId = req.user.id;
-
-      // Validate input
+  
       if (!title || !content) {
         return res
           .status(400)
-          .json({ message: "The title and contentn can not be empty" });
+          .json({ message: "The title and content cannot be empty" });
       }
-
-      // Detect emotions in the journal content
-      // const emotionsDetected = await emotionService.detectEmotions(content);
-      const emotionsDetected = [
-        { name: "joy", score: 0.8 },
-        { name: "sadness", score: 0.2 },
-      ];
-
-      // Generate personalized feedback based on detected emotions
-      // const feedback = emotionService.generateFeedback(emotionsDetected);
-      const feedback = "This is a feed back";
-
-      // Create new journal entry
+  
+      const emotionsDetected = await emotionService.detectEmotions(content);
+      const feedback = emotionService.generateFeedback(emotionsDetected);
+  
       const newJournal = new Journal({
         userId,
         title,
@@ -43,16 +32,15 @@ const journalController = {
         emotionsDetected,
         feedback,
       });
-
+  
       await newJournal.save();
-
-      // Add journal reference to user
+  
       await User.findByIdAndUpdate(
         userId,
         { $push: { journals: newJournal._id } },
         { new: true }
       );
-
+  
       res.status(201).json({
         success: true,
         data: newJournal,
@@ -187,6 +175,7 @@ const journalController = {
           message: "Not authorized to access this journal",
         });
       }
+      console.log('Returning journal:', journal); // 添加日志
 
       res.status(200).json({
         success: true,
@@ -212,61 +201,48 @@ const journalController = {
       const journalId = req.params.id;
       const userId = req.user.id;
       const { title, content } = req.body;
-
-      // Validate input
+  
       if (!title && !content) {
         return res.status(400).json({
           success: false,
           message: "Please provide title or content to update",
         });
       }
-
-      // Find the journal
+  
       let journal = await Journal.findById(journalId);
-
-      // Check if journal exists
       if (!journal) {
         return res.status(404).json({
           success: false,
           message: "Journal not found",
         });
       }
-
-      // Check if the journal belongs to the authenticated user
+  
       if (journal.userId.toString() !== userId) {
         return res.status(403).json({
           success: false,
           message: "Not authorized to update this journal",
         });
       }
-
-      // Update fields
+  
       const updateData = {};
+      let updatedContent = journal.content;
+  
       if (title) updateData.title = title;
       if (content) {
         updateData.content = content;
-
-        // Re-analyze emotions if content changes
-        // const emotionsDetected = await emotionService.detectEmotions(content);
-        const emotionsDetected = [
-          { name: "joy", score: 0.7 },
-          { name: "sadness", score: 0.3 },
-        ];
-        updateData.emotionsDetected = emotionsDetected;
-
-        // Generate new feedback
-        // const feedback = emotionService.generateFeedback(emotionsDetected);
-        const feedback = "Updated feedback based on new content";
-        updateData.feedback = feedback;
+        updatedContent = content;
       }
-
-      // Update the journal
+  
+      const emotionsDetected = await emotionService.detectEmotions(updatedContent);
+      updateData.emotionsDetected = emotionsDetected;
+      updateData.feedback = emotionService.generateFeedback(emotionsDetected);
+  
       journal = await Journal.findByIdAndUpdate(
         journalId,
         { $set: updateData },
         { new: true, runValidators: true }
       );
-
+  
       res.status(200).json({
         success: true,
         data: journal,
@@ -279,7 +255,7 @@ const journalController = {
         error: error.message,
       });
     }
-  },
-};
+  }
+}
 
 module.exports = journalController;
