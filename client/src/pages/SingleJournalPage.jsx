@@ -1,36 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import './SingleJournalPage.css';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import api from "../api/axios";
+import "./SingleJournalPage.css";
 
 function SingleJournalPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [journal, setJournal] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedJournal, setEditedJournal] = useState({ title: '', content: '' });
+  const [editedJournal, setEditedJournal] = useState({
+    title: "",
+    content: "",
+  });
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchJournal = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/journals/${id}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const data = await response.json();
-        if (data.success) {
-          setJournal(data.data);
+        const response = await api.get(`/journals/${id}`);
+        if (response.data.success) {
+          setJournal(response.data.data);
           setEditedJournal({
-            title: data.data.title,
-            content: data.data.content,
+            title: response.data.data.title,
+            content: response.data.data.content,
           });
         } else {
-          setError('Journal not found');
+          setError("Journal not found");
         }
       } catch (err) {
-        setError('Error fetching journal');
+        console.error("Error fetching journal:", err);
+        setError("Error fetching journal");
       }
     };
 
@@ -40,49 +39,39 @@ function SingleJournalPage() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/journals/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: editedJournal.title,
-          content: editedJournal.content,
-        }),
+      const response = await api.put(`/journals/${id}`, {
+        title: editedJournal.title,
+        content: editedJournal.content,
       });
-      const data = await response.json();
 
-      if (data.success) {
-        setJournal(data.data);
+      if (response.data.success) {
+        setJournal(response.data.data);
         setIsEditing(false);
       } else {
-        setError('Error updating journal');
+        setError("Error updating journal");
       }
     } catch (err) {
-      setError('Error updating journal');
+      console.error("Error updating journal:", err);
+      setError("Error updating journal");
     }
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this journal?');
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this journal?"
+    );
     if (confirmDelete) {
       try {
-        const response = await fetch(`http://localhost:3000/api/journals/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const data = await response.json();
+        const response = await api.delete(`/journals/${id}`);
 
-        if (data.success) {
-          navigate('/journals');
+        if (response.data.success) {
+          navigate("/journals");
         } else {
-          setError('Error deleting journal');
+          setError("Error deleting journal");
         }
       } catch (err) {
-        setError('Error deleting journal');
+        console.error("Error deleting journal:", err);
+        setError("Error deleting journal");
       }
     }
   };
@@ -97,36 +86,38 @@ function SingleJournalPage() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
   const getEmotionEmoji = (emotions) => {
-    if (!emotions || emotions.length === 0) return '';
-    
+    if (!emotions || emotions.length === 0) return "";
+
     const topEmotion = emotions.reduce((prev, current) =>
       prev.score > current.score ? prev : current
     );
 
     const emojiMap = {
-      joy: '😊',
-      satisfaction: '😌',
-      anxiety: '😰',
-      fear: '😨',
-      sadness: '😢',
-      anger: '😠',
-      neutral: '😐',
+      joy: "😊",
+      satisfaction: "😌",
+      anxiety: "😰",
+      fear: "😨",
+      sadness: "😢",
+      anger: "😠",
+      neutral: "😐",
     };
-    
-    return emojiMap[topEmotion.name] || '';
+
+    return emojiMap[topEmotion.name] || "";
   };
 
   return (
     <div className="single-journal-page">
-      <Link to="/journals" className="back-link">Back to Journals</Link>
+      <Link to="/journals" className="back-link">
+        Back to Journals
+      </Link>
 
       {!isEditing ? (
         <>
@@ -138,14 +129,21 @@ function SingleJournalPage() {
           <div className="journal-mood">
             {journal.emotionsDetected.length > 0 && (
               <>
-                <p>AI-detected emotions: {journal.emotionsDetected.map(e => `${e.name} (${(e.score * 100).toFixed(1)}%)`).join(', ')}</p>
+                <p>
+                  AI-detected emotions:{" "}
+                  {journal.emotionsDetected
+                    .map((e) => `${e.name} (${(e.score * 100).toFixed(1)}%)`)
+                    .join(", ")}
+                </p>
                 <p>Feedback: {journal.feedback}</p>
               </>
             )}
           </div>
           <div className="journal-actions">
             <button onClick={() => setIsEditing(true)}>Edit</button>
-            <button onClick={handleDelete} className="delete-btn">Delete</button>
+            <button onClick={handleDelete} className="delete-btn">
+              Delete
+            </button>
           </div>
         </>
       ) : (
@@ -153,17 +151,23 @@ function SingleJournalPage() {
           <input
             type="text"
             value={editedJournal.title}
-            onChange={(e) => setEditedJournal({...editedJournal, title: e.target.value})}
+            onChange={(e) =>
+              setEditedJournal({ ...editedJournal, title: e.target.value })
+            }
             required
           />
           <textarea
             value={editedJournal.content}
-            onChange={(e) => setEditedJournal({...editedJournal, content: e.target.value})}
+            onChange={(e) =>
+              setEditedJournal({ ...editedJournal, content: e.target.value })
+            }
             required
           />
           <div className="edit-actions">
             <button type="submit">Save Changes</button>
-            <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+            <button type="button" onClick={() => setIsEditing(false)}>
+              Cancel
+            </button>
           </div>
         </form>
       )}
