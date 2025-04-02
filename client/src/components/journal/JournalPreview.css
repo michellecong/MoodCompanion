@@ -1,55 +1,78 @@
 .journal-preview {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .journal-card {
-    display: block;
-    background-color: var(--background-light);
-    border-radius: var(--border-radius);
-    padding: 16px;
-    text-decoration: none;
-    color: var(--text-primary);
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  }
-  
-  .journal-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow);
-  }
-  
-  .journal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  
-  .journal-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--primary-dark);
-  }
-  
-  .journal-date {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-  }
-  
-  .journal-excerpt {
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    color: var(--text-secondary);
-  }
-  
-  .journal-emotions {
-    font-size: 1.5rem;
-    text-align: right;
-  }
-  
-  .no-journals {
-    text-align: center;
-    color: var(--text-secondary);
-    padding: 20px 0;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.journal-card-container {
+  position: relative;
+}
+
+.journal-card {
+  display: block;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  text-decoration: none;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.journal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.journal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.journal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+.journal-date {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.journal-excerpt {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.journal-emotions {
+  font-size: 1.5rem;
+  text-align: right;
+}
+
+.delete-journal-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #dc3545;
+  transition: color 0.2s;
+}
+
+.delete-journal-btn:hover {
+  color: #b02a37;
+}
+
+.no-journals {
+  text-align: center;
+  color: #888;
+  padding: 30px 0;
+  font-size: 1.1rem;
+}
