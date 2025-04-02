@@ -43,8 +43,6 @@ function HomePage({ isAuthenticated, user }) {
         <Dashboard
           isLoading={isLoading}
           recentJournals={recentJournals}
-          currentMood={currentMood}
-          onMoodSelect={setCurrentMood}
         />
       ) : (
         <LandingPage />
