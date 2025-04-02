@@ -15,6 +15,21 @@ MoodCompanion is a personal AI-powered application that helps users track their 
 - **AI Companion**: Get emotional support and personalized advice
 - **Community Support**: Share thoughts anonymously with others
 
+## Tech Stack
+Frontend: React
+Backend: Node.js, Express.js
+Database: MongoDB
+APIs: OpenAI, Google Cloud Natural Language API
+Deployment: Render
+
+## Environment Configuration
+If you are running the web app locally, add the following configuration in a .env file:
+```sh
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority
+JWT_SECRET=your_jwt_secret_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
 ## Server
 Start server:
 ```bash
@@ -47,6 +62,14 @@ npx vitest
 - Iteration 2 - Apr 5
 - Iteration 3 - Apr 16
 - Final Project submission - Apr 17 (10:45 am)
+
+## Current state
+![Local Image](readme_images/img-website.png)
+
+## Contributions
+- Minchao Cong:Implement the backend, which includes four collections and the CRUD operations for the API, as well as the implementation of the posts list page and post detail page.
+- Fang Liu: Implement the client side, including initializing the App file, deploying the homepage and journals page to support CRUD operations, and creating the login page for authentication.
+- Shurui Liu: Implemented the register functionality.
 
 ## License
 

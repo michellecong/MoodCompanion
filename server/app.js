@@ -16,7 +16,7 @@ const wishingWellCommentRoutes = require("./routes/wishingWellCommentRoutes");
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
-      ? [process.env.FRONTEND_URL || "https://yourproductionsite.com"]
+      ? [process.env.FRONTEND_URL || "https://moodcompanion.onrender.com"]
       : ["http://localhost:5173"], // Allow your frontend dev server
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -31,6 +31,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(__dirname, "../client/build")));
+
 // routes
 // app.use("/api/auth", authRoutes);
 app.use("/api/journals", journalRoutes);
@@ -38,6 +40,10 @@ app.use("/api/journals", journalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wishing-well/posts", wishingWellPostRoutes);
 app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
 
 connectDB();
 

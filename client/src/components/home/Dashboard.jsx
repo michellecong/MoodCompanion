@@ -1,19 +1,59 @@
-// src/components/home/Dashboard.jsx
 import { Link } from "react-router-dom";
-import MoodTracker from "../journal/MoodTracker";
 import JournalPreview from "../journal/JournalPreview";
 
-function Dashboard({ isLoading, recentJournals, currentMood, onMoodSelect }) {
+
+function Dashboard({ isLoading, recentJournals }) {
   if (isLoading) {
     return <div className="loading">Loading your personal dashboard...</div>;
   }
+
+  // calculate the recent emotion summary
+  const getRecentEmotionSummary = () => {
+    if (!recentJournals || recentJournals.length === 0) {
+      return { topEmotion: 'neutral', emoji: '😐' };
+    }
+
+    // summarize the emotions from recent journals
+    const emotionCounts = {};
+    recentJournals.forEach(journal => {
+      if (journal.emotionsDetected && journal.emotionsDetected.length > 0) {
+        const topEmotion = journal.emotionsDetected.reduce((prev, current) =>
+          prev.score > current.score ? prev : current
+        );
+        emotionCounts[topEmotion.name] = (emotionCounts[topEmotion.name] || 0) + 1;
+      }
+    });
+
+    // find the most frequent emotion
+    const topEmotion = Object.keys(emotionCounts).reduce((a, b) =>
+      emotionCounts[a] > emotionCounts[b] ? a : b,
+      'neutral'
+    );
+
+    const emojiMap = {
+      joy: '😊',
+      sadness: '😢',
+      anger: '😠',
+      anxiety: '😰',
+      neutral: '😐',
+    };
+
+    return {
+      topEmotion: topEmotion || 'neutral',
+      emoji: emojiMap[topEmotion] || '😐',
+    };
+  };
+
+  const { topEmotion, emoji } = getRecentEmotionSummary();
 
   return (
     <div className="user-dashboard">
       <div className="dashboard-row">
         <div className="dashboard-card mood-card">
-          <h2>How are you feeling today?</h2>
-          <MoodTracker onMoodSelect={onMoodSelect} selectedMood={currentMood} />
+          <h2>Recent Emotion Overview</h2>
+          <p>
+            Based on your recent journals, you seem to be feeling mostly <strong>{topEmotion}</strong> {emoji}.
+          </p>
         </div>
       </div>
 
@@ -21,12 +61,12 @@ function Dashboard({ isLoading, recentJournals, currentMood, onMoodSelect }) {
         <div className="dashboard-card journal-card">
           <div className="card-header">
             <h2>Recent Journal Entries</h2>
-            <Link to="/journal" className="view-all">
+            <Link to="/journals" className="view-all">
               View All
             </Link>
           </div>
           <JournalPreview journals={recentJournals} />
-          <Link to="/journal/new" className="new-entry-btn">
+          <Link to="/journals" className="new-entry-btn">
             + New Journal Entry
           </Link>
         </div>
