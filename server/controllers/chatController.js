@@ -1,4 +1,4 @@
-const chatService = require('../services/chatService');
+const chatService = require('../services/chatServices');
 const { check, validationResult } = require("express-validator");
 
 const chatContoller = {
