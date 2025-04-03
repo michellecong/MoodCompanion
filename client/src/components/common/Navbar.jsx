@@ -19,7 +19,7 @@ function Navbar({ isAuthenticated, onLogout, user }) {
           {isAuthenticated ? (
             <>
               <li className="nav-item">
-                <Link to="/journal" className="nav-link">
+                <Link to="/journals" className="nav-link">
                   Journal
                 </Link>
               </li>
