@@ -1,4 +1,4 @@
-const chatService = require('../services/chatServices');
+const chatServices = require('../services/chatServices');
 const { check, validationResult } = require("express-validator");
 
 const chatContoller = {
@@ -8,7 +8,7 @@ const chatContoller = {
             const { message } = req.body;
 
             // Simulate a response from the AI model
-            const aiResponse = await chatService.getAIResponse(message);
+            const aiResponse = await chatServices.getAIResponse(message);
 
             res.status(200).json({ reply: aiResponse });
         } catch (error) {
