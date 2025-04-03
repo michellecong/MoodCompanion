@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api from "../api/axios";
 import "./PostDetailPage.css";
 
-const PostDetailPage = ({ isAuthenticated, user }) => {
+const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -13,13 +13,41 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
   const [commentSort, setCommentSort] = useState("recent"); // 'recent' or 'top'
   const [submitting, setSubmitting] = useState(false);
 
+  // 使用组合认证状态，确保在props和localStorage都检查
+  const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
+
+  // 确保认证状态包含localStorage和props
+  useEffect(() => {
+    // 从localStorage检查认证信息作为备份
+    const token = localStorage.getItem("token");
+    if (token) {
+      console.log("从localStorage恢复认证状态");
+      setIsAuthenticated(true);
+    } else {
+      // 使用从props传入的认证状态
+      setIsAuthenticated(propIsAuthenticated);
+    }
+  }, [propIsAuthenticated]);
+
   useEffect(() => {
     const fetchPostDetails = async () => {
       try {
         setLoading(true);
+        // 确保API路径正确
         const response = await api.get(`/wishing-well/posts/${id}`);
-        setPost(response.data.data.post);
-        setComments(response.data.data.comments);
+
+        if (response.data && response.data.data) {
+          setPost(response.data.data.post);
+          // 如果评论包含在初始响应中
+          if (response.data.data.comments) {
+            setComments(response.data.data.comments);
+          } else {
+            // 否则单独获取评论
+            fetchComments(commentSort);
+          }
+        } else {
+          throw new Error("Invalid response format");
+        }
         setLoading(false);
       } catch (err) {
         setError("Failed to load post. Please try again later.");
@@ -34,10 +62,16 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
   const fetchComments = async (sort = "recent") => {
     try {
       const sortParam = sort === "top" ? "sortBy=upvotes" : "";
+      // 检查是否需要修正API路径 - 去掉重复的/api前缀
       const response = await api.get(
-        `/api/wishing-well/comments/post/${id}?${sortParam}`
+        `/wishing-well/comments/post/${id}?${sortParam}`
       );
-      setComments(response.data.data);
+
+      if (response.data && response.data.data) {
+        setComments(response.data.data);
+      } else {
+        console.error("Invalid comments response format:", response);
+      }
     } catch (err) {
       console.error("Error fetching comments:", err);
       setError("Failed to load comments. Please try again later.");
@@ -47,7 +81,7 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      // Redirect to login if not authenticated
+      // 重定向到登录页面
       window.location.href = `/login?redirect=/post/${id}`;
       return;
     }
@@ -56,7 +90,8 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
 
     try {
       setSubmitting(true);
-      await api.post("/api/wishing-well/comments", {
+      // 修正API路径 - 去掉重复的/api前缀
+      await api.post("/wishing-well/comments", {
         postId: id,
         content: commentText,
       });
@@ -93,8 +128,11 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
     }
 
     try {
-      const response = await api.put(`/api/wishing-well/posts/${id}/upvote`);
-      setPost({ ...post, upvotes: response.data.data.upvotes });
+      // 修正API路径
+      const response = await api.put(`/wishing-well/posts/${id}/upvote`);
+      if (response.data && response.data.data) {
+        setPost({ ...post, upvotes: response.data.data.upvotes });
+      }
     } catch (err) {
       console.error("Error upvoting post:", err);
       setError("Failed to upvote post. Please try again later.");
@@ -108,15 +146,18 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
     }
 
     try {
+      // 修正API路径
       const response = await api.put(
-        `/api/wishing-well/comments/${commentId}/upvote`
+        `/wishing-well/comments/${commentId}/upvote`
       );
-      const updatedComments = comments.map((comment) =>
-        comment._id === commentId
-          ? { ...comment, upvotes: response.data.data.upvotes }
-          : comment
-      );
-      setComments(updatedComments);
+      if (response.data && response.data.data) {
+        const updatedComments = comments.map((comment) =>
+          comment._id === commentId
+            ? { ...comment, upvotes: response.data.data.upvotes }
+            : comment
+        );
+        setComments(updatedComments);
+      }
     } catch (err) {
       console.error("Error upvoting comment:", err);
       setError("Failed to upvote comment. Please try again later.");
@@ -131,10 +172,15 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
     return <div className="error-message">{error || "Post not found"}</div>;
   }
 
+  // 添加调试信息
+  console.log("渲染PostDetailPage，认证状态：", isAuthenticated);
+  console.log("Props认证状态：", propIsAuthenticated);
+  console.log("localStorage token：", localStorage.getItem("token"));
+
   return (
     <div className="post-detail-container">
       <div className="back-link">
-        <Link to="/">← Back to all posts</Link>
+        <Link to="/posts">← Back to all posts</Link>
       </div>
 
       <div className="post-detail-card">
@@ -143,7 +189,7 @@ const PostDetailPage = ({ isAuthenticated, user }) => {
         {post.tags && post.tags.length > 0 && (
           <div className="post-tags">
             {post.tags.map((tag) => (
-              <Link to={`/?tag=${tag}`} key={tag} className="tag">
+              <Link to={`/posts?tag=${tag}`} key={tag} className="tag">
                 #{tag}
               </Link>
             ))}
