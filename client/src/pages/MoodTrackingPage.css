@@ -1,0 +1,48 @@
+.mood-tracking-page {
+    padding: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .mood-tracking-page h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .mood-tracking-page p {
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .chart-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  .error {
+    color: #dc3545;
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  
+  .back-link:hover {
+    text-decoration: underline;
+  }
