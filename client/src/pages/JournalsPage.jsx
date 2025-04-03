@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import JournalPreview from "../components/journal/JournalPreview";
 import "./JournalsPage.css";
 import api from "../api/axios";
@@ -185,11 +186,16 @@ function JournalsPage() {
             onChange={handleTempFilterChange}
           >
             <option value="">All Emotions</option>
-            <option value="joy">Joy</option>
-            <option value="sadness">Sadness</option>
-            <option value="anger">Anger</option>
-            <option value="anxiety">Anxiety</option>
-            <option value="neutral">Neutral</option>
+            <option value="excited">Excited</option>
+            <option value="content">Content</option>
+            <option value="depressed">Depressed</option>
+            <option value="lonely">Lonely</option>
+            <option value="frustrated">Frustrated</option>
+            <option value="irritated">Irritated</option>
+            <option value="nervous">Nervous</option>
+            <option value="worried">Worried</option>
+            <option value="calm">Calm</option>
+            <option value="indifferent">Indifferent</option>
           </select>
         </div>
         <div className="filter-group">
@@ -231,6 +237,7 @@ function JournalsPage() {
       ) : (
         <p>Loading journals...</p>
       )}
+      <Link to="/mood-tracking" className="view-mood-btn">View Mood Tracking</Link>
     </div>
   );
 }

@@ -44,6 +44,7 @@ function LandingPage() {
             Visualize your emotional patterns over time to build greater
             self-awareness.
           </p>
+          <Link to="/mood-tracking">View Mood Trends</Link>
         </div>
 
         <div className="feature-card">

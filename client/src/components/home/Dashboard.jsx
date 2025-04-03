@@ -31,11 +31,16 @@ function Dashboard({ isLoading, recentJournals }) {
     );
 
     const emojiMap = {
-      joy: '😊',
-      sadness: '😢',
-      anger: '😠',
-      anxiety: '😰',
-      neutral: '😐',
+      excited: '🤩',
+      content: '😊',
+      depressed: '😔',
+      lonely: '🥀',
+      frustrated: '😤',
+      irritated: '😠',
+      nervous: '😟',
+      worried: '😰',
+      calm: '😌',
+      indifferent: '😐',
     };
 
     return {
@@ -54,6 +59,9 @@ function Dashboard({ isLoading, recentJournals }) {
           <p>
             Based on your recent journals, you seem to be feeling mostly <strong>{topEmotion}</strong> {emoji}.
           </p>
+          <Link to="/mood-tracking" className="view-trends-btn">
+            View Mood Trends
+          </Link>
         </div>
       </div>
 
