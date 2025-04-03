@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 import './MoodTrackingPage.css';
+import api from "../api/axios";
 
 // register the components
 ChartJS.register(
@@ -32,25 +33,21 @@ function MoodTrackingPage() {
   useEffect(() => {
     const fetchJournals = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/journals', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const data = await response.json();
-        if (data.success) {
-          setJournals(data.data);
+        const response = await api.get("/journals");
+        if (response.data.success) {
+          setJournals(response.data.data);
+          setFilteredJournals(response.data.data);
         } else {
-          setError('Failed to fetch journals');
+          setError("Failed to fetch journals");
         }
       } catch (err) {
-        setError('Error fetching journals');
+        setError("Error fetching journals");
+        console.error("Error fetching journals:", err);
       }
     };
-
+  
     fetchJournals();
-  }, []);
+  }, []);  
 
   useEffect(() => {
     if (journals.length === 0) return;
