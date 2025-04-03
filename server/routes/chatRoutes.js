@@ -30,7 +30,7 @@ router.post(
   // check("content", "content can not be empty").not().isEmpty(),
 
   validateRequest,
-  sendChatMessage
+  chatMessage
 );
 
 module.exports = router;
