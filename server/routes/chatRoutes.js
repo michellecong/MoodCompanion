@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {sendChatMessage} = require("../controllers/chatController");
+const {chatMessage} = require("../controllers/chatController");
 
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
