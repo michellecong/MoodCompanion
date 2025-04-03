@@ -32,3 +32,5 @@ router.post(
   validateRequest,
   sendChatMessage
 );
+
+module.exports = router;

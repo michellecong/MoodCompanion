@@ -1,4 +1,5 @@
 const chatContoller = {
+    /* sends a message to the AI model and returns the response */
     async sendChatMessage(req, res) {
         try {
             const { message } = req.body;

@@ -11,6 +11,7 @@ const journalRoutes = require("./routes/journalRoutes");
 const userRoutes = require("./routes/userRoutes");
 const wishingWellPostRoutes = require("./routes/wishingWellPostRoutes");
 const wishingWellCommentRoutes = require("./routes/wishingWellCommentRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 // Configure CORS options
 const corsOptions = {
@@ -40,6 +41,7 @@ app.use("/api/journals", journalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wishing-well/posts", wishingWellPostRoutes);
 app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
