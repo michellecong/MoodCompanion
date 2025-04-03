@@ -23,13 +23,16 @@ function JournalPreview({ journals, onDelete }) {
     );
     
     const emojiMap = {
-      joy: '😊',
-      satisfaction: '😌',
-      anxiety: '😰',
-      fear: '😨',
-      sadness: '😢',
-      anger: '😠',
-      neutral: '😐',
+      excited: '🤩',
+      content: '😊',
+      depressed: '😔',
+      lonely: '🥀',
+      frustrated: '😤',
+      irritated: '😠',
+      nervous: '😟',
+      worried: '😰',
+      calm: '😌',
+      indifferent: '😐',
     };
     
     return emojiMap[topEmotion.name] || '';
