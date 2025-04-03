@@ -56,6 +56,9 @@ npm run dev
 ```bash
 npx vitest
 ```
+5. Dependencies:
+npm install openai
+
 
 ## Time Line
 - Iteration 1 - Mar 25
