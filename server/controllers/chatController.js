@@ -1,11 +1,14 @@
+const chatService = require('../services/chatService');
+const { check, validationResult } = require("express-validator");
+
 const chatContoller = {
     /* sends a message to the AI model and returns the response */
-    async sendChatMessage(req, res) {
+    async chatMessage(req, res) {
         try {
             const { message } = req.body;
 
             // Simulate a response from the AI model
-            const aiResponse = `AI response to: ${message}`;
+            const aiResponse = await chatService.getAIResponse(message);
 
             res.status(200).json({ reply: aiResponse });
         } catch (error) {
@@ -14,3 +17,5 @@ const chatContoller = {
         }
     }
 }
+
+module.exports = chatContoller;
