@@ -13,18 +13,17 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const [commentSort, setCommentSort] = useState("recent"); // 'recent' or 'top'
   const [submitting, setSubmitting] = useState(false);
 
-  // 使用组合认证状态，确保在props和localStorage都检查
+  // Use combined authentication state, ensure both props and localStorage are checked
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
 
-  // 确保认证状态包含localStorage和props
+  // Ensure authentication state includes both localStorage and props
   useEffect(() => {
-    // 从localStorage检查认证信息作为备份
+    // Check authentication info from localStorage as backup
     const token = localStorage.getItem("token");
     if (token) {
-      console.log("从localStorage恢复认证状态");
       setIsAuthenticated(true);
     } else {
-      // 使用从props传入的认证状态
+      // Use authentication state passed from props
       setIsAuthenticated(propIsAuthenticated);
     }
   }, [propIsAuthenticated]);
@@ -33,16 +32,15 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     const fetchPostDetails = async () => {
       try {
         setLoading(true);
-        // 确保API路径正确
         const response = await api.get(`/wishing-well/posts/${id}`);
 
         if (response.data && response.data.data) {
           setPost(response.data.data.post);
-          // 如果评论包含在初始响应中
+          // If comments are included in the initial response
           if (response.data.data.comments) {
             setComments(response.data.data.comments);
           } else {
-            // 否则单独获取评论
+            // Otherwise fetch comments separately
             fetchComments(commentSort);
           }
         } else {
@@ -62,7 +60,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const fetchComments = async (sort = "recent") => {
     try {
       const sortParam = sort === "top" ? "sortBy=upvotes" : "";
-      // 检查是否需要修正API路径 - 去掉重复的/api前缀
       const response = await api.get(
         `/wishing-well/comments/post/${id}?${sortParam}`
       );
@@ -81,7 +78,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      // 重定向到登录页面
+      // Redirect to login page
       window.location.href = `/login?redirect=/post/${id}`;
       return;
     }
@@ -90,7 +87,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
     try {
       setSubmitting(true);
-      // 修正API路径 - 去掉重复的/api前缀
       await api.post("/wishing-well/comments", {
         postId: id,
         content: commentText,
@@ -128,7 +124,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
 
     try {
-      // 修正API路径
       const response = await api.put(`/wishing-well/posts/${id}/upvote`);
       if (response.data && response.data.data) {
         setPost({ ...post, upvotes: response.data.data.upvotes });
@@ -146,7 +141,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
 
     try {
-      // 修正API路径
       const response = await api.put(
         `/wishing-well/comments/${commentId}/upvote`
       );
@@ -171,11 +165,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   if (error || !post) {
     return <div className="error-message">{error || "Post not found"}</div>;
   }
-
-  // 添加调试信息
-  console.log("渲染PostDetailPage，认证状态：", isAuthenticated);
-  console.log("Props认证状态：", propIsAuthenticated);
-  console.log("localStorage token：", localStorage.getItem("token"));
 
   return (
     <div className="post-detail-container">

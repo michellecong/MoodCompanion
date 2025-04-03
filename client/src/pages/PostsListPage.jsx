@@ -16,10 +16,10 @@ const PostsListPage = () => {
         setLoading(true);
         const endpoint = "/wishing-well/posts";
 
-        // 获取所有帖子，不使用后端标签筛选
+        // Get all posts, don't use backend tag filtering
         const response = await api.get(endpoint);
 
-        // 如果选中了标签，在前端进行筛选
+        // If a tag is selected, filter on the frontend
         const allPosts = response.data.data;
         const filteredPosts = selectedTag
           ? allPosts.filter(
@@ -42,7 +42,7 @@ const PostsListPage = () => {
     setSelectedTag(tag === selectedTag ? "" : tag);
   };
 
-  // 格式化日期
+  // Format date
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -75,7 +75,7 @@ const PostsListPage = () => {
         </button>
       </div>
 
-      {/* 当前选中的标签显示 */}
+      {/* Display for currently selected tag */}
       {selectedTag && (
         <div className="selected-tag">
           Filtering by: <span>{selectedTag}</span>

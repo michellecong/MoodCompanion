@@ -10,7 +10,7 @@ function Login({ onLogin, onUser }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 获取查询参数中的redirect路径，如果有的话
+  // Get the redirect path from query parameters, if any
   const searchParams = new URLSearchParams(location.search);
   const redirectPath = searchParams.get("redirect") || "/";
 
@@ -19,20 +19,20 @@ function Login({ onLogin, onUser }) {
       const response = await api.post("/users/login", { email, password });
 
       if (response.data.token) {
-        // 存储token
+        // Store token
         localStorage.setItem("token", response.data.token);
 
-        // 更新用户数据
+        // Update user data
         if (response.data.user) {
           localStorage.setItem("user", JSON.stringify(response.data.user));
-          // 调用App组件的回调更新用户状态
+          // Call the App component callback to update user state
           onUser(response.data.user);
         }
 
-        // 调用App组件的回调更新认证状态
+        // Call the App component callback to update authentication state
         onLogin(true);
 
-        // 如果有重定向路径，则导航到该路径，否则导航到首页
+        // Navigate to the redirect path if available, otherwise navigate to home page
         navigate(redirectPath);
       } else {
         setError("Invalid credentials");
