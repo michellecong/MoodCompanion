@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
 import "./PostDetailPage.css";
 
@@ -16,7 +16,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const from = queryParams.get("from");
+  const from = queryParams.get("from") || "";
 
   // 使用结合的身份验证状态
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
@@ -384,7 +384,15 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   return (
     <div className="post-detail-container">
       <div className="back-link">
-        <Link to="/posts">← Back to all posts</Link>
+        {from === "followed" ? (
+          <a onClick={handleGoBack} className="back-link-text">
+            ← Return to Followed Posts
+          </a>
+        ) : (
+          <a onClick={handleGoBack} className="back-link-text">
+            ← Return
+          </a>
+        )}
       </div>
 
       <div className="post-detail-card">

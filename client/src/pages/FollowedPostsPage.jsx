@@ -168,7 +168,10 @@ const FollowedPostsPage = ({ isAuthenticated }) => {
                   </div>
 
                   <div className="post-actions">
-                    <Link to={`/post/${post._id}`} className="view-button">
+                    <Link
+                      to={`/post/${post._id}?from=followed`}
+                      className="view-button"
+                    >
                       View Details
                     </Link>
                     <button
