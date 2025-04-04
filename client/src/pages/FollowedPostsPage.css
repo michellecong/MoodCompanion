@@ -1,36 +1,95 @@
-/* Add these styles to your existing CSS */
+.posts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
 
-.not-authenticated-container {
-  max-width: 500px;
-  margin: 100px auto;
-  padding: 30px;
-  background-color: #f8f9fa;
+.post-card {
+  background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.not-authenticated-container h2 {
-  margin-bottom: 16px;
-  color: #333;
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.not-authenticated-container p {
-  margin-bottom: 24px;
+.post-content {
+  flex-grow: 1;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.post-tags {
+  margin-bottom: 15px;
+}
+
+.post-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 15px;
+}
+
+.post-stats {
+  display: flex;
+  justify-content: space-between;
   color: #666;
 }
 
-.login-link {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #4299e1;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.login-link:hover {
-  background-color: #3182ce;
+.view-button,
+.unfollow-button {
+  flex: 1; /* Allow buttons to grow */
+  padding: 8px 15px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.view-button {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.unfollow-button {
+  background-color: #e63ae66e;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.view-button:hover {
+  background-color: #3a80d2;
+  color: rgb(218, 214, 202);
+}
+
+.unfollow-button:hover {
+  background-color: #c02b7a;
+}
+
+.post-date {
+  text-align: right;
+  color: #888;
+  font-size: 0.8rem;
 }
