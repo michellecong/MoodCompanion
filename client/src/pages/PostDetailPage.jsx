@@ -15,21 +15,33 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const [submitting, setSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Use combined authentication state, ensure both props and localStorage are checked
+  // 使用结合的身份验证状态
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
   const [currentUser, setCurrentUser] = useState(user);
 
-  // Ensure authentication state includes both localStorage and props
+  // 确保身份验证状态包括localStorage和props
   useEffect(() => {
-    // Check authentication info from localStorage as backup
+    // 从localStorage检查身份验证信息作为备份
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
-      setCurrentUser(JSON.parse(localStorage.getItem("user") || "{}"));
+      try {
+        const userData = JSON.parse(localStorage.getItem("user") || "{}");
+
+        // 检查用户数据并打印出来以便调试
+        console.log("localStorage中的用户数据:", userData);
+
+        setCurrentUser(userData);
+      } catch (error) {
+        console.error("解析用户数据时出错:", error);
+      }
     } else {
-      // Use authentication state passed from props
+      // 使用从props传递的身份验证状态
       setIsAuthenticated(propIsAuthenticated);
       setCurrentUser(user);
+
+      // 打印props中的用户数据
+      console.log("Props中的用户数据:", user);
     }
   }, [propIsAuthenticated, user]);
 
@@ -41,11 +53,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
         if (response.data && response.data.data) {
           setPost(response.data.data.post);
-          // If comments are included in the initial response
+          // 如果初始响应中包含评论
           if (response.data.data.comments) {
             setComments(response.data.data.comments);
           } else {
-            // Otherwise fetch comments separately
+            // 否则单独获取评论
             fetchComments(commentSort);
           }
         } else {
@@ -83,7 +95,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      // Redirect to login page
+      // 重定向到登录页面
       window.location.href = `/login?redirect=/post/${id}`;
       return;
     }
@@ -92,7 +104,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
     try {
       setSubmitting(true);
-      await api.post("/wishing-well/comments", {
+      const response = await api.post("/wishing-well/comments", {
         postId: id,
         content: commentText,
       });
@@ -163,7 +175,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // New function to handle post deletion
+  // 处理帖子删除的函数
   const handleDeletePost = async () => {
     if (!isAuthenticated) {
       window.location.href = `/login?redirect=/post/${id}`;
@@ -182,7 +194,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       setIsDeleting(true);
       await api.delete(`/wishing-well/posts/${id}`);
       setIsDeleting(false);
-      // Redirect to posts page after successful deletion
+      // 成功删除后重定向到帖子页面
       navigate("/posts");
     } catch (err) {
       console.error("Error deleting post:", err);
@@ -191,7 +203,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // New function to handle comment deletion
+  // 处理评论删除的函数
   const handleDeleteComment = async (commentId) => {
     if (!isAuthenticated) {
       window.location.href = `/login?redirect=/post/${id}`;
@@ -208,7 +220,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
     try {
       await api.delete(`/wishing-well/comments/${commentId}`);
-      // Update comments list by removing the deleted comment
+      // 通过从列表中移除已删除的评论来更新评论列表
       setComments(comments.filter((comment) => comment._id !== commentId));
     } catch (err) {
       console.error("Error deleting comment:", err);
@@ -216,16 +228,38 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // Helper function to check if user is post owner or admin
+  // 检查用户是否是帖子所有者或管理员的辅助函数
   const isPostOwner = () => {
     if (!post || !currentUser) return false;
     return post.userId === currentUser._id || currentUser.role === "admin";
   };
 
-  // Helper function to check if user is comment owner or admin
+  // 检查用户是否是评论所有者或管理员的辅助函数
   const isCommentOwner = (commentUserId) => {
+    // 调试信息
+    console.log("当前用户对象:", currentUser);
+    console.log("评论用户ID:", commentUserId);
+
     if (!currentUser) return false;
-    return commentUserId === currentUser._id || currentUser.role === "admin";
+
+    // 尝试从不同可能的位置获取用户ID
+    const userId = currentUser._id || currentUser.id;
+
+    console.log("找到的用户ID:", userId);
+
+    if (!userId || !commentUserId) return false;
+
+    // 确保都是字符串进行比较
+    const currentId = String(userId);
+    const commentId = String(commentUserId);
+
+    const isOwner = currentId === commentId;
+    const isAdmin = currentUser.role === "admin";
+
+    console.log("是评论所有者?", isOwner);
+    console.log("是管理员?", isAdmin);
+
+    return isOwner || isAdmin;
   };
 
   if (loading) {
@@ -268,7 +302,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
               💬 {post.commentCount || comments.length}
             </span>
 
-            {/* 删除帖子按钮 - 适中宽度 */}
+            {/* 删除帖子按钮 - 只对帖子作者或管理员显示 */}
             {isAuthenticated && isPostOwner() && (
               <button
                 className="delete-button"
@@ -351,7 +385,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                     {formatDate(comment.createdAt)}
                   </span>
 
-                  {/* 评论删除按钮 */}
+                  {/* 评论删除按钮 - 直接比较userId和当前用户ID */}
                   {isAuthenticated && isCommentOwner(comment.userId) && (
                     <button
                       className="delete-button small"
