@@ -8,7 +8,7 @@ const {
 } = require("../controllers/wishingWellCommentController");
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
-const multer = require("multer");
+
 /**
  * Middleware to validate request
  */

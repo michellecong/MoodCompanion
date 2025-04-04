@@ -44,6 +44,29 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB 限制
 });
 
+// Multer 错误处理中间件
+const multerErrorHandler = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "file size is too large, max 5MB",
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: err.message || "error uploading file",
+    });
+  } else if (err) {
+    // 处理文件过滤器抛出的错误
+    return res.status(400).json({
+      success: false,
+      message: err.message || "error uploading file",
+    });
+  }
+  next(); // 如果没有错误，继续执行后续中间件
+};
+
 /**
  * @route   POST api/wishing-well/posts
  * @desc    Create a new post
@@ -52,7 +75,8 @@ const upload = multer({
 router.post(
   "/",
   auth,
-  upload.single("image"), // 添加 multer 中间件处理图片上传
+  upload.single("image"),
+  multerErrorHandler, // 添加 multer 中间件处理图片上传
   [
     check("content", "Content cannot be empty").not().isEmpty(),
     check("content", "Content is too long").isLength({ max: 1000 }),
