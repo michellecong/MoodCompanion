@@ -9,6 +9,7 @@ const {
   followPost,
   unfollowPost,
   deletePost,
+  getFollowedPosts,
 } = require("../controllers/wishingWellPostController");
 const auth = require("../middleware/auth");
 const { check, validationResult } = require("express-validator");
@@ -48,6 +49,14 @@ router.get("/me", auth, getUserPosts);
  * @desc    Get a post by ID with its comments
  * @access  Public
  */
+
+/**
+ * @route   GET api/wishing-well/posts/followed
+ * @desc    Get posts followed by the user
+ * @access  Private
+ */
+router.get("/followed", auth, getFollowedPosts);
+
 router.get("/:id", getPostById);
 
 /**

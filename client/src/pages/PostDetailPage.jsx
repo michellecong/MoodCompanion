@@ -14,10 +14,22 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const [commentSort, setCommentSort] = useState("recent"); // 'recent' or 'top'
   const [submitting, setSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const from = queryParams.get("from");
 
   // 使用结合的身份验证状态
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
   const [currentUser, setCurrentUser] = useState(user);
+
+  // 添加返回函数
+  const handleGoBack = () => {
+    if (from === "followed") {
+      navigate("/followed-posts");
+    } else {
+      navigate(-1); // 默认返回上一页
+    }
+  };
 
   // 确保身份验证状态包括localStorage和props
   useEffect(() => {

@@ -12,6 +12,7 @@ import PostsListPage from "./pages/PostsListPage";
 import ChatPage from "./pages/ChatPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import MoodTrackingPage from "./pages/MoodTrackingPage";
+import FollowedPostsPage from "./pages/FollowedPostsPage";
 
 import "./App.css";
 
@@ -70,6 +71,10 @@ function App() {
             />
             <Route path="/posts" element={<PostsListPage />} />
             <Route path="/create-post" element={<CreatePostPage />} />
+            <Route
+              path="/followed-posts"
+              element={<FollowedPostsPage isAuthenticated={isAuthenticated} />}
+            />
             <Route path="/chat" element={<ChatPage />} />
           </Routes>
         </main>
