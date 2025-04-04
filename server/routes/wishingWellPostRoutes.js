@@ -14,6 +14,35 @@ const {
 const auth = require("../middleware/auth");
 const { check, validationResult } = require("express-validator");
 const { validateRequest } = require("../middleware/validators");
+const multer = require("multer");
+const path = require("path");
+
+// 配置 multer 存储
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // 确保这个目录存在
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, uniqueSuffix + ext);
+  },
+});
+
+// 文件过滤器 - 只允许图片
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("只支持图片上传"), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB 限制
+});
 
 /**
  * @route   POST api/wishing-well/posts
@@ -23,6 +52,7 @@ const { validateRequest } = require("../middleware/validators");
 router.post(
   "/",
   auth,
+  upload.single("image"), // 添加 multer 中间件处理图片上传
   [
     check("content", "Content cannot be empty").not().isEmpty(),
     check("content", "Content is too long").isLength({ max: 1000 }),

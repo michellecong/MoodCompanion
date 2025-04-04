@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./PostsListPage.css";
+import { getAssetUrl } from "../api/helpers";
 
 const PostsListPage = () => {
   const [posts, setPosts] = useState([]);
@@ -103,6 +104,15 @@ const PostsListPage = () => {
           {posts.map((post) => (
             <div key={post._id} className="post-card">
               <Link to={`/post/${post._id}`} className="post-link">
+                {post.image && (
+                  <div className="post-image-container">
+                    <img
+                      src={getAssetUrl(post.image)}
+                      alt="Post"
+                      className="post-image"
+                    />
+                  </div>
+                )}
                 <div className="post-content">
                   {post.content.length > 150
                     ? `${post.content.substring(0, 150)}...`
