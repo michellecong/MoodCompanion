@@ -90,7 +90,7 @@ const CreatePostPage = () => {
           <button
             type="button"
             className="cancel-button"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/posts")}
           >
             Cancel
           </button>

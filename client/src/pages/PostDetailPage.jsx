@@ -27,7 +27,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     if (from === "followed") {
       navigate("/followed-posts");
     } else {
-      navigate(-1); // 默认返回上一页
+      navigate("/posts"); // 默认返回上一页
     }
   };
 
@@ -106,7 +106,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
         setIsFollowing(userFollowingPosts.includes(id));
       }
     } catch (err) {
-      console.error("获取关注帖子列表出错:", err);
+      console.error("Error in handling followed posts:", err);
     }
   };
 
@@ -147,11 +147,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
         }
       }
     } catch (err) {
-      console.error("切换关注状态出错:", err);
+      console.error("Error in handling followed posts:", err);
       setError(
         isFollowing
-          ? "取消关注帖子失败，请稍后重试。"
-          : "关注帖子失败，请稍后重试。"
+          ? "Failed to unfollow the post. Please try again later."
+          : "Failed to follow the post. Please try again later."
       );
     } finally {
       setFollowLoading(false);
@@ -429,10 +429,10 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                 title={isFollowing ? "取消关注此帖子" : "关注此帖子以接收更新"}
               >
                 {followLoading
-                  ? "加载中..."
+                  ? "Loading..."
                   : isFollowing
-                  ? "已关注 ✓"
-                  : "关注"}
+                  ? "Followed ✓"
+                  : "Follow"}
               </button>
             )}
 

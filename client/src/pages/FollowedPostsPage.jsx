@@ -133,7 +133,12 @@ const FollowedPostsPage = ({ isAuthenticated }) => {
 
   return (
     <div className="followed-posts-container">
-      <h1 className="page-title">Posts I Follow</h1>
+      <div className="page-header">
+        <h1 className="page-title">Posts I Follow</h1>
+        <Link to="/posts" className="back-to-posts-button">
+          All Posts
+        </Link>
+      </div>
 
       {posts.length === 0 ? (
         <div className="no-posts-message">

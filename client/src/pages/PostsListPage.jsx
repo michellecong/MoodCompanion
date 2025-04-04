@@ -9,6 +9,9 @@ const PostsListPage = () => {
   const [error, setError] = useState(null);
   const [selectedTag, setSelectedTag] = useState("");
   const navigate = useNavigate();
+  const handleFollowedPosts = () => {
+    navigate("/followed-posts");
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -70,9 +73,17 @@ const PostsListPage = () => {
             anonymous space.
           </p>
         </div>
-        <button onClick={handleCreatePost} className="create-post-button">
-          Create Post
-        </button>
+        <div className="page-actions">
+          <button
+            onClick={handleFollowedPosts}
+            className="followed-posts-button"
+          >
+            Followed Posts
+          </button>
+          <button onClick={handleCreatePost} className="create-post-button">
+            Create Post
+          </button>
+        </div>
       </div>
 
       {/* Display for currently selected tag */}
