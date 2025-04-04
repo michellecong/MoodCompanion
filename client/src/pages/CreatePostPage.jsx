@@ -6,9 +6,31 @@ import "./CreatePostPage.css";
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
+  const [image, setImage] = useState(null); // 添加图片状态
+  const [previewUrl, setPreviewUrl] = useState(null); // 添加预览URL状态
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  // 处理图片选择
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      // 创建预览URL
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
+    }
+  };
+
+  // 移除已选择的图片
+  const handleRemoveImage = () => {
+    setImage(null);
+    setPreviewUrl(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +50,19 @@ const CreatePostPage = () => {
         .map((tag) => tag.trim())
         .filter((tag) => tag !== "");
 
-      const response = await api.post("/wishing-well/posts", {
-        content,
-        tags: tagsArray,
+      // 使用FormData来支持文件上传
+      const formData = new FormData();
+      formData.append("content", content);
+      tagsArray.forEach((tag) => formData.append("tags", tag));
+
+      if (image) {
+        formData.append("image", image);
+      }
+
+      const response = await api.post("/wishing-well/posts", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // 改变内容类型
+        },
       });
 
       if (response.data.success) {
@@ -70,6 +102,35 @@ const CreatePostPage = () => {
             rows="6"
             required
           />
+        </div>
+
+        {/* 添加图片上传区域 */}
+        <div className="form-group">
+          <label htmlFor="image">Add an Image (optional):</label>
+          <div className="image-upload-container">
+            <input
+              type="file"
+              id="image"
+              onChange={handleImageChange}
+              accept="image/*"
+              className="image-input"
+            />
+            <label htmlFor="image" className="image-upload-button">
+              Select Image
+            </label>
+            {previewUrl && (
+              <div className="image-preview-container">
+                <img src={previewUrl} alt="Preview" className="image-preview" />
+                <button
+                  type="button"
+                  className="remove-image-button"
+                  onClick={handleRemoveImage}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="form-group">

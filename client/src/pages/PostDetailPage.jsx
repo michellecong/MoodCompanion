@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
 import "./PostDetailPage.css";
+import { getAssetUrl } from "../api/helpers";
 
 const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const { id } = useParams();
@@ -40,20 +41,14 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       try {
         const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
-        // 检查用户数据并打印出来以便调试
-        console.log("localStorage中的用户数据:", userData);
-
         setCurrentUser(userData);
       } catch (error) {
-        console.error("解析用户数据时出错:", error);
+        console.error("error in parsing user data", error);
       }
     } else {
       // 使用从props传递的身份验证状态
       setIsAuthenticated(propIsAuthenticated);
       setCurrentUser(user);
-
-      // 打印props中的用户数据
-      console.log("Props中的用户数据:", user);
     }
   }, [propIsAuthenticated, user]);
 
@@ -313,18 +308,12 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   };
 
   const isPostOwner = () => {
-    // 打印调试信息
-    console.log("isPostOwner函数调用");
-    console.log("post对象:", post);
-    console.log("currentUser对象:", currentUser);
-
     if (!post) return false;
     if (!isAuthenticated) return false;
     if (!currentUser) return false;
 
     // 检查条件1: API提供的isOwner标志
     if (post.isOwner === true) {
-      console.log("通过isOwner标志判断为所有者");
       return true;
     }
 
@@ -332,13 +321,12 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     const userId = currentUser._id || currentUser.id;
     if (userId && post.userId) {
       const isMatch = String(post.userId) === String(userId);
-      console.log("用户ID比较:", { postUserId: post.userId, userId, isMatch });
+
       if (isMatch) return true;
     }
 
     // 检查条件3: 管理员角色
     if (currentUser.role === "admin") {
-      console.log("用户是管理员");
       return true;
     }
 
@@ -347,16 +335,10 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
   // 检查用户是否是评论所有者或管理员的辅助函数
   const isCommentOwner = (commentUserId) => {
-    // 调试信息
-    console.log("当前用户对象:", currentUser);
-    console.log("评论用户ID:", commentUserId);
-
     if (!currentUser) return false;
 
     // 尝试从不同可能的位置获取用户ID
     const userId = currentUser._id || currentUser.id;
-
-    console.log("找到的用户ID:", userId);
 
     if (!userId || !commentUserId) return false;
 
@@ -366,9 +348,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
     const isOwner = currentId === commentId;
     const isAdmin = currentUser.role === "admin";
-
-    console.log("是评论所有者?", isOwner);
-    console.log("是管理员?", isAdmin);
 
     return isOwner || isAdmin;
   };
@@ -396,6 +375,15 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       </div>
 
       <div className="post-detail-card">
+        {post.image && (
+          <div className="post-image-container">
+            <img
+              src={getAssetUrl(post.image)}
+              alt="Post content"
+              className="post-image"
+            />
+          </div>
+        )}
         <div className="post-content">{post.content}</div>
 
         {post.tags && post.tags.length > 0 && (
@@ -426,7 +414,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                 className={`follow-button ${isFollowing ? "following" : ""}`}
                 onClick={handleToggleFollow}
                 disabled={followLoading}
-                title={isFollowing ? "取消关注此帖子" : "关注此帖子以接收更新"}
+                title={
+                  isFollowing
+                    ? "Unfollow this post"
+                    : "Follow this post to receive updates"
+                }
               >
                 {followLoading
                   ? "Loading..."
