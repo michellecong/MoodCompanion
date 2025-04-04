@@ -376,7 +376,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
       <div className="post-detail-card">
         {post.image && (
-          <div className="post-image-container">
+          <div className="post-detail-image-container">
             <img
               src={getAssetUrl(post.image)}
               alt="Post content"
