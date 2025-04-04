@@ -124,6 +124,9 @@
 .comments-sort {
   display: flex;
   gap: 10px;
+  background-color: rgba(0, 153, 255, 0.542); /* 添加一个半透明红色背景 */
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .sort-button {
