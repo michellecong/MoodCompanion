@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./PostDetailPage.css";
 
 const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,9 +13,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const [commentText, setCommentText] = useState("");
   const [commentSort, setCommentSort] = useState("recent"); // 'recent' or 'top'
   const [submitting, setSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Use combined authentication state, ensure both props and localStorage are checked
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
+  const [currentUser, setCurrentUser] = useState(user);
 
   // Ensure authentication state includes both localStorage and props
   useEffect(() => {
@@ -22,11 +25,13 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
+      setCurrentUser(JSON.parse(localStorage.getItem("user") || "{}"));
     } else {
       // Use authentication state passed from props
       setIsAuthenticated(propIsAuthenticated);
+      setCurrentUser(user);
     }
-  }, [propIsAuthenticated]);
+  }, [propIsAuthenticated, user]);
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -158,6 +163,71 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
+  // New function to handle post deletion
+  const handleDeletePost = async () => {
+    if (!isAuthenticated) {
+      window.location.href = `/login?redirect=/post/${id}`;
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this post? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await api.delete(`/wishing-well/posts/${id}`);
+      setIsDeleting(false);
+      // Redirect to posts page after successful deletion
+      navigate("/posts");
+    } catch (err) {
+      console.error("Error deleting post:", err);
+      setError("Failed to delete post. Please try again later.");
+      setIsDeleting(false);
+    }
+  };
+
+  // New function to handle comment deletion
+  const handleDeleteComment = async (commentId) => {
+    if (!isAuthenticated) {
+      window.location.href = `/login?redirect=/post/${id}`;
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this comment? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await api.delete(`/wishing-well/comments/${commentId}`);
+      // Update comments list by removing the deleted comment
+      setComments(comments.filter((comment) => comment._id !== commentId));
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      setError("Failed to delete comment. Please try again later.");
+    }
+  };
+
+  // Helper function to check if user is post owner or admin
+  const isPostOwner = () => {
+    if (!post || !currentUser) return false;
+    return post.userId === currentUser._id || currentUser.role === "admin";
+  };
+
+  // Helper function to check if user is comment owner or admin
+  const isCommentOwner = (commentUserId) => {
+    if (!currentUser) return false;
+    return commentUserId === currentUser._id || currentUser.role === "admin";
+  };
+
   if (loading) {
     return <div className="loading">Loading post...</div>;
   }
@@ -197,6 +267,17 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
             <span className="comments-count">
               💬 {post.commentCount || comments.length}
             </span>
+
+            {/* 删除帖子按钮 - 适中宽度 */}
+            {isAuthenticated && isPostOwner() && (
+              <button
+                className="delete-button"
+                onClick={handleDeletePost}
+                disabled={isDeleting}
+              >
+                🗑️ {isDeleting ? "Deleting..." : "Delete Post"}
+              </button>
+            )}
           </div>
           <div className="post-date">{formatDate(post.createdAt)}</div>
         </div>
@@ -238,7 +319,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                 type="submit"
                 disabled={submitting || !commentText.trim()}
               >
-                {submitting ? "Posting..." : "Post Comment"}
+                {submitting ? "Posting..." : "Post"}
               </button>
             </div>
           </form>
@@ -269,6 +350,17 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                   <span className="comment-date">
                     {formatDate(comment.createdAt)}
                   </span>
+
+                  {/* 评论删除按钮 */}
+                  {isAuthenticated && isCommentOwner(comment.userId) && (
+                    <button
+                      className="delete-button small"
+                      onClick={() => handleDeleteComment(comment._id)}
+                      title="Delete comment"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

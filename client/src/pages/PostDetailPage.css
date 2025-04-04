@@ -257,6 +257,74 @@
   text-align: center;
   margin: 30px 0;
 }
+/* 删除按钮样式 - 适中宽度 */
+.delete-button {
+  background-color: #eb7575;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  width: auto;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.delete-button:hover {
+  background-color: #e45c5c;
+}
+
+.delete-button:disabled {
+  background-color: #f2a7a7;
+  cursor: not-allowed;
+}
+
+/* 评论的删除按钮 */
+.delete-button.small {
+  background-color: transparent;
+  color: #f56c6c;
+  padding: 3px 6px;
+  font-size: 14px;
+  margin: 0 0 0 10px;
+  width: auto;
+}
+
+.delete-button.small:hover {
+  color: #e64a4a;
+  background-color: rgba(245, 108, 108, 0.1);
+  border-radius: 4px;
+}
+
+/* Adjust post footer layout for the new delete button */
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.post-stats {
+  display: flex;
+  align-items: center;
+}
+
+/* Adjust comment footer for delete button */
+.comment-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.comment-date {
+  margin-left: 10px;
+}
 
 @media (max-width: 600px) {
   .post-detail-card {
