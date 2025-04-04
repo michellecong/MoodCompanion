@@ -289,6 +289,44 @@
   border-radius: 4px;
 }
 
+.follow-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  margin-left: 10px;
+  background-color: #f0f2f5;
+  color: #4b5563;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.follow-button:hover {
+  background-color: #e5e7eb;
+}
+
+.follow-button.following {
+  background-color: #e1f5fe;
+  color: #0288d1;
+}
+
+.follow-button.following:hover {
+  background-color: #ffebee;
+  color: #ef4444;
+}
+
+.follow-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 媒体查询 - 小屏幕设备 */
+/* 适用于小屏幕设备（如手机） */
 @media (max-width: 600px) {
   .post-detail-card {
     padding: 15px;

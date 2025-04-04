@@ -74,6 +74,78 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     fetchPostDetails();
   }, [id]);
 
+  // 1. 首先添加新的状态来跟踪关注状态
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [followingPosts, setFollowingPosts] = useState([]);
+
+  // 2. 添加一个函数来获取用户关注的帖子
+  const fetchFollowingPosts = async () => {
+    if (!isAuthenticated || !currentUser) return;
+
+    try {
+      const response = await api.get("/user/me");
+
+      if (response.data && response.data.success) {
+        const userFollowingPosts = response.data.data.followingPosts || [];
+        setFollowingPosts(userFollowingPosts);
+
+        // 检查当前帖子是否在关注列表中
+        setIsFollowing(userFollowingPosts.includes(id));
+      }
+    } catch (err) {
+      console.error("获取关注帖子列表出错:", err);
+    }
+  };
+
+  // 3. 在useEffect中调用这个函数
+  useEffect(() => {
+    if (isAuthenticated && currentUser) {
+      fetchFollowingPosts();
+    }
+  }, [isAuthenticated, currentUser, id]);
+
+  // 4. 实现关注/取消关注的处理函数
+  const handleToggleFollow = async () => {
+    if (!isAuthenticated) {
+      window.location.href = `/login?redirect=/post/${id}`;
+      return;
+    }
+
+    try {
+      setFollowLoading(true);
+
+      if (isFollowing) {
+        // 取消关注
+        const response = await api.put(`/wishing-well/posts/${id}/unfollow`);
+        if (response.data && response.data.success) {
+          setIsFollowing(false);
+          // 更新关注列表
+          setFollowingPosts(followingPosts.filter((postId) => postId !== id));
+        }
+      } else {
+        // 关注
+        const response = await api.put(`/wishing-well/posts/${id}/follow`);
+        if (response.data && response.data.success) {
+          setIsFollowing(true);
+          // 更新关注列表
+          if (!followingPosts.includes(id)) {
+            setFollowingPosts([...followingPosts, id]);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("切换关注状态出错:", err);
+      setError(
+        isFollowing
+          ? "取消关注帖子失败，请稍后重试。"
+          : "关注帖子失败，请稍后重试。"
+      );
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
   const fetchComments = async (sort = "recent") => {
     try {
       const sortParam = sort === "top" ? "sortBy=upvotes" : "";
@@ -328,6 +400,21 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
             <span className="comments-count">
               💬 {post.commentCount || comments.length}
             </span>
+
+            {isAuthenticated && (
+              <button
+                className={`follow-button ${isFollowing ? "following" : ""}`}
+                onClick={handleToggleFollow}
+                disabled={followLoading}
+                title={isFollowing ? "取消关注此帖子" : "关注此帖子以接收更新"}
+              >
+                {followLoading
+                  ? "加载中..."
+                  : isFollowing
+                  ? "已关注 ✓"
+                  : "关注"}
+              </button>
+            )}
 
             {/* Post owner or admin can delete post */}
             {isAuthenticated && isPostOwner() && (
