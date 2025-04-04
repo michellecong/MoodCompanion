@@ -228,10 +228,37 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // 检查用户是否是帖子所有者或管理员的辅助函数
   const isPostOwner = () => {
-    if (!post || !currentUser) return false;
-    return post.userId === currentUser._id || currentUser.role === "admin";
+    // 打印调试信息
+    console.log("isPostOwner函数调用");
+    console.log("post对象:", post);
+    console.log("currentUser对象:", currentUser);
+
+    if (!post) return false;
+    if (!isAuthenticated) return false;
+    if (!currentUser) return false;
+
+    // 检查条件1: API提供的isOwner标志
+    if (post.isOwner === true) {
+      console.log("通过isOwner标志判断为所有者");
+      return true;
+    }
+
+    // 检查条件2: 用户ID比较
+    const userId = currentUser._id || currentUser.id;
+    if (userId && post.userId) {
+      const isMatch = String(post.userId) === String(userId);
+      console.log("用户ID比较:", { postUserId: post.userId, userId, isMatch });
+      if (isMatch) return true;
+    }
+
+    // 检查条件3: 管理员角色
+    if (currentUser.role === "admin") {
+      console.log("用户是管理员");
+      return true;
+    }
+
+    return false;
   };
 
   // 检查用户是否是评论所有者或管理员的辅助函数
@@ -302,7 +329,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
               💬 {post.commentCount || comments.length}
             </span>
 
-            {/* 删除帖子按钮 - 只对帖子作者或管理员显示 */}
+            {/* Post owner or admin can delete post */}
             {isAuthenticated && isPostOwner() && (
               <button
                 className="delete-button"

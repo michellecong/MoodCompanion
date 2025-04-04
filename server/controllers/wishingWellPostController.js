@@ -56,8 +56,9 @@ const wishingWellPostController = {
   async getPostById(req, res) {
     try {
       const postId = req.params.id;
+      const userId = req.user ? req.user.id : null;
 
-      // Find post
+      // 查找帖子
       const post = await WishingWellPost.findById(postId);
 
       if (!post) {
@@ -67,22 +68,24 @@ const wishingWellPostController = {
         });
       }
 
-      // Skip fetching user details for privacy in anonymous posts
-      // Instead just fetch the comments
+      // 准备帖子响应 - 保留userId并添加isOwner标志
+      const postResponse = {
+        ...post.toObject(),
+        isOwner: userId && String(post.userId) === String(userId), // 添加isOwner标志
+      };
+
+      // 获取评论
       const comments = await WishingWellComment.find({
         postId,
         status: "active",
       })
         .sort({ createdAt: -1 })
-        .select("-upvotedBy"); // Don't expose who upvoted
+        .select("-upvotedBy"); // 不暴露谁点赞
 
       res.status(200).json({
         success: true,
         data: {
-          post: {
-            ...post.toObject(),
-            userId: undefined, // Hide the actual userId for anonymity
-          },
+          post: postResponse,
           comments,
         },
       });
