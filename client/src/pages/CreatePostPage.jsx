@@ -34,8 +34,9 @@ const CreatePostPage = () => {
       });
 
       if (response.data.success) {
-        // Redirect to the post list or the newly created post
-        navigate("/");
+        // Redirect to the newly created post
+        const newPostId = response.data.data._id;
+        navigate(`/post/${newPostId}`);
       } else {
         setError(response.data.message || "Failed to create post");
       }
