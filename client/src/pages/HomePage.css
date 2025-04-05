@@ -63,7 +63,8 @@
 .cta-secondary:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
-/* Daily Affirmation */
+
+/* 
 .daily-affirmation {
   background-color: var(--secondary-light);
   border-radius: var(--border-radius);
@@ -121,7 +122,7 @@
   margin: 0 auto;
   line-height: 1.6;
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-}
+} */
 @media (max-width: 768px) {
   .daily-affirmation {
     min-height: 180px;

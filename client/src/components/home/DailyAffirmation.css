@@ -1,0 +1,238 @@
+/* Daily Affirmation Carousel Styles */
+.daily-affirmation {
+  background-color: var(--secondary-light);
+  border-radius: var(--border-radius);
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  min-height: 160px;
+}
+
+.affirmation-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.8;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.affirmation-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.affirmation-content {
+  position: relative;
+  z-index: 2;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(252, 208, 161, 0.4),
+    rgba(255, 226, 199, 0.1)
+  );
+}
+
+.daily-affirmation h3 {
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-family: "Georgia", serif; /* 更改标题字体 */
+  font-size: 1.8rem; /* 更改标题大小 */
+  letter-spacing: 1px; /* 添加字母间距 */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 1),
+    0 0 15px rgba(255, 255, 255, 0.8); /* 增强文本发光效果 */
+  position: relative; /* 为伪元素定位 */
+  z-index: 2; /* 确保文本在光晕上方 */
+  display: inline-block; /* 使光晕效果只围绕文字 */
+  padding: 5px 15px; /* 为光晕效果提供空间 */
+}
+
+/* 为标题创建光晕背景效果 */
+.daily-affirmation h3:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  z-index: -1; /* 放在文本后面 */
+  border-radius: 50% / 60%; /* 创建椭圆形状 */
+  filter: blur(4px); /* 轻微模糊边缘 */
+  transform: scale(1.1); /* 略微扩大光晕范围 */
+}
+
+.affirmation-slide {
+  font-size: 1.6rem; /* 增加字体大小 */
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; /* 更改文本字体 */
+  font-style: italic;
+  font-weight: 500; /* 增加字重 */
+  color: var(--text-primary);
+  max-width: 80%;
+  margin: 0 auto;
+  line-height: 1.6;
+  letter-spacing: 0.5px; /* 轻微增加字母间距 */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 1),
+    0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); /* 多层文本阴影创造光晕效果 */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  min-height: 4.8rem; /* Ensures consistent height during transitions */
+  opacity: 0; /* Start with opacity 0 for smoother transitions */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* 为伪元素定位 */
+  z-index: 2; /* 确保文本在光晕上方 */
+  padding: 10px 20px; /* 为光晕效果提供空间 */
+}
+
+/* 为文本创建光晕背景效果 */
+.affirmation-slide:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.6) 30%,
+    rgba(255, 255, 255, 0.3) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: -1; /* 放在文本后面 */
+  border-radius: 50% / 70%; /* 创建椭圆形状 */
+  filter: blur(5px); /* 轻微模糊边缘 */
+}
+/* Animation classes for the carousel */
+.fade-in {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-out-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-out-right {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* Add a slight zoom effect to background images */
+.affirmation-image.fade-in img {
+  transition: transform 8s ease;
+  transform: scale(1.05);
+}
+
+/* Carousel Controls */
+.carousel-controls {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  z-index: 3;
+  padding: 0 20px;
+  pointer-events: none; /* This ensures clicks go through to the container */
+}
+
+.nav-button {
+  background-color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  pointer-events: auto; /* Re-enable pointer events for buttons */
+}
+
+.nav-button:hover {
+  background-color: white;
+  transform: scale(1.1);
+}
+
+.nav-button:focus {
+  outline: none;
+}
+
+.nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: scale(1);
+}
+
+.nav-button svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--primary-color);
+}
+
+/* Carousel Indicators/Dots */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  z-index: 3;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+  background-color: white;
+  transform: scale(1.25);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+  .daily-affirmation {
+    min-height: 180px;
+  }
+
+  .affirmation-slide {
+    max-width: 90%;
+    font-size: 1.1rem;
+  }
+
+  .nav-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .nav-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
