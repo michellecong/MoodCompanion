@@ -1,0 +1,72 @@
+/* Base avatar styles */
+.avatar {
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
+}
+
+/* Size variations */
+.avatar-xs {
+  width: 1.5rem; /* w-6 */
+  height: 1.5rem; /* h-6 */
+}
+
+.avatar-sm {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+}
+
+.avatar-md {
+  width: 3rem; /* w-12 */
+  height: 3rem; /* h-12 */
+}
+
+.avatar-lg {
+  width: 4rem; /* w-16 */
+  height: 4rem; /* h-16 */
+}
+
+.avatar-xl {
+  width: 6rem; /* w-24 */
+  height: 6rem; /* h-24 */
+}
+
+/* Placeholder avatar style */
+.avatar-placeholder {
+  background-color: #d1d5db; /* bg-gray-300 */
+  color: #4b5563; /* text-gray-600 */
+}
+
+/* Avatar with initial styles */
+.avatar-initial {
+  color: white;
+}
+
+/* Text size variations */
+.avatar-text {
+  font-weight: 500; /* font-medium */
+  color: white;
+}
+
+.avatar-text-xs {
+  font-size: 0.75rem; /* text-xs */
+}
+
+.avatar-text-sm {
+  font-size: 0.875rem; /* text-sm */
+}
+
+.avatar-text-md {
+  font-size: 1rem; /* text-base */
+}
+
+.avatar-text-lg {
+  font-size: 1.125rem; /* text-lg */
+}
+
+.avatar-text-xl {
+  font-size: 1.25rem; /* text-xl */
+}
