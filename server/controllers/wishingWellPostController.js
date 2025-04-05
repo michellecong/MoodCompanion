@@ -17,6 +17,14 @@ const wishingWellPostController = {
       const { content, tags } = req.body;
       const userId = req.user.id;
 
+      // 使用完整URL
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      let image = `${baseUrl}/images/default-post-image.jpg`;
+
+      if (req.file) {
+        image = `/uploads/${req.file.filename}`;
+      }
+
       // Validate input
       if (!content) {
         return res.status(400).json({
@@ -25,11 +33,12 @@ const wishingWellPostController = {
         });
       }
 
-      // Create new post
+      // Create new post with image
       const newPost = new WishingWellPost({
         userId,
         content,
         tags: tags || [],
+        image, // 添加图片字段
       });
 
       await newPost.save();
@@ -56,8 +65,9 @@ const wishingWellPostController = {
   async getPostById(req, res) {
     try {
       const postId = req.params.id;
+      const userId = req.user ? req.user.id : null;
 
-      // Find post
+      // 查找帖子
       const post = await WishingWellPost.findById(postId);
 
       if (!post) {
@@ -67,22 +77,24 @@ const wishingWellPostController = {
         });
       }
 
-      // Skip fetching user details for privacy in anonymous posts
-      // Instead just fetch the comments
+      // 准备帖子响应 - 保留userId并添加isOwner标志
+      const postResponse = {
+        ...post.toObject(),
+        isOwner: userId && String(post.userId) === String(userId), // 添加isOwner标志
+      };
+
+      // 获取评论
       const comments = await WishingWellComment.find({
         postId,
         status: "active",
       })
         .sort({ createdAt: -1 })
-        .select("-upvotedBy"); // Don't expose who upvoted
+        .select("-upvotedBy"); // 不暴露谁点赞
 
       res.status(200).json({
         success: true,
         data: {
-          post: {
-            ...post.toObject(),
-            userId: undefined, // Hide the actual userId for anonymity
-          },
+          post: postResponse,
           comments,
         },
       });

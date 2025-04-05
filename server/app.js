@@ -32,8 +32,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, "../client/build")));
+// 修改为使用绝对路径
+app.use(express.static(path.join(__dirname, "public"))); // 用于默认图片
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // 用于上传的图片
 
+// 放在后面，避免前端路由和API冲突
+app.use(express.static(path.join(__dirname, "../client/build")));
 // routes
 // app.use("/api/auth", authRoutes);
 app.use("/api/journals", journalRoutes);

@@ -85,7 +85,7 @@ const wishingWellCommentController = {
       const sortBy =
         req.query.sortBy === "upvotes" ? { upvotes: -1 } : { createdAt: -1 };
 
-      // Validate post exists
+      // 验证帖子存在
       const postExists = await WishingWellPost.exists({
         _id: postId,
         status: "active",
@@ -98,7 +98,7 @@ const wishingWellCommentController = {
         });
       }
 
-      // Fetch comments
+      // 获取评论 - 只排除 upvotedBy，保留 userId
       const comments = await WishingWellComment.find({
         postId,
         status: "active",
@@ -106,7 +106,7 @@ const wishingWellCommentController = {
         .sort(sortBy)
         .skip(skip)
         .limit(limit)
-        .select("-upvotedBy -userId"); // Don't expose user IDs or who upvoted
+        .select("-upvotedBy"); // 只排除 upvotedBy
 
       const total = await WishingWellComment.countDocuments({
         postId,

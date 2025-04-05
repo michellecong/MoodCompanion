@@ -1,5 +1,6 @@
 // src/hooks/useUserData.js
 import { useState, useEffect } from "react";
+import api from "../api/axios";
 
 export function useUserData(isAuthenticated) {
   const [recentJournals, setRecentJournals] = useState([]);
@@ -17,36 +18,16 @@ export function useUserData(isAuthenticated) {
 
   const fetchUserData = async () => {
     try {
-      // In a real application, this would be an API call
-      // Using mock data for development purposes
+      setIsLoading(true);
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Fetch the current mood
+      const response = await api.get("/journals?limit=2"); // limit to 2 for recent journals
 
-      // Set mock data
-      setRecentJournals([
-        {
-          _id: "1",
-          title: "A good day",
-          content: "Today was productive and I felt energized throughout.",
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          emotionsDetected: [
-            { name: "joy", score: 0.8 },
-            { name: "satisfaction", score: 0.7 },
-          ],
-        },
-        {
-          _id: "2",
-          title: "Feeling anxious about presentation",
-          content:
-            "I have a big presentation tomorrow and I'm feeling nervous.",
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-          emotionsDetected: [
-            { name: "anxiety", score: 0.6 },
-            { name: "fear", score: 0.4 },
-          ],
-        },
-      ]);
+      if (response.data.success) {
+        setRecentJournals(response.data.data);
+      } else {
+        console.error("Failed to fetch recent journals");
+      }
 
       setIsLoading(false);
     } catch (error) {
