@@ -246,3 +246,18 @@
   font-size: 1.2rem;
   color: var(--text-secondary);
 }
+
+/* Split Content Layout */
+.split-content {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.split-main {
+  flex: 2; /* 占据 2/3 宽度 */
+}
+
+.split-sidebar {
+  flex: 1; /* 占据 1/3 宽度 */
+}
