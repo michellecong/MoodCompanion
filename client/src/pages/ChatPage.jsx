@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ChatSidebar from "./ChatSidebar";
+import ChatSidebar from "../components/chat/ChatSidebar";
 import "./ChatPage.css";
 
 function ChatPage() {
