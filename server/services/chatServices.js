@@ -1,26 +1,27 @@
-const OpenAI = require("openai");
-require("dotenv").config();
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, 
-});
+// services/chatServices.js
+const Chat = require("../models/chatModel");
+const { getAIResponseFromOpenAI } = require("./openaiService"); // You probably have this
 
 const chatServices = {
-    async getAIResponse(message) {
-        try {
-            const response = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo", // Change model if needed
-                messages: [{role:"system",content:"You are a mental health specialist who helps reframe thoughts into positive ones."},{ role: "user", content: message }],
-                //Fine-tune the system message as per your requirement
-                max_tokens: 100,
-            });
+  async getAIResponse(message) {
+    return await getAIResponseFromOpenAI(message); // your LLM logic here
+  },
 
-            return response.choices[0].message.content;
-        } catch (error) {
-            console.error("Error generating AI response:", error);
-            throw new Error("Failed to fetch response from AI.");
-        }
-    }
+  async saveChat({ userId, messages }) {
+    const now = new Date();
+    const title = now.toLocaleString(); // or customize
+
+    const newChat = new Chat({ userId, title, messages });
+    return await newChat.save();
+  },
+
+  async getUserChats(userId) {
+    return await Chat.find({ userId }).sort({ createdAt: -1 });
+  },
+
+  async getChatById(chatId) {
+    return await Chat.findById(chatId);
+  },
 };
 
 module.exports = chatServices;
