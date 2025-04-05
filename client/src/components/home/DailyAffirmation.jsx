@@ -23,7 +23,6 @@ function DailyAffirmation() {
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
 
-  // 预定义肯定语列表
   const affirmationData = [
     {
       text: "You are capable of amazing things. Today is full of possibilities.",
@@ -75,14 +74,14 @@ function DailyAffirmation() {
     },
   ];
 
-  // 导航到特定方向的函数
+  // navigate to the next or previous affirmation
   const navigate = (direction) => {
-    // 防止多次转换同时进行
+    // in case of transition, do not allow another transition
     if (isTransitioning) return;
 
     setIsTransitioning(true);
 
-    // 清除现有计时器以避免冲突
+    // clear existing intervals and timeouts
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -93,12 +92,12 @@ function DailyAffirmation() {
       timeoutRef.current = null;
     }
 
-    // 根据方向设置过渡类
+    // set the transition class based on the direction
     setTransitionClass(
       direction === "next" ? "fade-out-left" : "fade-out-right"
     );
 
-    // 动画完成后，更改内容
+    // set a timeout to change the index after the transition
     timeoutRef.current = setTimeout(() => {
       if (direction === "next") {
         setCurrentIndex(
@@ -112,28 +111,28 @@ function DailyAffirmation() {
 
       setTransitionClass("fade-in");
 
-      // 淡入动画后，重置过渡状态
+      // set a timeout to reset the transition state
       setTimeout(() => {
         setIsTransitioning(false);
-        // 重启自动播放
+        // restart autoplay
         startAutoplay();
       }, 500);
     }, 500);
   };
 
-  // 导航到下一个肯定语的函数
+  // navigate to the next affirmation
   const goToNext = () => navigate("next");
 
-  // 导航到上一个肯定语的函数
+  // navigate to the previous affirmation
   const goToPrev = () => navigate("prev");
 
-  // 导航到特定索引的函数
+  // navigate to a specific affirmation
   const goToIndex = (index) => {
     if (index === currentIndex || isTransitioning) return;
 
     setIsTransitioning(true);
 
-    // 清除现有计时器
+    // clear existing intervals and timeouts
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -152,36 +151,36 @@ function DailyAffirmation() {
       setCurrentIndex(index);
       setTransitionClass("fade-in");
 
-      // 淡入动画后，重置过渡状态
+      // set a timeout to reset the transition state
       setTimeout(() => {
         setIsTransitioning(false);
-        // 重启自动播放
+        // restart autoplay
         startAutoplay();
       }, 500);
     }, 500);
   };
 
-  // 开始自动播放函数
+  // start the autoplay feature
   const startAutoplay = () => {
-    // 首先清除现有间隔
+    // clear existing intervals
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    // 设置新间隔
+    // set an interval to change the affirmation every 3 seconds
     intervalRef.current = setInterval(() => {
-      // 仅在未处于过渡状态时更改
+      // if the user is currently transitioning, do not change the affirmation
       if (!isTransitioning) {
         navigate("next");
       }
     }, 3000);
   };
 
-  // 组件挂载时初始化自动播放
+  // start the autoplay when the component mounts
   useEffect(() => {
     startAutoplay();
 
-    // 卸载时清除所有计时器
+    // clear the interval when the component unmounts
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -192,7 +191,6 @@ function DailyAffirmation() {
     };
   }, []);
 
-  // 处理键盘导航
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "ArrowLeft") {
@@ -209,7 +207,6 @@ function DailyAffirmation() {
     };
   }, []);
 
-  // 鼠标悬停时暂停自动播放
   const handleMouseEnter = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -218,7 +215,6 @@ function DailyAffirmation() {
   };
 
   const handleMouseLeave = () => {
-    // 仅在未处于过渡状态时重启
     if (!isTransitioning) {
       startAutoplay();
     }
