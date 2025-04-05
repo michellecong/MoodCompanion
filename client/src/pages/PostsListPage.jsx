@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./PostsListPage.css";
 
@@ -8,6 +8,7 @@ const PostsListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTag, setSelectedTag] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -47,6 +48,10 @@ const PostsListPage = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const handleCreatePost = () => {
+    navigate("/create-post");
+  };
+
   if (loading) {
     return <div className="loading">Loading posts...</div>;
   }
@@ -57,11 +62,18 @@ const PostsListPage = () => {
 
   return (
     <div className="posts-list-container">
-      <h1 className="page-title">Wishing Well</h1>
-      <p className="page-description">
-        Share your thoughts, wishes, and connect with others in this anonymous
-        space.
-      </p>
+      <div className="page-header">
+        <div className="header-content">
+          <h1 className="page-title">Wishing Well</h1>
+          <p className="page-description">
+            Share your thoughts, wishes, and connect with others in this
+            anonymous space.
+          </p>
+        </div>
+        <button onClick={handleCreatePost} className="create-post-button">
+          Create Post
+        </button>
+      </div>
 
       {/* 当前选中的标签显示 */}
       {selectedTag && (

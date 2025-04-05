@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 import "./LoginPage.css";
 
 function Login() {
@@ -8,22 +9,20 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    fetch("http://localhost:3000/api/users/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-          navigate("/"); 
-        } else {
-          setError("Invalid credentials");
-        }
-      })
-      .catch(() => setError("Login failed"));
+  const handleLogin = async () => {
+    try {
+      const response = await api.post("/users/login", { email, password });
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
+      } else {
+        setError("Invalid credentials");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Login failed");
+    }
   };
 
   return (

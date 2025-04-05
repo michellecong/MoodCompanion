@@ -10,6 +10,8 @@ import SingleJournalPage from "./pages/SingleJournalPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostsListPage from "./pages/PostsListPage";
 import ChatPage from "./pages/ChatPage";
+import CreatePostPage from "./pages/CreatePostPage";
+import MoodTrackingPage from './pages/MoodTrackingPage';
 
 import "./App.css";
 
@@ -59,8 +61,10 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/journals" element={<JournalsPage />} />
             <Route path="/journal/:id" element={<SingleJournalPage />} />
+            <Route path="/mood-tracking" element={<MoodTrackingPage />} />
             <Route path="/post/:id" element={<PostDetailPage />} />
             <Route path="/posts" element={<PostsListPage />} />
+            <Route path="/create-post" element={<CreatePostPage />} />
             <Route path="/chat" element={<ChatPage />} />
           </Routes>
         </main>
