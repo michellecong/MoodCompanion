@@ -69,3 +69,13 @@ function ChatPage() {
 }
 
 export default ChatPage;
+
+/* Future unctionalities:
+Pattern recognization - recognise their cognitive distortions
+
+Educational tips to challenge distortions
+
+insight into patterns over time
+
+guided reflection
+*/
