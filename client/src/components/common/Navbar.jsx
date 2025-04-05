@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
+import ProfileDropdown from "../Personal/ProfileDropdown";
 
 function Navbar({ isAuthenticated, onLogout, user }) {
   return (
@@ -29,9 +30,7 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/profile" className="nav-link">
-                  Profile
-                </Link>
+                <ProfileDropdown user={user} />
               </li>
               <li className="nav-item">
                 <button className="logout-btn" onClick={onLogout}>

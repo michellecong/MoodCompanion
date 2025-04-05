@@ -13,6 +13,7 @@ import ChatPage from "./pages/ChatPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import MoodTrackingPage from "./pages/MoodTrackingPage";
 import FollowedPostsPage from "./pages/FollowedPostsPage";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 
 import "./App.css";
 
@@ -46,37 +47,44 @@ function App() {
           user={user}
         />
         <main className="main-content">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <HomePage isAuthenticated={isAuthenticated} user={user} />
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
-              }
-            />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/journals" element={<JournalsPage />} />
-            <Route path="/journal/:id" element={<SingleJournalPage />} />
-            <Route path="/mood-tracking" element={<MoodTrackingPage />} />
-            <Route
-              path="/post/:id"
-              element={
-                <PostDetailPage isAuthenticated={isAuthenticated} user={user} />
-              }
-            />
-            <Route path="/posts" element={<PostsListPage />} />
-            <Route path="/create-post" element={<CreatePostPage />} />
-            <Route
-              path="/followed-posts"
-              element={<FollowedPostsPage isAuthenticated={isAuthenticated} />}
-            />
-            <Route path="/chat" element={<ChatPage />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <HomePage isAuthenticated={isAuthenticated} user={user} />
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
+                }
+              />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/journals" element={<JournalsPage />} />
+              <Route path="/journal/:id" element={<SingleJournalPage />} />
+              <Route path="/mood-tracking" element={<MoodTrackingPage />} />
+              <Route
+                path="/post/:id"
+                element={
+                  <PostDetailPage
+                    isAuthenticated={isAuthenticated}
+                    user={user}
+                  />
+                }
+              />
+              <Route path="/posts" element={<PostsListPage />} />
+              <Route path="/create-post" element={<CreatePostPage />} />
+              <Route
+                path="/followed-posts"
+                element={
+                  <FollowedPostsPage isAuthenticated={isAuthenticated} />
+                }
+              />
+              <Route path="/chat" element={<ChatPage />} />
+            </Routes>
+          </ErrorBoundary>
         </main>
         <Footer />
       </div>
