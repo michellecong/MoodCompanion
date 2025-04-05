@@ -27,20 +27,20 @@ router.post("/", auth, validateRequest, chatController.chatMessage);
  * @desc    Save a full chat
  * @access  Private
  */
-router.post("/save", auth, chatController.saveChat);
+router.post("/save", auth, validateRequest, chatController.saveChat);
 
 /**
  * @route   GET /api/chat/user/:userId
  * @desc    Get all chats for a specific user
  * @access  Private
  */
-router.get("/user/:userId", auth, chatController.getUserChats);
+router.get("/user/:userId", auth, validateRequest, chatController.getUserChats);
 
 /**
  * @route   GET /api/chat/:id
  * @desc    Get a single chat by ID
  * @access  Private
  */
-router.get("/:id", auth, chatController.getChatById);
+router.get("/:id", auth, validateRequest, chatController.getChatById);
 
 module.exports = router;

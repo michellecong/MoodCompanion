@@ -1,6 +1,7 @@
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
 const chatServices = require("../services/chatServices");
+require("dotenv").config();
 
 /**
  * Chat controller for handling chat-related operations

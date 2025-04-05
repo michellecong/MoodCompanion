@@ -16,8 +16,9 @@ function ChatPage() {
     setUnsavedMessages(newMessages);
     setInput("");
     setLoading(true);
-
+    
     try {
+      console.log("Auth token in localStorage:", localStorage.getItem("token")); // Log the token for debugging
       const response = await fetch("http://localhost:3000/api/chat", {
         method: "POST",
         headers: {

@@ -21,6 +21,7 @@ module.exports = function (req, res, next) {
 
   try {
     // verify token
+    console.log("🔐 Auth JWT_SECRET in use to verify:", process.env.JWT_SECRET);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // add user from payload
