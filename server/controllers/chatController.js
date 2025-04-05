@@ -40,6 +40,7 @@ const chatController = {
    * Save a complete chat
    */
   async saveChat(req, res) {
+    console.log("🔵 saveChat endpoint hit");
     try {
       const { messages } = req.body;
       const userId = req.user.id;
@@ -61,6 +62,7 @@ const chatController = {
       });
 
       await newChat.save();
+      console.log("Chat saved:", newChat);
 
       // Optionally link chat to User model
       await User.findByIdAndUpdate(userId, {
