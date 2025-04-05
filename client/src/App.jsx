@@ -13,6 +13,7 @@ import ChatPage from "./pages/ChatPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import MoodTrackingPage from "./pages/MoodTrackingPage";
 import FollowedPostsPage from "./pages/FollowedPostsPage";
+import Dashboard from "./components/home/Dashboard";
 
 import "./App.css";
 
@@ -76,6 +77,7 @@ function App() {
               element={<FollowedPostsPage isAuthenticated={isAuthenticated} />}
             />
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </main>
         <Footer />
