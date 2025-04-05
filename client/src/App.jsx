@@ -14,6 +14,7 @@ import CreatePostPage from "./pages/CreatePostPage";
 import MoodTrackingPage from "./pages/MoodTrackingPage";
 import FollowedPostsPage from "./pages/FollowedPostsPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import Profile from "./components/Personal/Profile";
 
 import "./App.css";
 
@@ -83,6 +84,12 @@ function App() {
                 }
               />
               <Route path="/chat" element={<ChatPage />} />
+              <Route
+                path="/profile"
+                element={
+                  <Profile user={user} isAuthenticated={isAuthenticated} />
+                }
+              />
             </Routes>
           </ErrorBoundary>
         </main>

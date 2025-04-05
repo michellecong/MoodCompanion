@@ -42,6 +42,16 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                   <span>Hi, {user.username}</span>
                 </li>
               )}
+
+              <li className="dropdown-avatar">
+                {user.avatar ? (
+                  <img src={user.avatar} alt="User avatar" />
+                ) : (
+                  <div className="avatar-placeholder">
+                    {user.username.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </li>
             </>
           ) : (
             <>
