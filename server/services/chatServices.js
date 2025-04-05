@@ -10,7 +10,8 @@ const chatServices = {
         try {
             const response = await openai.chat.completions.create({
                 model: "gpt-3.5-turbo", // Change model if needed
-                messages: [{ role: "user", content: message }],
+                messages: [{role:"system",content:"You are a mental health specialist who helps reframe thoughts into positive ones."},{ role: "user", content: message }],
+                //Fine-tune the system message as per your requirement
                 max_tokens: 100,
             });
 

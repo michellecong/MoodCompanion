@@ -16,10 +16,11 @@ function ChatPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/chat", {
+      const response = await fetch("http://localhost:3000/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ message: input }),
       });
@@ -68,3 +69,13 @@ function ChatPage() {
 }
 
 export default ChatPage;
+
+/* Future unctionalities:
+Pattern recognization - recognise their cognitive distortions
+
+Educational tips to challenge distortions
+
+insight into patterns over time
+
+guided reflection
+*/
