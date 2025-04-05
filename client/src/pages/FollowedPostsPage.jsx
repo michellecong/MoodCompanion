@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./FollowedPostsPage.css";
+import { getAssetUrl } from "../api/helpers";
 
 const FollowedPostsPage = ({ isAuthenticated }) => {
   const [posts, setPosts] = useState([]);
@@ -152,6 +153,15 @@ const FollowedPostsPage = ({ isAuthenticated }) => {
           <div className="posts-list">
             {posts.map((post) => (
               <div key={post._id} className="post-card">
+                {post.image && (
+                  <div className="post-image-container">
+                    <img
+                      src={getAssetUrl(post.image)}
+                      alt="Post"
+                      className="post-image"
+                    />
+                  </div>
+                )}
                 <div className="post-content">{post.content}</div>
 
                 {post.tags && post.tags.length > 0 && (

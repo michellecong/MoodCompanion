@@ -93,3 +93,22 @@
   color: #888;
   font-size: 0.8rem;
 }
+
+.post-image-container {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-image {
+  transform: scale(1.05);
+}
