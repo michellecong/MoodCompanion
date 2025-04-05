@@ -16,7 +16,7 @@ function Login({ onLogin, onUser }) {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post("/users/login", { email, password });
+      const response = await api.post("/login", { email, password });
 
       if (response.data.token) {
         // Store token
