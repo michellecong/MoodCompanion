@@ -1,9 +1,5 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-require("dotenv").config({
-  path: path.resolve(__dirname, "../.env"), //
-});
 
 const userController = {
   async register(req, res) {
@@ -71,6 +67,7 @@ const userController = {
   },
 
   async login(req, res) {
+    console.log("🧪 CTRLR: JWT_SECRET from .env is:", `"${process.env.JWT_SECRET}"`);
     try {
       const { email, password } = req.body;
 

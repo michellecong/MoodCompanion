@@ -20,6 +20,7 @@ function Login({ onLogin, onUser }) {
 
       if (response.data.token) {
         // Store token
+        localStorage.removeItem("token"); // Clear any existing token
         localStorage.setItem("token", response.data.token);
 
         // Update user data

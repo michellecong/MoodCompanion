@@ -4,6 +4,8 @@ require("dotenv").config({
   path: path.resolve(__dirname, "../../.env"),
 });
 
+console.log("🔐 MIDDLEWARE: JWT_SECRET used to verify:", `"${process.env.JWT_SECRET}"`);
+
 /**
  * validate the token provided by the user
  */
@@ -24,7 +26,6 @@ module.exports = function (req, res, next) {
 
   try {
     // verify token
-    console.log("🔐 Auth JWT_SECRET in use to verify:", process.env.JWT_SECRET);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // add user from payload
