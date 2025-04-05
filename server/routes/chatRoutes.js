@@ -1,17 +1,46 @@
 const express = require("express");
 const router = express.Router();
 const chatController = require("../controllers/chatController");
+const { check, validationResult } = require("express-validator");
+const auth = require("../middleware/auth");
 
-// POST /api/chat — send message to AI
-router.post("/", chatController.chatMessage);
+// Validation middleware (optional for POSTs)
+const validateRequest = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+};
 
-// POST /api/chat/save — save full chat
-router.post("/save", chatController.saveChat);
+// === Routes ===
 
-// GET /api/chat/user/:userId — get all chats for user
-router.get("/user/:userId", chatController.getChats);
+/**
+ * @route   POST /api/chat
+ * @desc    Send a chat message
+ * @access  Private
+ */
+router.post("/", auth, validateRequest, chatController.chatMessage);
 
-// GET /api/chat/:id — get a single chat
-router.get("/:id", chatController.getChatById);
+/**
+ * @route   POST /api/chat/save
+ * @desc    Save a full chat
+ * @access  Private
+ */
+router.post("/save", auth, chatController.saveChat);
+
+/**
+ * @route   GET /api/chat/user/:userId
+ * @desc    Get all chats for a specific user
+ * @access  Private
+ */
+router.get("/user/:userId", auth, chatController.getChats);
+
+/**
+ * @route   GET /api/chat/:id
+ * @desc    Get a single chat by ID
+ * @access  Private
+ */
+router.get("/:id", auth, chatController.getChatById);
 
 module.exports = router;
