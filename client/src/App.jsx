@@ -12,7 +12,8 @@ import PostsListPage from "./pages/PostsListPage";
 import ChatPage from "./pages/ChatPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import MoodTrackingPage from "./pages/MoodTrackingPage";
-import ErrorBoundary from "./components/common/ErrorBoundary";
+import FollowedPostsPage from "./pages/FollowedPostsPage";
+
 import "./App.css";
 
 function App() {
@@ -61,17 +62,19 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/journals" element={<JournalsPage />} />
             <Route path="/journal/:id" element={<SingleJournalPage />} />
+            <Route path="/mood-tracking" element={<MoodTrackingPage />} />
             <Route
-              path="/mood-tracking"
+              path="/post/:id"
               element={
-                <ErrorBoundary>
-                  <MoodTrackingPage />
-                </ErrorBoundary>
+                <PostDetailPage isAuthenticated={isAuthenticated} user={user} />
               }
             />
-            <Route path="/post/:id" element={<PostDetailPage />} />
             <Route path="/posts" element={<PostsListPage />} />
             <Route path="/create-post" element={<CreatePostPage />} />
+            <Route
+              path="/followed-posts"
+              element={<FollowedPostsPage isAuthenticated={isAuthenticated} />}
+            />
             <Route path="/chat" element={<ChatPage />} />
           </Routes>
         </main>

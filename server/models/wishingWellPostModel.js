@@ -6,6 +6,10 @@ const WishingWellPostSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  image: {
+    type: String,
+    default: "/images/default-post-image.jpg", // 系统默认图片路径
+  },
   content: {
     type: String,
     required: true,

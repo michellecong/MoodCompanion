@@ -1,0 +1,225 @@
+.weather-container {
+  max-width: 420px;
+  margin: 1rem 2rem 2rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 1px 5px rgba(0, 0, 0, 0.1);
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  transition: all 0.3s ease;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.weather-clear-sky {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+.weather-clouds {
+  background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+}
+
+.weather-rain {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+.weather-snow {
+  background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+}
+
+.weather-thunderstorm {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.weather-fog {
+  background: linear-gradient(135deg, #d4d4d4 0%, #f2f2f2 100%);
+}
+
+.weather-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.weather-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+  border-radius: 3px;
+}
+
+.weather-icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.city-name {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #2d3748;
+}
+
+.temperature {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1a202c;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.weather-description {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.weather-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-card {
+  background-color: rgba(235, 244, 255, 0.7);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: #718096;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.message-card {
+  background-color: rgba(255, 250, 230, 0.8);
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  border-left: 4px solid #ecc94b;
+  margin-top: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.message-text {
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  color: #4a5568;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: #4a5568;
+}
+
+.error-state {
+  text-align: center;
+  padding: 2rem 0;
+  color: #e53e3e;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-container {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Skeleton loading animation */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  height: 24px;
+  margin-bottom: 1rem;
+  animation: pulse 1.5s infinite ease-in-out;
+  width: 100%;
+}
+
+.skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-city {
+  width: 60%;
+  margin: 0 auto 0.5rem auto;
+}
+
+.skeleton-temp {
+  width: 30%;
+  margin: 0 auto 1rem auto;
+}
+
+.skeleton-detail {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.skeleton-message-line1 {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.skeleton-message-line2 {
+  width: 80%;
+  margin: 0.5rem auto 0 auto;
+}
+
+.skeleton-message-line3 {
+  width: 70%;
+  margin: 0.5rem auto 0 auto;
+}
+
+.skeleton-message-line4 {
+  width: 85%;
+  margin: 0.5rem auto 0 auto;
+}

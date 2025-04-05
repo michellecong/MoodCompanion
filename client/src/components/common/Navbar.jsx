@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import './Navbar.css';
+import { Link } from "react-router-dom";
+import "./Navbar.css";
 
 function Navbar({ isAuthenticated, onLogout, user }) {
   return (
@@ -11,19 +11,27 @@ function Navbar({ isAuthenticated, onLogout, user }) {
 
         <ul className="nav-menu">
           <li className="nav-item">
-            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/" className="nav-link">
+              Home
+            </Link>
           </li>
-          
+
           {isAuthenticated ? (
             <>
               <li className="nav-item">
-                <Link to="/journal" className="nav-link">Journal</Link>
+                <Link to="/journals" className="nav-link">
+                  Journal
+                </Link>
               </li>
               <li className="nav-item">
-                <Link to="/wishing-well" className="nav-link">Wishing Well</Link>
+                <Link to="/posts" className="nav-link">
+                  Wishing Well
+                </Link>
               </li>
               <li className="nav-item">
-                <Link to="/profile" className="nav-link">Profile</Link>
+                <Link to="/profile" className="nav-link">
+                  Profile
+                </Link>
               </li>
               <li className="nav-item">
                 <button className="logout-btn" onClick={onLogout}>
@@ -39,10 +47,14 @@ function Navbar({ isAuthenticated, onLogout, user }) {
           ) : (
             <>
               <li className="nav-item">
-                <Link to="/login" className="nav-link">Login</Link>
+                <Link to="/login" className="nav-link">
+                  Login
+                </Link>
               </li>
               <li className="nav-item">
-                <Link to="/register" className="nav-link register-btn">Register</Link>
+                <Link to="/register" className="nav-link register-btn">
+                  Register
+                </Link>
               </li>
             </>
           )}

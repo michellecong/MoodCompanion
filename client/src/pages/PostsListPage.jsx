@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./PostsListPage.css";
+import { getAssetUrl } from "../api/helpers";
 
 const PostsListPage = () => {
   const [posts, setPosts] = useState([]);
@@ -9,6 +10,9 @@ const PostsListPage = () => {
   const [error, setError] = useState(null);
   const [selectedTag, setSelectedTag] = useState("");
   const navigate = useNavigate();
+  const handleFollowedPosts = () => {
+    navigate("/followed-posts");
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -16,10 +20,10 @@ const PostsListPage = () => {
         setLoading(true);
         const endpoint = "/wishing-well/posts";
 
-        // 获取所有帖子，不使用后端标签筛选
+        // Get all posts, don't use backend tag filtering
         const response = await api.get(endpoint);
 
-        // 如果选中了标签，在前端进行筛选
+        // If a tag is selected, filter on the frontend
         const allPosts = response.data.data;
         const filteredPosts = selectedTag
           ? allPosts.filter(
@@ -42,7 +46,7 @@ const PostsListPage = () => {
     setSelectedTag(tag === selectedTag ? "" : tag);
   };
 
-  // 格式化日期
+  // Format date
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -70,12 +74,20 @@ const PostsListPage = () => {
             anonymous space.
           </p>
         </div>
-        <button onClick={handleCreatePost} className="create-post-button">
-          Create Post
-        </button>
+        <div className="page-actions">
+          <button
+            onClick={handleFollowedPosts}
+            className="followed-posts-button"
+          >
+            Followed Posts
+          </button>
+          <button onClick={handleCreatePost} className="create-post-button">
+            Create Post
+          </button>
+        </div>
       </div>
 
-      {/* 当前选中的标签显示 */}
+      {/* Display for currently selected tag */}
       {selectedTag && (
         <div className="selected-tag">
           Filtering by: <span>{selectedTag}</span>
@@ -92,6 +104,15 @@ const PostsListPage = () => {
           {posts.map((post) => (
             <div key={post._id} className="post-card">
               <Link to={`/post/${post._id}`} className="post-link">
+                {post.image && (
+                  <div className="post-image-container">
+                    <img
+                      src={getAssetUrl(post.image)}
+                      alt="Post"
+                      className="post-image"
+                    />
+                  </div>
+                )}
                 <div className="post-content">
                   {post.content.length > 150
                     ? `${post.content.substring(0, 150)}...`
