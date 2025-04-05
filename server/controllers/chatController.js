@@ -6,8 +6,6 @@ const chatContoller = {
     async chatMessage(req, res) {
         try {
             const { message } = req.body;
-
-            // Simulate a response from the AI model
             const aiResponse = await chatServices.getAIResponse(message);
 
             res.status(200).json({ reply: aiResponse });
