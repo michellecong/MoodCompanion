@@ -1,5 +1,10 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({
+  path: path.resolve(__dirname, "../../.env"),
+});
+
+console.log("🔐 MIDDLEWARE: JWT_SECRET used to verify:", `"${process.env.JWT_SECRET}"`);
 
 /**
  * validate the token provided by the user

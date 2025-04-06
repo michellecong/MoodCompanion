@@ -68,6 +68,7 @@ const userController = {
   },
 
   async login(req, res) {
+    console.log("🧪 CTRLR: JWT_SECRET from .env is:", `"${process.env.JWT_SECRET}"`);
     try {
       const { identifier, password } = req.body;
 
