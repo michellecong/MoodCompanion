@@ -76,18 +76,10 @@ function Login({ onLogin, onUser }) {
 
   const handleLogin = async () => {
     try {
-<<<<<<< HEAD
-      const response = await api.post("/login", { email, password });
-
-      if (response.data.token) {
-        // Store token
-        localStorage.removeItem("token"); // Clear any existing token
-=======
       const response = await api.post("/users/login", { identifier, password });
 
       if (response.data.token) {
         // Store the token in local storage
->>>>>>> 57b291024385039e523d8594079426e852c3eb3f
         localStorage.setItem("token", response.data.token);
         if (response.data.user) {
           localStorage.setItem("user", JSON.stringify(response.data.user));
