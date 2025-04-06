@@ -10,7 +10,7 @@ const { validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
 
 // Optional validation middleware
-const validateRequest = (req, res, next) => {
+/* const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -18,34 +18,13 @@ const validateRequest = (req, res, next) => {
   next();
 };
 
-// === Routes ===
+*/
+router.post("/", chatMessage);
 
-/**
- * @route   POST /api/chat
- * @desc    Send a chat message
- * @access  Private
- */
-router.post("/", auth, validateRequest, chatMessage);
+router.post("/save", saveChat);
 
-/**
- * @route   POST /api/chat/save
- * @desc    Save a full chat
- * @access  Private
- */
-router.post("/save", auth, validateRequest, saveChat);
+// router.get("/user/:userId", getUserChats);
 
-/**
- * @route   GET /api/chat/user/:userId
- * @desc    Get all chats for a specific user
- * @access  Private
- */
-router.get("/user/:userId", auth, validateRequest, getUserChats);
-
-/**
- * @route   GET /api/chat/:id
- * @desc    Get a single chat by ID
- * @access  Private
- */
-router.get("/:id", auth, validateRequest, getChatById);
+router.get("/:id", getChatById);
 
 module.exports = router;
