@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { getAssetUrl } from "../../api/helpers";
+
 import "./Avatar.css";
 
 const Avatar = ({ user, size = "md", className = "" }) => {
+  const [imgError, setImgError] = useState(false);
+
   // If we don't have a user at all, show a placeholder
   if (!user) {
     return (
@@ -16,31 +19,19 @@ const Avatar = ({ user, size = "md", className = "" }) => {
   const initial = user.username ? user.username.charAt(0).toUpperCase() : "?";
   const backgroundColor = user.avatarColor || "#4299E1"; // Default blue if not set
 
-  // If user has an avatar image, show it
-  if (user.avatar) {
+  // If user has an avatar image and no error loading it, show the image
+  if (user.avatar && !imgError) {
     return (
       <img
         src={getAssetUrl(user.avatar)}
         alt={user.username || "User"}
         className={`avatar avatar-${size} ${className}`}
-        onError={(e) => {
-          e.target.onerror = null; // Prevent infinite loop
-          // Show initial-based avatar as fallback when image fails to load
-          e.target.style.display = "none"; // Hide the img element
-
-          // Create initial-based avatar dynamically
-          const parent = e.target.parentNode;
-          const div = document.createElement("div");
-          div.className = `avatar avatar-${size} ${className}`;
-          div.style.backgroundColor = backgroundColor;
-          div.innerText = initial;
-          parent.appendChild(div);
-        }}
+        onError={() => setImgError(true)}
       />
     );
   }
 
-  // Default: Show initial-based avatar
+  // Default or fallback: Show initial-based avatar
   return (
     <div
       className={`avatar avatar-${size} avatar-initial ${className}`}

@@ -84,7 +84,7 @@ const UserProfile = () => {
         const fileFormData = new FormData();
         fileFormData.append("file", formData.avatarFile);
 
-        const uploadResponse = await api.post("/upload", fileFormData, {
+        const uploadResponse = await api.post("/users/upload", fileFormData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -101,7 +101,9 @@ const UserProfile = () => {
         avatar: updatedFormData.avatar,
       });
 
-      setProfile(response.data.data);
+      const refreshResponse = await api.get("/users/profile");
+      setProfile(refreshResponse.data.data);
+
       setIsEditing(false);
 
       // Update locally stored user info
@@ -289,6 +291,7 @@ const UserProfile = () => {
               <h4 className="section-title">
                 My Journals ({profile.journals.length})
               </h4>
+
               <div className="journal-list">
                 {profile.journals.map((journal) => (
                   <div key={journal._id} className="journal-item">

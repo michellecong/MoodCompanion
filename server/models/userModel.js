@@ -31,10 +31,6 @@ const UserSchema = new mongoose.Schema({
     default: "user",
   },
 
-  profilePicture: {
-    type: String,
-    default: "/images/default-avatar.png",
-  },
   // New avatar fields
   avatar: {
     type: String,
