@@ -6,18 +6,18 @@ import "./CreatePostPage.css";
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
-  const [image, setImage] = useState(null); // 添加图片状态
-  const [previewUrl, setPreviewUrl] = useState(null); // 添加预览URL状态
+  const [image, setImage] = useState(null); // add image state
+  const [previewUrl, setPreviewUrl] = useState(null); // add preview URL state
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // 处理图片选择
+  // deal with image upload
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      // 创建预览URL
+      // create a preview URL for the selected image
       const fileReader = new FileReader();
       fileReader.onload = () => {
         setPreviewUrl(fileReader.result);
@@ -26,7 +26,7 @@ const CreatePostPage = () => {
     }
   };
 
-  // 移除已选择的图片
+  // remove image
   const handleRemoveImage = () => {
     setImage(null);
     setPreviewUrl(null);
@@ -50,7 +50,7 @@ const CreatePostPage = () => {
         .map((tag) => tag.trim())
         .filter((tag) => tag !== "");
 
-      // 使用FormData来支持文件上传
+      // use FormData to handle file upload
       const formData = new FormData();
       formData.append("content", content);
       tagsArray.forEach((tag) => formData.append("tags", tag));
@@ -61,7 +61,7 @@ const CreatePostPage = () => {
 
       const response = await api.post("/wishing-well/posts", formData, {
         headers: {
-          "Content-Type": "multipart/form-data", // 改变内容类型
+          "Content-Type": "multipart/form-data", // important for file upload
         },
       });
 
@@ -104,7 +104,6 @@ const CreatePostPage = () => {
           />
         </div>
 
-        {/* 添加图片上传区域 */}
         <div className="form-group">
           <label htmlFor="image">Add an Image (optional):</label>
           <div className="image-upload-container">
