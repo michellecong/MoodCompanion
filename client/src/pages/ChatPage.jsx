@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ChatSidebar from "../components/chat/ChatSidebar";
 import "./ChatPage.css";
+import api from "../api/axios";
 
 function ChatPage() {
   const [savedChats, setSavedChats] = useState([]); // Only saved chats go here
@@ -18,7 +19,6 @@ function ChatPage() {
     setLoading(true);
     
     try {
-      console.log("Auth token in localStorage:", localStorage.getItem("token")); // Log the token for debugging
       const response = await fetch("http://localhost:3000/api/chat", {
         method: "POST",
         headers: {
@@ -30,7 +30,9 @@ function ChatPage() {
 
       const data = await response.json();
       const aiMessage = { sender: "ai", text: data.reply };
-      setUnsavedMessages((prev) => [...prev, aiMessage]);
+
+      // Add AI message to chat
+      setMessages((prevMessages) => [...prevMessages, aiMessage]);
     } catch (error) {
       console.error("Error:", error);
       const fallback = { sender: "ai", text: "Sorry, something went wrong." };
@@ -87,9 +89,6 @@ function ChatPage() {
           <button onClick={sendMessage} disabled={loading}>
             {loading ? "Sending..." : "Send"}
           </button>
-          <button onClick={saveChat} style={{ marginLeft: "10px" }}>
-            💾 Save Chat
-          </button>
         </div>
       </div>
     </div>
@@ -97,3 +96,13 @@ function ChatPage() {
 }
 
 export default ChatPage;
+
+/* Future unctionalities:
+Pattern recognization - recognise their cognitive distortions
+
+Educational tips to challenge distortions
+
+insight into patterns over time
+
+guided reflection
+*/

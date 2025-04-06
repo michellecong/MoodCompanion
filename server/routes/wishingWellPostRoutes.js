@@ -34,7 +34,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    cb(new Error("只支持图片上传"), false);
+    cb(new Error("Only image allowed"), false);
   }
 };
 

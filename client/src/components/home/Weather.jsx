@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  Cloud,
   Sun,
+  Cloud,
   CloudRain,
   CloudSnow,
   CloudLightning,
@@ -10,38 +10,37 @@ import {
 } from "lucide-react";
 import "./Weather.css";
 
-// Weather Component
-const WeatherComponent = () => {
+const CompactWeather = () => {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [locationName, setLocationName] = useState("Your Location");
 
-  // API key using Vite environment variables
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+  // API key - in a real app, use environment variables
+  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY; // Replace with your OpenWeatherMap API key
 
   // Get weather icon based on weather condition
   const getWeatherIcon = (weatherMain) => {
-    if (!weatherMain) return <Wind size={48} className="text-gray-600" />;
+    if (!weatherMain) return <Wind size={32} color="#6b7280" />;
 
     switch (weatherMain) {
       case "Clear":
-        return <Sun size={48} style={{ color: "#f59e0b" }} />;
+        return <Sun size={32} color="#f59e0b" />;
       case "Clouds":
-        return <Cloud size={48} style={{ color: "#6b7280" }} />;
+        return <Cloud size={32} color="#6b7280" />;
       case "Rain":
       case "Drizzle":
-        return <CloudRain size={48} style={{ color: "#3b82f6" }} />;
+        return <CloudRain size={32} color="#3b82f6" />;
       case "Snow":
-        return <CloudSnow size={48} style={{ color: "#bfdbfe" }} />;
+        return <CloudSnow size={32} color="#bfdbfe" />;
       case "Thunderstorm":
-        return <CloudLightning size={48} style={{ color: "#8b5cf6" }} />;
+        return <CloudLightning size={32} color="#8b5cf6" />;
       case "Fog":
       case "Mist":
       case "Haze":
-        return <CloudFog size={48} style={{ color: "#9ca3af" }} />;
+        return <CloudFog size={32} color="#9ca3af" />;
       default:
-        return <Wind size={48} style={{ color: "#6b7280" }} />;
+        return <Wind size={32} color="#6b7280" />;
     }
   };
 
@@ -76,6 +75,35 @@ const WeatherComponent = () => {
     }
   };
 
+  // Get container class based on weather condition
+  const getContainerClass = () => {
+    if (!weather || !weather.weather || !weather.weather[0]) {
+      return "weather-container";
+    }
+
+    const weatherMain = weather.weather[0].main;
+
+    switch (weatherMain) {
+      case "Clear":
+        return "weather-container clear-sky";
+      case "Clouds":
+        return "weather-container clouds";
+      case "Rain":
+      case "Drizzle":
+        return "weather-container rain";
+      case "Snow":
+        return "weather-container snow";
+      case "Thunderstorm":
+        return "weather-container thunderstorm";
+      case "Fog":
+      case "Mist":
+      case "Haze":
+        return "weather-container fog";
+      default:
+        return "weather-container";
+    }
+  };
+
   // Fetch weather by coordinates
   const fetchWeatherByCoords = async (lat, lon) => {
     if (lat === undefined || lon === undefined) return;
@@ -103,21 +131,20 @@ const WeatherComponent = () => {
       // Using mock data for display purposes
       setWeather({
         name: "Your Location",
-        main: { temp: 15, humidity: 70 },
+        main: { temp: 18 },
         weather: [{ main: "Clear", description: "clear sky" }],
-        wind: { speed: 3.5 },
       });
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch default weather if geolocation fails (Toronto)
+  // Fetch default weather if geolocation fails (using a default city)
   const fetchDefaultWeather = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=Toronto&appid=${API_KEY}&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?q=Beijing&appid=${API_KEY}&units=metric`
       );
 
       if (!response.ok) {
@@ -126,7 +153,7 @@ const WeatherComponent = () => {
 
       const data = await response.json();
       setWeather(data);
-      setLocationName("Toronto");
+      setLocationName("Beijing");
       setError(null);
     } catch (err) {
       console.error("Error fetching default weather data:", err);
@@ -134,10 +161,9 @@ const WeatherComponent = () => {
 
       // Using mock data for display purposes
       setWeather({
-        name: "Toronto",
-        main: { temp: 15, humidity: 70 },
+        name: "Beijing",
+        main: { temp: 18 },
         weather: [{ main: "Clear", description: "clear sky" }],
-        wind: { speed: 3.5 },
       });
     } finally {
       setLoading(false);
@@ -169,136 +195,55 @@ const WeatherComponent = () => {
     }
   }, []);
 
-  // Get appropriate weather class based on weather condition
-  const getWeatherClass = () => {
-    if (
-      !weather ||
-      !weather.weather ||
-      !weather.weather[0] ||
-      !weather.weather[0].main
-    ) {
-      return "weather-container";
-    }
-
-    const weatherMain = weather.weather[0].main;
-
-    switch (weatherMain) {
-      case "Clear":
-        return "weather-container weather-clear-sky";
-      case "Clouds":
-        return "weather-container weather-clouds";
-      case "Rain":
-      case "Drizzle":
-        return "weather-container weather-rain";
-      case "Snow":
-        return "weather-container weather-snow";
-      case "Thunderstorm":
-        return "weather-container weather-thunderstorm";
-      case "Fog":
-      case "Mist":
-      case "Haze":
-        return "weather-container weather-fog";
-      default:
-        return "weather-container";
-    }
-  };
-
-  // Create placeholder skeleton content
-  const loadingPlaceholder = (
-    <div className="content-container">
-      <div className="weather-icon-container">
-        <div className="skeleton skeleton-icon"></div>
-      </div>
-
-      <div className="skeleton skeleton-city"></div>
-      <div className="skeleton skeleton-temp"></div>
-
-      <div className="weather-details">
-        <div className="detail-card">
-          <p className="detail-label">Humidity</p>
-          <div className="skeleton skeleton-detail"></div>
-        </div>
-        <div className="detail-card">
-          <p className="detail-label">Wind Speed</p>
-          <div className="skeleton skeleton-detail"></div>
+  if (loading) {
+    return (
+      <div className="weather-container">
+        <div className="loading-state">
+          <p>Loading weather information...</p>
         </div>
       </div>
+    );
+  }
 
-      <div className="message-card">
-        <div className="skeleton skeleton-message-line1"></div>
-        <div className="skeleton skeleton-message-line2"></div>
-        <div className="skeleton skeleton-message-line3"></div>
-        <div className="skeleton skeleton-message-line4"></div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className={getWeatherClass()}>
-      <h1 className="weather-title">Weather Mood Assistant</h1>
-
-      {loading ? (
-        loadingPlaceholder
-      ) : error ? (
+  if (error) {
+    return (
+      <div className="container">
         <div className="error-state">
           <p>{error}</p>
         </div>
-      ) : weather ? (
-        <div className="content-container">
-          {/* Weather information */}
-          <div className="weather-icon-container">
-            {weather.weather && weather.weather[0]
-              ? getWeatherIcon(weather.weather[0].main)
-              : getWeatherIcon(null)}
-          </div>
+      </div>
+    );
+  }
 
-          <h2 className="city-name">{weather.name || locationName}</h2>
-          <p className="temperature">
+  return (
+    <div className={getContainerClass()}>
+      {/* Location and basic weather info */}
+      <div className="weather-header">
+        <p className="location-name">{weather.name || locationName}</p>
+        <span className="weather-icon-temp">
+          {weather.weather && weather.weather[0]
+            ? getWeatherIcon(weather.weather[0].main)
+            : getWeatherIcon(null)}
+          <span className="temperature">
             {weather.main && typeof weather.main.temp !== "undefined"
               ? `${Math.round(weather.main.temp)}°C`
               : "--°C"}
-          </p>
-          <p className="weather-description">
-            {weather.weather &&
-            weather.weather[0] &&
-            weather.weather[0].description
-              ? weather.weather[0].description
-              : ""}
-          </p>
+          </span>
+        </span>
+      </div>
 
-          <div className="weather-details">
-            <div className="detail-card">
-              <p className="detail-label">Humidity</p>
-              <p className="detail-value">
-                {weather.main && typeof weather.main.humidity !== "undefined"
-                  ? `${weather.main.humidity}%`
-                  : "--"}
-              </p>
-            </div>
-            <div className="detail-card">
-              <p className="detail-label">Wind Speed</p>
-              <p className="detail-value">
-                {weather.wind && typeof weather.wind.speed !== "undefined"
-                  ? `${weather.wind.speed} m/s`
-                  : "--"}
-              </p>
-            </div>
-          </div>
-
-          {/* Comforting message */}
-          <div className="message-card">
-            <p className="message-text">
-              {weather.weather && weather.weather[0] && weather.main
-                ? getComfortingWords(weather.weather[0].main, weather.main.temp)
-                : "Weather information is loading. Stay patient and positive!"}
-            </p>
-          </div>
+      {/* Highlighted comfort message */}
+      <div className="message-container">
+        <div className="message-card">
+          <p className="message-text">
+            {weather.weather && weather.weather[0] && weather.main
+              ? getComfortingWords(weather.weather[0].main, weather.main.temp)
+              : "Weather information is loading. Stay patient and positive!"}
+          </p>
         </div>
-      ) : (
-        loadingPlaceholder
-      )}
+      </div>
     </div>
   );
 };
 
-export default WeatherComponent;
+export default CompactWeather;

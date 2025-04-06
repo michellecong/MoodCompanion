@@ -241,7 +241,7 @@ function MoodTrackingPage() {
         <Link to="/journals" className="button">
           Back to Journals
         </Link>
-        <Link to="/dashboard" className="button secondary">
+        <Link to="/" className="button secondary">
           Back to Dashboard
         </Link>
       </div>
