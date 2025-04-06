@@ -68,11 +68,18 @@ const userController = {
 
   async login(req, res) {
     try {
-      const { email, password } = req.body;
+      const { identifier, password } = req.body;
 
-      // Find user by email
-      const user = await User.findOne({ email });
-
+      if (!identifier || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Username or email and password are required",
+        });
+      }
+      const user = await User.findOne({
+        $or: [{ email: identifier }, { username: identifier }],
+      });
+  
       if (!user) {
         return res.status(404).json({
           success: false,
