@@ -112,7 +112,13 @@ npm run dev
     - Created a `NotFoundPage` component and configured routing in `App.jsx` to display a 404 page for invalid routes (e.g., `/aaa`), with a link back to the homepage.  
     - Enhanced `RegisterPage.jsx` with detailed client-side validation (username, email, password) and improved error messaging.  
     - Upgraded `Login.jsx` with client-side validation, support for login via username or email, and better error feedback, while updating `userController.js` on the backend to align with these changes.  
-- **Shurui Liu**: [To be filled by Shurui]  
+- **Shurui Liu**: 
+  - **AI Companion Page**: Developed the AI Chat Companion page.
+  - **Components**: Separated concerns and enhanced the Companion page by creating components.
+  - **Open AI API Integration**: Developed the `chatServices.js` file to integrate the Open AI API.
+  - **Prompt Engineering**: Chose prompt engineering over fine-tuning. Instructed the LLM to provide responses better suited for a mental health companion.
+  - **Chat CRUD Operations**: Defined methods for saving, deleting, and querying for chats for a specific user.  
+  - **Authentication**: Debugged `auth.js`.
 
 
 ## License
