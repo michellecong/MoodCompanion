@@ -19,22 +19,23 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const queryParams = new URLSearchParams(location.search);
   const from = queryParams.get("from") || "";
 
-  // 使用结合的身份验证状态
+  // use state to manage authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
   const [currentUser, setCurrentUser] = useState(user);
 
-  // 添加返回函数
+  // add a function to handle the back button
   const handleGoBack = () => {
     if (from === "followed") {
       navigate("/followed-posts");
     } else {
-      navigate("/posts"); // 默认返回上一页
+      navigate("/posts"); // or navigate to a default page
     }
   };
 
-  // 确保身份验证状态包括localStorage和props
+  // ensure the authentication state is set correctly
   useEffect(() => {
-    // 从localStorage检查身份验证信息作为备份
+    // change the logic to check for token in localStorage
+    // and set the authentication state accordingly
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
@@ -46,7 +47,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
         console.error("error in parsing user data", error);
       }
     } else {
-      // 使用从props传递的身份验证状态
+      // user is not authenticated
       setIsAuthenticated(propIsAuthenticated);
       setCurrentUser(user);
     }
@@ -60,11 +61,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
         if (response.data && response.data.data) {
           setPost(response.data.data.post);
-          // 如果初始响应中包含评论
+          // if the post contains comments, set them directly
           if (response.data.data.comments) {
             setComments(response.data.data.comments);
           } else {
-            // 否则单独获取评论
+            // if no comments are provided, fetch them
             fetchComments(commentSort);
           }
         } else {
@@ -81,12 +82,12 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     fetchPostDetails();
   }, [id]);
 
-  // 1. 首先添加新的状态来跟踪关注状态
+  // 1. add state to manage the follow status and loading state
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [followingPosts, setFollowingPosts] = useState([]);
 
-  // 2. 添加一个函数来获取用户关注的帖子
+  // 2. add a function to fetch the user's followed posts
   const fetchFollowingPosts = async () => {
     if (!isAuthenticated || !currentUser) return;
 
@@ -97,7 +98,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
         const userFollowingPosts = response.data.data.followingPosts || [];
         setFollowingPosts(userFollowingPosts);
 
-        // 检查当前帖子是否在关注列表中
+        // check if the current post is in the user's followed posts
         setIsFollowing(userFollowingPosts.includes(id));
       }
     } catch (err) {
@@ -105,14 +106,14 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // 3. 在useEffect中调用这个函数
+  // 3. useEffect to fetch the followed posts when the component mounts
   useEffect(() => {
     if (isAuthenticated && currentUser) {
       fetchFollowingPosts();
     }
   }, [isAuthenticated, currentUser, id]);
 
-  // 4. 实现关注/取消关注的处理函数
+  // 4. add a function to handle the follow/unfollow action
   const handleToggleFollow = async () => {
     if (!isAuthenticated) {
       window.location.href = `/login?redirect=/post/${id}`;
@@ -123,19 +124,19 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       setFollowLoading(true);
 
       if (isFollowing) {
-        // 取消关注
+        // cancel follow
         const response = await api.put(`/wishing-well/posts/${id}/unfollow`);
         if (response.data && response.data.success) {
           setIsFollowing(false);
-          // 更新关注列表
+          // update the following posts list
           setFollowingPosts(followingPosts.filter((postId) => postId !== id));
         }
       } else {
-        // 关注
+        // follow
         const response = await api.put(`/wishing-well/posts/${id}/follow`);
         if (response.data && response.data.success) {
           setIsFollowing(true);
-          // 更新关注列表
+          // update the following posts list
           if (!followingPosts.includes(id)) {
             setFollowingPosts([...followingPosts, id]);
           }
@@ -174,7 +175,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      // 重定向到登录页面
+      // if user is not authenticated, redirect to login
       window.location.href = `/login?redirect=/post/${id}`;
       return;
     }
@@ -254,7 +255,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // 处理帖子删除的函数
+  // deal with post deletion
   const handleDeletePost = async () => {
     if (!isAuthenticated) {
       window.location.href = `/login?redirect=/post/${id}`;
@@ -273,7 +274,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       setIsDeleting(true);
       await api.delete(`/wishing-well/posts/${id}`);
       setIsDeleting(false);
-      // 成功删除后重定向到帖子页面
+      // Redirect to the posts page after deletion
       navigate("/posts");
     } catch (err) {
       console.error("Error deleting post:", err);
@@ -282,7 +283,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
   };
 
-  // 处理评论删除的函数
+  // deal with comment deletion
   const handleDeleteComment = async (commentId) => {
     if (!isAuthenticated) {
       window.location.href = `/login?redirect=/post/${id}`;
@@ -299,7 +300,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
     try {
       await api.delete(`/wishing-well/comments/${commentId}`);
-      // 通过从列表中移除已删除的评论来更新评论列表
+      // Update the comments state to remove the deleted comment
       setComments(comments.filter((comment) => comment._id !== commentId));
     } catch (err) {
       console.error("Error deleting comment:", err);
@@ -312,12 +313,12 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     if (!isAuthenticated) return false;
     if (!currentUser) return false;
 
-    // 检查条件1: API提供的isOwner标志
+    // check condition 1: post.isOwner
     if (post.isOwner === true) {
       return true;
     }
 
-    // 检查条件2: 用户ID比较
+    // check condition 2: post.userId
     const userId = currentUser._id || currentUser.id;
     if (userId && post.userId) {
       const isMatch = String(post.userId) === String(userId);
@@ -325,7 +326,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       if (isMatch) return true;
     }
 
-    // 检查条件3: 管理员角色
+    // check condition 3: post.userId === currentUser._id
     if (currentUser.role === "admin") {
       return true;
     }
@@ -333,16 +334,16 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     return false;
   };
 
-  // 检查用户是否是评论所有者或管理员的辅助函数
+  // check if the comment is owned by the current user
   const isCommentOwner = (commentUserId) => {
     if (!currentUser) return false;
 
-    // 尝试从不同可能的位置获取用户ID
+    // commentUserId is the userId of the comment
     const userId = currentUser._id || currentUser.id;
 
     if (!userId || !commentUserId) return false;
 
-    // 确保都是字符串进行比较
+    // compare the userId of the comment with the current user's id
     const currentId = String(userId);
     const commentId = String(commentUserId);
 
@@ -511,7 +512,6 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                     {formatDate(comment.createdAt)}
                   </span>
 
-                  {/* 评论删除按钮 - 直接比较userId和当前用户ID */}
                   {isAuthenticated && isCommentOwner(comment.userId) && (
                     <button
                       className="delete-button small"
