@@ -124,8 +124,32 @@ npm run dev
 
 ### Iteration 2
 
-- **Minchao Cong**: [To be filled by Minchao]
+- **Minchao Cong**:
+
+  - **Post Interaction Features**: Enhanced the post detail page with comprehensive interaction capabilities:
+    - Implemented comment system allowing users to add comments to posts
+    - Added follow/unfollow functionality for user connections
+    - Integrated upvote system for post engagement
+    - Applied authentication requirements for comment visibility
+    - Implemented permission controls so only post owners and comment owners can delete their content
+  - **Post Media Integration**: Modified posts schema, routes, and controller methods:
+    - Added image upload and storage functionality
+    - Enabled users to publish posts with attached images
+    - Optimized media handling for different device displays
+  - **Homepage User Experience**: Designed an engaging homepage with dynamic elements:
+    - Added carousel feature displaying motivational content
+    - Implemented icon-based navigation for authenticated users
+    - Integrated weather API companion that provides location-based forecasts with personalized comfort messages
+  - **User Profile System**: Enhanced the user experience with profile customization:
+    - Modified user schema to include avatar functionality
+    - Created routes and controllers for profile image management
+    - Added dropdown menu in navigation displaying user avatar
+    - Developed interfaces for viewing and editing user information
+  - **Error Handling Framework**: Optimized application stability and user feedback:
+    - Implemented error boundary component for graceful error management
+
 - **Fang Liu**:
+
   - **Journal Page CRUD**: Enhanced the journal page by fully implementing Create, Read, Update, and Delete (CRUD) functionality.
   - **Filtering Functionality**: Improved the journal filtering system for better user experience and data retrieval.
   - **Google Cloud Natural Language API Integration**: Integrated the Google Cloud Natural Language API to analyze the sentiment of journal entries, enabling mood tracking.
@@ -134,7 +158,15 @@ npm run dev
     - Created a `NotFoundPage` component and configured routing in `App.jsx` to display a 404 page for invalid routes (e.g., `/aaa`), with a link back to the homepage.
     - Enhanced `RegisterPage.jsx` with detailed client-side validation (username, email, password) and improved error messaging.
     - Upgraded `Login.jsx` with client-side validation, support for login via username or email, and better error feedback, while updating `userController.js` on the backend to align with these changes.
-- **Shurui Liu**: [To be filled by Shurui]
+
+- **Shurui Liu**:
+
+- - **AI Companion Page**: Developed the AI Chat Companion page.
+  - **Components**: Separated concerns and enhanced the Companion page by creating components.
+  - **Open AI API Integration**: Developed the `chatServices.js` file to integrate the Open AI API.
+  - **Prompt Engineering**: Chose prompt engineering over fine-tuning. Instructed the LLM to provide responses better suited for a mental health companion.
+  - **Chat CRUD Operations**: Defined methods for saving, deleting, and querying for chats for a specific user.
+  - **Authentication**: Debugged `auth.js`.
 
 ## License
 
