@@ -7,6 +7,7 @@ import Dashboard from "../components/home/Dashboard";
 import LandingPage from "../components/home/LandingPage";
 import { useUserData } from "../hooks/useUserData";
 import "./HomePage.css";
+import { FaBook, FaChartLine, FaRobot, FaUsers } from "react-icons/fa";
 
 function HomePage({ isAuthenticated, user }) {
   const { recentJournals, currentMood, setCurrentMood, isLoading } =
@@ -23,13 +24,40 @@ function HomePage({ isAuthenticated, user }) {
             community
           </p>
 
-          {!isAuthenticated && (
+          {!isAuthenticated ? (
             <div className="cta-buttons">
               <Link to="/register" className="cta-primary">
                 Get Started
               </Link>
               <Link to="/login" className="cta-secondary">
                 Login
+              </Link>
+            </div>
+          ) : (
+            <div className="feature-nav-buttons">
+              <Link to="/journals" className="feature-button">
+                <div className="feature-icon">
+                  <FaBook />
+                </div>
+                <span>Journal</span>
+              </Link>
+              <Link to="/mood-tracking" className="feature-button">
+                <div className="feature-icon">
+                  <FaChartLine />
+                </div>
+                <span>MoodTrack</span>
+              </Link>
+              <Link to="/chat" className="feature-button">
+                <div className="feature-icon">
+                  <FaRobot />
+                </div>
+                <span>AI Companion</span>
+              </Link>
+              <Link to="/posts" className="feature-button">
+                <div className="feature-icon">
+                  <FaUsers />
+                </div>
+                <span>Community</span>
               </Link>
             </div>
           )}

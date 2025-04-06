@@ -49,15 +49,15 @@ function JournalsPage() {
   
       if (response.data.success) {
         const newJournalData = response.data.data;
-        // 更新 journals
+        // update journals state
         setJournals((prevJournals) => [newJournalData, ...prevJournals]);
-        // 更新 filteredJournals，考虑当前过滤条件
+        // update filteredJournals state
         setFilteredJournals((prevFiltered) => {
-          // 如果没有过滤条件，直接添加新 journal
+          // if no filter is applied, add the new journal to the top
           if (!tempFilter.emotion && !tempFilter.startDate && !tempFilter.endDate) {
             return [newJournalData, ...prevFiltered];
           }
-          // 如果有过滤条件，检查新 journal 是否符合条件
+          // if filter is applied, check if the new journal matches the filter
           let matchesFilter = true;
           if (tempFilter.emotion) {
             const topEmotion = newJournalData.emotionsDetected?.reduce(
