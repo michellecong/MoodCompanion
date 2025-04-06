@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./ChatPage.css";
+import api from "../api/axios";
 
 function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -16,17 +17,9 @@ function ChatPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ message: input }),
-      });
+      const response = await api.post("/chat", { message: input });
 
-      const data = await response.json();
-      const aiMessage = { sender: "ai", text: data.reply };
+      const aiMessage = { sender: "ai", text: response.data.reply };
 
       // Add AI message to chat
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
@@ -59,6 +52,7 @@ function ChatPage() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
           disabled={loading}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button onClick={sendMessage} disabled={loading}>
           {loading ? "Sending..." : "Send"}
