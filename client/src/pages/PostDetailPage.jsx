@@ -226,7 +226,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       }
     } catch (err) {
       console.error("Error upvoting post:", err);
-      setError("Failed to upvote post. Please try again later.");
+      alert("You have already upvoted this post.");
     }
   };
 
@@ -250,7 +250,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
       }
     } catch (err) {
       console.error("Error upvoting comment:", err);
-      setError("Failed to upvote comment. Please try again later.");
+      alert("You have already upvoted this comment.");
     }
   };
 
