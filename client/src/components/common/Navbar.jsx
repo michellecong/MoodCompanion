@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import ProfileDropdown from "../Personal/ProfileDropdown";
+import { getAssetUrl } from "../../api/helpers";
 
 function Navbar({ isAuthenticated, onLogout, user }) {
   return (
@@ -45,7 +46,7 @@ function Navbar({ isAuthenticated, onLogout, user }) {
 
               <li className="dropdown-avatar">
                 {user.avatar ? (
-                  <img src={user.avatar} alt="User avatar" />
+                  <img src={getAssetUrl(user.avatar)} alt="User avatar" />
                 ) : (
                   <div className="avatar-placeholder">
                     {user.username.charAt(0).toUpperCase()}

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./ProfileDropdown.css";
+import { getAssetUrl } from "../../api/helpers";
 
 function ProfileDropdown({ user }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +37,7 @@ function ProfileDropdown({ user }) {
           <div className="dropdown-user-info">
             <div className="dropdown-avatar">
               {user.avatar ? (
-                <img src={user.avatar} alt="User avatar" />
+                <img src={getAssetUrl(user.avatar)} alt="User avatar" />
               ) : (
                 <div className="avatar-placeholder">
                   {user.username.charAt(0).toUpperCase()}
@@ -56,17 +57,7 @@ function ProfileDropdown({ user }) {
               </Link>
             </li>
             <li>
-              <Link to="/profile/edit" onClick={() => setIsOpen(false)}>
-                Edit Profile
-              </Link>
-            </li>
-            <li>
-              <Link to="/profile/settings" onClick={() => setIsOpen(false)}>
-                Settings
-              </Link>
-            </li>
-            <li>
-              <Link to="/profile/mood-history" onClick={() => setIsOpen(false)}>
+              <Link to="/mood-tracking" onClick={() => setIsOpen(false)}>
                 Mood History
               </Link>
             </li>
