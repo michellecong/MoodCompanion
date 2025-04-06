@@ -4,10 +4,15 @@
 
 /* Hero Section */
 .hero-section {
-  background-color: var(--primary-color);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    /* #6a98d0 */ rgba(106, 152, 208, 0.6) 50%,
+    var(--accent-color) 100% /* #b5e8d5 */
+  );
   color: white;
   text-align: center;
-  padding: 80px 20px;
+  padding: 80px 20px 20px;
   margin-bottom: 40px;
   border-radius: var(--border-radius);
 }
@@ -260,4 +265,49 @@
 
 .split-sidebar {
   flex: 1; /* 占据 1/3 宽度 */
+}
+
+.cta-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Feature Navigation Buttons */
+.feature-nav-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 40px;
+}
+
+.feature-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.feature-button:hover {
+  transform: translateY(-5px);
+}
+
+.feature-button .feature-icon {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.feature-button .feature-icon i {
+  font-size: 1.8rem;
+}
+
+.feature-button span {
+  font-size: 0.9rem;
+  font-weight: 500;
 }
