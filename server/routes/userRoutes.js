@@ -13,6 +13,93 @@ const {
   handleFriendRequest,
 } = require("../controllers/userController");
 const auth = require("../middleware/auth");
+const multer = require("multer");
+const path = require("path");
+// 配置 multer 存储
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // 确保这个目录存在
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, "avatar-" + uniqueSuffix + ext);
+  },
+});
+
+// 文件过滤器 - 只允许图片
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("只允许上传图片文件"), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB 限制
+});
+
+// Multer 错误处理中间件
+const multerErrorHandler = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "文件大小超出限制，最大 2MB",
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: err.message || "上传文件时出错",
+    });
+  } else if (err) {
+    // 处理文件过滤器抛出的错误
+    return res.status(400).json({
+      success: false,
+      message: err.message || "上传文件时出错",
+    });
+  }
+  next(); // 如果没有错误，继续执行后续中间件
+};
+
+// 文件上传处理
+const handleFileUpload = (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "没有上传文件",
+      });
+    }
+
+    // 返回文件路径（相对于服务器根目录）
+    const filePath = `/uploads/${req.file.filename}`;
+
+    res.status(200).json({
+      success: true,
+      filePath: filePath,
+      message: "文件上传成功",
+    });
+  } catch (error) {
+    console.error("文件上传错误:", error);
+    res.status(500).json({
+      success: false,
+      message: "文件上传失败",
+      error: error.message,
+    });
+  }
+};
+
+router.post(
+  "/upload",
+  auth,
+  upload.single("file"),
+  multerErrorHandler,
+  handleFileUpload
+);
 
 // Public routes
 router.post(

@@ -30,9 +30,28 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
-  profilePicture: {
+
+  // New avatar fields
+  avatar: {
     type: String,
-    default: "default-avatar.png",
+    default: null,
+  },
+  avatarColor: {
+    type: String,
+    default: function () {
+      // Generate a random color on user creation
+      const colors = [
+        "#4299E1",
+        "#48BB78",
+        "#ED8936",
+        "#9F7AEA",
+        "#F56565",
+        "#38B2AC",
+        "#667EEA",
+        "#D53F8C",
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
   },
   email: {
     type: String,

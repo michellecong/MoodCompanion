@@ -52,7 +52,8 @@ const userController = {
           username: user.username,
           email: user.email,
           role: user.role,
-          profilePicture: user.profilePicture,
+          avatar: user.avatar,
+          avatarColor: user.avatarColor,
           createdAt: user.createdAt,
         },
       });
@@ -116,7 +117,8 @@ const userController = {
           username: user.username,
           email: user.email,
           role: user.role,
-          profilePicture: user.profilePicture,
+          avatar: user.avatar,
+          avatarColor: user.avatarColor,
           lastLogin: user.lastLogin,
         },
       });
@@ -171,13 +173,13 @@ const userController = {
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { username, email, profilePicture } = req.body;
+      const { username, email, avatar } = req.body; // 移除 profilePicture
 
       // Prepare update data
       const updateData = {};
       if (username) updateData.username = username;
       if (email) updateData.email = email;
-      if (profilePicture) updateData.profilePicture = profilePicture;
+      if (avatar !== undefined) updateData.avatar = avatar; // Allow null to remove avatar
 
       // Check if username or email already exists
       if (username || email) {
@@ -212,7 +214,10 @@ const userController = {
 
       res.status(200).json({
         success: true,
-        data: updatedUser,
+        data: {
+          ...updatedUser._doc,
+          initials: updatedUser.username.charAt(0).toUpperCase(),
+        },
       });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -223,7 +228,6 @@ const userController = {
       });
     }
   },
-
   /**
    * Change password
    * @param {Object} req - Express request object
@@ -470,7 +474,7 @@ const userController = {
       const userId = req.user.id;
 
       const user = await User.findById(userId)
-        .populate("friends", "username email profilePicture")
+        .populate("friends", "username email avatar avatarColor")
         .select("friends");
 
       if (!user) {

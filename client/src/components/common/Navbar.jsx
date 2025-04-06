@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
+import ProfileDropdown from "../Personal/ProfileDropdown";
+import { getAssetUrl } from "../../api/helpers";
 
 function Navbar({ isAuthenticated, onLogout, user }) {
   return (
@@ -34,9 +36,7 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/profile" className="nav-link">
-                  Profile
-                </Link>
+                <ProfileDropdown user={user} />
               </li>
               <li className="nav-item">
                 <button className="logout-btn" onClick={onLogout}>
@@ -48,6 +48,16 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                   <span>Hi, {user.username}</span>
                 </li>
               )}
+
+              <li className="dropdown-avatar">
+                {user.avatar ? (
+                  <img src={getAssetUrl(user.avatar)} alt="User avatar" />
+                ) : (
+                  <div className="avatar-placeholder">
+                    {user.username.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </li>
             </>
           ) : (
             <>
