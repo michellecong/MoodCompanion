@@ -40,15 +40,44 @@ function JournalsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
+  
     try {
       const response = await api.post("/journals", {
         title: newJournal.title,
         content: newJournal.content,
       });
-
+  
       if (response.data.success) {
-        setJournals([response.data.data, ...journals]);
+        const newJournalData = response.data.data;
+        // 更新 journals
+        setJournals((prevJournals) => [newJournalData, ...prevJournals]);
+        // 更新 filteredJournals，考虑当前过滤条件
+        setFilteredJournals((prevFiltered) => {
+          // 如果没有过滤条件，直接添加新 journal
+          if (!tempFilter.emotion && !tempFilter.startDate && !tempFilter.endDate) {
+            return [newJournalData, ...prevFiltered];
+          }
+          // 如果有过滤条件，检查新 journal 是否符合条件
+          let matchesFilter = true;
+          if (tempFilter.emotion) {
+            const topEmotion = newJournalData.emotionsDetected?.reduce(
+              (prev, current) => (prev.score > current.score ? prev : current),
+              {}
+            );
+            matchesFilter = topEmotion?.name === tempFilter.emotion;
+          }
+          if (tempFilter.startDate) {
+            matchesFilter =
+              matchesFilter &&
+              newJournalData.createdAt.split("T")[0] >= tempFilter.startDate;
+          }
+          if (tempFilter.endDate) {
+            matchesFilter =
+              matchesFilter &&
+              newJournalData.createdAt.split("T")[0] <= tempFilter.endDate;
+          }
+          return matchesFilter ? [newJournalData, ...prevFiltered] : prevFiltered;
+        });
         setNewJournal({ title: "", content: "" });
         setError(null);
       } else {
