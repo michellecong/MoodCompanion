@@ -435,7 +435,7 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                 onClick={handleDeletePost}
                 disabled={isDeleting}
               >
-                🗑️ {isDeleting ? "Deleting..." : "Delete Post"}
+                {isDeleting ? "Deleting..." : "Delete Post"}
               </button>
             )}
           </div>
