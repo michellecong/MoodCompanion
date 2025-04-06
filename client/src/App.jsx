@@ -13,6 +13,7 @@ import ChatPage from "./pages/ChatPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import MoodTrackingPage from "./pages/MoodTrackingPage";
 import FollowedPostsPage from "./pages/FollowedPostsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import Profile from "./components/Personal/Profile";
 
@@ -84,6 +85,7 @@ function App() {
                 }
               />
               <Route path="/chat" element={<ChatPage />} />
+              <Route path="*" element={<NotFoundPage />} />
               <Route
                 path="/profile"
                 element={
