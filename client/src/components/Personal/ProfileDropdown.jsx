@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./ProfileDropdown.css";
 import { getAssetUrl } from "../../api/helpers";
+import Avatar from "./Avatar";
 
 function ProfileDropdown({ user }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,13 +37,7 @@ function ProfileDropdown({ user }) {
         <div className="profile-dropdown-menu">
           <div className="dropdown-user-info">
             <div className="dropdown-avatar">
-              {user.avatar ? (
-                <img src={getAssetUrl(user.avatar)} alt="User avatar" />
-              ) : (
-                <div className="avatar-placeholder">
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <Avatar user={user} size="lg" />
             </div>
             <div className="dropdown-user-details">
               <p className="dropdown-username">{user.username}</p>
