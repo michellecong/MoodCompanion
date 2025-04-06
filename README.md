@@ -124,32 +124,7 @@ npm run dev
 
 ### Iteration 2
 
-- **Minchao Cong**:
-
-  - **Post Interaction Features**: Enhanced the post detail page with comprehensive interaction capabilities:
-
-    - Implemented comment system allowing users to add comments to posts
-    - Added follow/unfollow functionality for user connections
-    - Integrated upvote system for post engagement
-    - Applied authentication requirements for comment visibility
-    - Implemented permission controls so only post owners and comment owners can delete their content
-
-  - **Post Media Integration**: Modified posts schema, routes, and controller methods:
-    - Added image upload and storage functionality
-    - Enabled users to publish posts with attached images
-    - Optimized media handling for different device displays
-  - **Homepage User Experience**: Designed an engaging homepage with dynamic elements:
-    - Added carousel feature displaying motivational content
-    - Implemented icon-based navigation for authenticated users
-    - Integrated weather API companion that provides location-based forecasts with personalized comfort messages
-  - **User Profile System**: Enhanced the user experience with profile customization:
-    - Modified user schema to include avatar functionality
-    - Created routes and controllers for profile image management
-    - Added dropdown menu in navigation displaying user avatar
-    - Developed interfaces for viewing and editing user information
-  - **Error Handling Framework**: Optimized application stability and user feedback:
-    - Implemented error boundary component for graceful error management
-
+- **Minchao Cong**: [To be filled by Minchao]
 - **Fang Liu**:
   - **Journal Page CRUD**: Enhanced the journal page by fully implementing Create, Read, Update, and Delete (CRUD) functionality.
   - **Filtering Functionality**: Improved the journal filtering system for better user experience and data retrieval.
