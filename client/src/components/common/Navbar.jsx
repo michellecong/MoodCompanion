@@ -29,6 +29,11 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                 </Link>
               </li>
               <li className="nav-item">
+                <Link to="/chat" className="nav-link">
+                  Chatbot
+                </Link>
+              </li>
+              <li className="nav-item">
                 <Link to="/profile" className="nav-link">
                   Profile
                 </Link>
