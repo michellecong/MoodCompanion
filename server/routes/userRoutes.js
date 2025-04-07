@@ -17,7 +17,7 @@ const multer = require("multer");
 const path = require("path");
 const cloudinary = require("../utils/cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-// 配置 multer 存储
+// use multer-storage-cloudinary to store images in Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -32,7 +32,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    cb(new Error("只允许上传图片文件"), false);
+    cb(new Error("only image allowed"), false);
   }
 };
 
@@ -48,18 +48,18 @@ const multerErrorHandler = (err, req, res, next) => {
     if (err.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({
         success: false,
-        message: "文件大小超出限制，最大 2MB",
+        message: "the size is greater than 2MB",
       });
     }
     return res.status(400).json({
       success: false,
-      message: err.message || "上传文件时出错",
+      message: err.message || "error uploading file",
     });
   } else if (err) {
     // Handle file filter errors
     return res.status(400).json({
       success: false,
-      message: err.message || "上传文件时出错",
+      message: err.message || "error uploading file",
     });
   }
   next(); // If no error, continue to next middleware
@@ -71,7 +71,7 @@ const handleFileUpload = (req, res) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "没有上传文件",
+        message: "No file uploaded",
       });
     }
 
@@ -81,13 +81,13 @@ const handleFileUpload = (req, res) => {
     res.status(200).json({
       success: true,
       filePath: imageUrl,
-      message: "文件上传成功",
+      message: "File uploaded successfully",
     });
   } catch (error) {
-    console.error("文件上传错误:", error);
+    console.error("Error uploading file", error);
     res.status(500).json({
       success: false,
-      message: "文件上传失败",
+      message: "Error uploading file",
       error: error.message,
     });
   }
