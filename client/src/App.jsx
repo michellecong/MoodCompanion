@@ -29,7 +29,7 @@ function App() {
 
     if (token && userData) {
       setIsAuthenticated(true);
-      console.log("FE: Authenticated:", token);
+      // console.log("FE: Authenticated:", token);
       setUser(JSON.parse(userData));
     }
   }, []);

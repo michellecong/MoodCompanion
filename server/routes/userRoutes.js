@@ -15,19 +15,19 @@ const {
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
+const cloudinary = require("../utils/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 // 配置 multer 存储
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // 确保这个目录存在
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, "avatar-" + uniqueSuffix + ext);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "avatars",
+    allowed_formats: ["jpg", "jpeg", "png", "gif"],
+    transformation: [{ width: 200, height: 200, crop: "limit" }],
   },
 });
 
-// 文件过滤器 - 只允许图片
+// File filter - only allowing images
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
@@ -39,10 +39,10 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB 限制
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
 });
 
-// Multer 错误处理中间件
+// Multer error handling middleware
 const multerErrorHandler = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
@@ -56,16 +56,16 @@ const multerErrorHandler = (err, req, res, next) => {
       message: err.message || "上传文件时出错",
     });
   } else if (err) {
-    // 处理文件过滤器抛出的错误
+    // Handle file filter errors
     return res.status(400).json({
       success: false,
       message: err.message || "上传文件时出错",
     });
   }
-  next(); // 如果没有错误，继续执行后续中间件
+  next(); // If no error, continue to next middleware
 };
 
-// 文件上传处理
+// File upload handling
 const handleFileUpload = (req, res) => {
   try {
     if (!req.file) {
@@ -75,12 +75,12 @@ const handleFileUpload = (req, res) => {
       });
     }
 
-    // 返回文件路径（相对于服务器根目录）
-    const filePath = `/uploads/${req.file.filename}`;
+    // Return the secure URL from Cloudinary
+    const imageUrl = req.file.path;
 
     res.status(200).json({
       success: true,
-      filePath: filePath,
+      filePath: imageUrl,
       message: "文件上传成功",
     });
   } catch (error) {
