@@ -16,20 +16,20 @@ const { check, validationResult } = require("express-validator");
 const { validateRequest } = require("../middleware/validators");
 const multer = require("multer");
 const path = require("path");
+const cloudinary = require("../utils/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-// 配置 multer 存储
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // 确保这个目录存在
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, uniqueSuffix + ext);
+// use multer-storage-cloudinary to store images in Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "wishing-well", // upload folder name
+    allowed_formats: ["jpg", "jpeg", "png", "gif"],
+    transformation: [{ width: 1000, height: 1000, crop: "limit" }], // limit the size
   },
 });
 
-// 文件过滤器 - 只允许图片
+// File filter - only allowing images
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
@@ -41,10 +41,10 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB 限制
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
-// Multer 错误处理中间件
+// Multer error handling middleware
 const multerErrorHandler = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
@@ -58,13 +58,13 @@ const multerErrorHandler = (err, req, res, next) => {
       message: err.message || "error uploading file",
     });
   } else if (err) {
-    // 处理文件过滤器抛出的错误
+    // Handle file filter errors
     return res.status(400).json({
       success: false,
       message: err.message || "error uploading file",
     });
   }
-  next(); // 如果没有错误，继续执行后续中间件
+  next(); // go to the next middleware
 };
 
 /**
@@ -76,7 +76,7 @@ router.post(
   "/",
   auth,
   upload.single("image"),
-  multerErrorHandler, // 添加 multer 中间件处理图片上传
+  multerErrorHandler, // handle multer errors
   [
     check("content", "Content cannot be empty").not().isEmpty(),
     check("content", "Content is too long").isLength({ max: 1000 }),

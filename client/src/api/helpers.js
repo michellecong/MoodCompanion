@@ -3,6 +3,11 @@ export const getAssetUrl = (path) => {
   if (!path) return null;
   if (path.startsWith("http")) return path;
 
+  // 如果是Cloudinary路径但没有协议部分，添加https:
+  if (path.startsWith("//res.cloudinary.com")) {
+    return `https:${path}`;
+  }
+
   // 从 API 基础 URL 中提取服务器根路径
   const apiBaseUrl =
     import.meta.env?.VITE_API_URL ||

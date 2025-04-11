@@ -17,12 +17,10 @@ const wishingWellPostController = {
       const { content, tags } = req.body;
       const userId = req.user.id;
 
-      // 使用完整URL
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
-      let image = `${baseUrl}/images/default-post-image.jpg`;
+      let image = `/images/default-post-image.jpg`;
 
       if (req.file) {
-        image = `/uploads/${req.file.filename}`;
+        image = req.file.path;
       }
 
       // Validate input
@@ -38,7 +36,7 @@ const wishingWellPostController = {
         userId,
         content,
         tags: tags || [],
-        image, // 添加图片字段
+        image,
       });
 
       await newPost.save();
