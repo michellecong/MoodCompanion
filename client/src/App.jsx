@@ -37,6 +37,7 @@ function App() {
         const token = await getAccessTokenSilently();
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
+        console.log("Token stored in localStorage:", token);
       } else {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
