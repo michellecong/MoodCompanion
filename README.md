@@ -46,7 +46,7 @@ To run the web app locally, create a `.env` file with the following configuratio
 VITE_API_URL=http://localhost:3000/api
 VITE_WEATHER_API_KEY=your_weather_api_key
 VITE_AUTH0_DOMAIN=dev-mbnzpg6jdhzwez57.us.auth0.com
-VITE_AUTH0_CLIENT_ID=aUFLFb8hIWukzOXGOy6kbKWO8JAP9Pxz
+VITE_AUTH0_CLIENT_ID=hetpd1zpthmbLoQ2at7Rki9H0U6Mlh3T
 VITE_AUTH0_AUDIENCE=https://moodcompanion-api
 ```
 
