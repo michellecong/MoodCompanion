@@ -48,10 +48,6 @@ VITE_WEATHER_API_KEY=your_weather_api_key
 VITE_AUTH0_DOMAIN=dev-mbnzpg6jdhzwez57.us.auth0.com
 VITE_AUTH0_CLIENT_ID=aUFLFb8hIWukzOXGOy6kbKWO8JAP9Pxz
 VITE_AUTH0_AUDIENCE=https://moodcompanion-api
-CLOUDINARY_CLOUD_NAME=dvk6pkdnc
-CLOUDINARY_API_KEY=722568152246744
-CLOUDINARY_API_SECRET=YegsusQxmFAZJnV2f3EWZwryoHo
-CLOUDINARY_URL=cloudinary://722568152246744:YegsusQxmFAZJnV2f3EWZwryoHo@dvk6pkdnc
 ```
 
 **Backend:**
@@ -62,6 +58,10 @@ JWT_SECRET=your_jwt_secret_key
 PORT=3000
 GOOGLE_API_KEY=your_google_cloud_natural_language_api_key
 OPENAI_API_KEY=your_openai_api_key
+CLOUDINARY_CLOUD_NAME=dvk6pkdnc
+CLOUDINARY_API_KEY=722568152246744
+CLOUDINARY_API_SECRET=YegsusQxmFAZJnV2f3EWZwryoHo
+CLOUDINARY_URL=cloudinary://722568152246744:YegsusQxmFAZJnV2f3EWZwryoHo@dvk6pkdnc
 ```
 
 ## Server
