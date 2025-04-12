@@ -20,7 +20,7 @@ const auth = require("../middleware/auth");
 
 */
 // Public
-router.post("/", auth, chatMessage);
+router.post("/", chatMessage);
 
 // Private
 router.post("/save", auth, saveChat);
