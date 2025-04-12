@@ -9,10 +9,17 @@ const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
 const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
-if (!domain || !clientId) {
+if (!domain || !clientId || !audience) {
   console.error("❌ Missing Auth0 environment variables. Check your .env file.");
   throw new Error("Auth0 configuration is incomplete.");
 }
+
+console.log("🧪 Auth0 Config", {
+  domain,
+  clientId,
+  audience,
+  redirect_uri: window.location.origin
+});
 
 const onRedirectCallback = (appState) => {
   const targetUrl = appState?.returnTo || window.location.pathname;
