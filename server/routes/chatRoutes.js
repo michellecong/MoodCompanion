@@ -19,8 +19,10 @@ const auth = require("../middleware/auth");
 };
 
 */
+// Public
 router.post("/", chatMessage);
 
+// Private
 router.post("/save", saveChat);
 
 // router.get("/user/:userId", getUserChats);
