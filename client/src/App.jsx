@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 // Import components/pages
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ErrorBoundary from "./components/ErrorBoundary";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -19,7 +19,7 @@ import CreatePostPage from "./pages/CreatePostPage";
 import FollowedPostsPage from "./pages/FollowedPostsPage";
 import ChatPage from "./pages/ChatPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import Profile from "./pages/Profile";
+import Profile from "./components/Personal/Profile";
 
 function App() {
   const {
