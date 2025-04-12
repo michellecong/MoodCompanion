@@ -20,13 +20,11 @@ const auth = require("../middleware/auth");
 
 */
 // Public
-router.post("/", chatMessage);
+router.post("/", auth, chatMessage);
 
 // Private
-router.post("/save", saveChat);
+router.post("/save", auth, saveChat);
 
-// router.get("/user/:userId", getUserChats);
-
-router.get("/:id", getChatById);
+router.get("/:id", auth, getChatById);
 
 module.exports = router;
