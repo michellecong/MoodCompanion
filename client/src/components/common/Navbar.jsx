@@ -47,7 +47,9 @@ function Navbar() {
                   className="logout-btn"
                   onClick={() =>
                     logout({
-                      returnTo: window.location.origin,
+                      logoutParams: {
+                        returnTo: window.location.origin,
+                      },
                     })
                   }
                 >
@@ -64,14 +66,26 @@ function Navbar() {
           ) : (
             <>
               <li className="nav-item">
-                <button className="nav-link" onClick={() => loginWithRedirect()}>
+                <button
+                  className="nav-link"
+                  onClick={() =>
+                    loginWithRedirect({
+                      prompt: "login", // forces Auth0 login screen to show
+                    })
+                  }
+                >
                   Login
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link register-btn"
-                  onClick={() => loginWithRedirect({ screen_hint: "signup" })}
+                  onClick={() =>
+                    loginWithRedirect({
+                      screen_hint: "signup",
+                      prompt: "login", 
+                    })
+                  }
                 >
                   Register
                 </button>
