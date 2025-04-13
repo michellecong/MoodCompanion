@@ -1,48 +1,56 @@
-const fs = require("fs");
-const path = require("path");
-const axios = require("axios");
-const { initPinecone } = require("./services/vectorService");
-require("dotenv").config();
+import fs from "fs";
+import path from "path";
+import axios from "axios";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { Pinecone } from "@pinecone-database/pinecone";
 
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// ✅ Create Pinecone client
+const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+const index = pinecone.index("mental-health-companion-zy5p830");
+
+// ✅ Get OpenAI embedding
 async function getEmbedding(text) {
   const response = await axios.post(
     "https://api.openai.com/v1/embeddings",
     {
       input: text,
-      model: "text-embedding-ada-002"
+      model: "text-embedding-ada-002",
     },
     {
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-      }
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
     }
   );
 
   return response.data.data[0].embedding;
 }
 
+// ✅ Upload all chunks to Pinecone
 async function uploadChunks() {
-  const index = await initPinecone();
-
   const filePath = path.join(__dirname, "rag_data", "cbt_examples.json");
   const chunks = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
+  const vectors = [];
+
   for (const chunk of chunks) {
     const embedding = await getEmbedding(chunk.text);
-    await index.upsert({
-      upsertRequest: {
-        vectors: [
-          {
-            id: chunk.id,
-            values: embedding,
-            metadata: { text: chunk.text },
-          },
-        ],
-      },
+    vectors.push({
+      id: chunk.id,
+      values: embedding,
+      metadata: { text: chunk.text },
     });
-    console.log(`✅ Uploaded: ${chunk.id}`);
+    console.log(`🧠 Prepared: ${chunk.id}`);
   }
 
+  await index.upsert(vectors);
   console.log("✅ All chunks uploaded to Pinecone.");
 }
 

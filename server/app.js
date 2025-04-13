@@ -1,48 +1,49 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const config = require("config");
-const cors = require("cors");
-const path = require("path");
-const connectDB = require("./utils/db");
-require("dotenv").config();
+// server/app.js (ESM version)
+
+import express from "express";
+import mongoose from "mongoose";
+import config from "config";
+import cors from "cors";
+import path from "path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+import connectDB from "./utils/db.js";
 
 // routes import
+import journalRoutes from "./routes/journalRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import wishingWellPostRoutes from "./routes/wishingWellPostRoutes.js";
+import wishingWellCommentRoutes from "./routes/wishingWellCommentRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
-const journalRoutes = require("./routes/journalRoutes");
-const userRoutes = require("./routes/userRoutes");
-const wishingWellPostRoutes = require("./routes/wishingWellPostRoutes");
-const wishingWellCommentRoutes = require("./routes/wishingWellCommentRoutes");
-const chatRoutes = require("./routes/chatRoutes");
+dotenv.config();
 
-// Configure CORS options
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
       ? [process.env.FRONTEND_URL || "https://moodcompanion.onrender.com"]
-      : ["http://localhost:5173"], // Allow your frontend dev server
+      : ["http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Allow cookies if using sessions
+  credentials: true,
 };
 
-// create express app
 const app = express();
 
-// middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// 修改为使用绝对路径
-app.use(express.static(path.join(__dirname, "public"))); // 用于默认图片
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // 用于上传的图片
-
-// 放在后面，避免前端路由和API冲突
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "../client/build")));
-// routes
-// app.use("/api/auth", authRoutes);
+
 app.use("/api/journals", journalRoutes);
-// app.use("/api/wishingwell", wishingwellRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wishing-well/posts", wishingWellPostRoutes);
 app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
@@ -54,4 +55,4 @@ app.get("*", (req, res) => {
 
 connectDB();
 
-module.exports = app;
+export default app;

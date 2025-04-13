@@ -1,6 +1,6 @@
-// Generates a vector for any given text, user message or content. 
+// services/embedService.js (ESM version)
 
-const axios = require("axios");
+import axios from "axios";
 
 async function getEmbedding(text) {
   const response = await axios.post(
@@ -16,4 +16,4 @@ async function getEmbedding(text) {
   return response.data.data[0].embedding;
 }
 
-module.exports = { getEmbedding };
+export { getEmbedding };

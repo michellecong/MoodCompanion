@@ -1,4 +1,4 @@
-const axios = require("axios");
+import axios from "axios";
 
 const mapSentimentToEmotions = (sentiment, content) => {
   let emotionsDetected = [];
@@ -132,4 +132,4 @@ const generateFeedback = (emotionsDetected) => {
   }
 };
 
-module.exports = { detectEmotions, generateFeedback };
+export { detectEmotions, generateFeedback };

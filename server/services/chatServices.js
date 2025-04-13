@@ -1,8 +1,12 @@
-const OpenAI = require("openai");
-require("dotenv").config();
+// services/chatServices.js (ESM version)
+
+import OpenAI from "openai";
+import dotenv from "dotenv";
+dotenv.config();
+
+import { retrieveContext } from "./retrievalService.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const { retrieveContext } = require("./retrievalService");
 
 const chatServices = {
   async getAIResponse(message) {
@@ -20,4 +24,4 @@ const chatServices = {
   },
 };
 
-module.exports = chatServices;
+export default chatServices;

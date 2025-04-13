@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const WishingWellCommentSchema = new mongoose.Schema({
   postId: {
@@ -44,4 +44,5 @@ WishingWellCommentSchema.index({ postId: 1, createdAt: -1 }); // For fetching co
 WishingWellCommentSchema.index({ userId: 1 }); // For user's comments
 WishingWellCommentSchema.index({ upvotes: -1 }); // For sorting by popularity
 
-module.exports = mongoose.model("WishingWellComment", WishingWellCommentSchema);
+const WishingWellComment = mongoose.model("WishingWellComment", WishingWellCommentSchema);
+export default WishingWellComment;
