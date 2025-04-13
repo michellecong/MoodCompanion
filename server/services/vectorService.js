@@ -10,7 +10,7 @@ const pinecone = new Pinecone({
 });
 
 // ✅ Connect to your index directly (no init required)
-const index = pinecone.index("mental-health-companion-zy5p830");
+const index = pinecone.index("mental-health-companion");
 
 async function querySimilarChunks(vector, topK = 5) {
   const response = await index.query({

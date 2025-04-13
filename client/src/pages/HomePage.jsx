@@ -1,6 +1,7 @@
 // src/pages/HomePage.jsx
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import DailyAffirmation from "../components/home/DailyAffirmation";
 import Weather from "../components/home/Weather";
 import Dashboard from "../components/home/Dashboard";
@@ -9,9 +10,20 @@ import { useUserData } from "../hooks/useUserData";
 import "./HomePage.css";
 import { FaBook, FaChartLine, FaRobot, FaUsers } from "react-icons/fa";
 
-function HomePage({ isAuthenticated, user }) {
-  const { recentJournals, currentMood, setCurrentMood, isLoading } =
-    useUserData(isAuthenticated);
+function HomePage() {
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth0();
+
+  const {
+    recentJournals,
+    currentMood,
+    setCurrentMood,
+    isLoading,
+  } = useUserData(isAuthenticated);
+
+  // Wait for Auth0 to finish loading before rendering
+  if (authLoading) {
+    return <p>Loading authentication...</p>;
+  }
 
   return (
     <div className="home-page">
@@ -67,16 +79,14 @@ function HomePage({ isAuthenticated, user }) {
       {/* Daily affirmation - visible to all users */}
       <div className="split-content">
         <div className="split-main">
-          {/* Daily affirmation - visible to all users */}
           <DailyAffirmation />
         </div>
         <div className="split-sidebar">
-          {/* Quick actions component */}
           <Weather />
         </div>
       </div>
 
-      {/* Render different content based on authentication status */}
+      {/* Authenticated user dashboard OR landing page */}
       {isAuthenticated ? (
         <Dashboard isLoading={isLoading} recentJournals={recentJournals} />
       ) : (
