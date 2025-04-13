@@ -1,13 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
-  createComment,
-  getPostComments,
-  upvoteComment,
-  deleteComment,
-} = require("../controllers/wishingWellCommentController");
-const { check, validationResult } = require("express-validator");
-const auth = require("../middleware/auth");
+
+import wishingWellCommentController from "../controllers/wishingWellCommentController.js";
+import { check, validationResult } from "express-validator";
+import auth from "../middleware/auth.js";
+import { model } from "mongoose";
 
 /**
  * Middleware to validate request
@@ -34,7 +31,7 @@ router.post(
     check("content", "Content is too long").isLength({ max: 500 }),
   ],
   validateRequest,
-  createComment
+  wishingWellCommentController.createComment
 );
 
 /**
@@ -42,20 +39,20 @@ router.post(
  * @desc    Get comments for a post
  * @access  Public
  */
-router.get("/post/:postId", getPostComments);
+router.get("/post/:postId", wishingWellCommentController.getPostComments);
 
 /**
  * @route   PUT api/wishing-well/comments/:id/upvote
  * @desc    Upvote a comment
  * @access  Private
  */
-router.put("/:id/upvote", auth, upvoteComment);
+router.put("/:id/upvote", auth, wishingWellCommentController.upvoteComment);
 
 /**
  * @route   DELETE api/wishing-well/comments/:id
  * @desc    Delete a comment
  * @access  Private
  */
-router.delete("/:id", auth, deleteComment);
+router.delete("/:id", auth, wishingWellCommentController.deleteComment);
 
-module.exports = router;
+export default router;
