@@ -6,6 +6,9 @@ require("dotenv").config();
 const client = new PineconeClient();
 
 async function initPinecone() {
+    console.log("API:", process.env.PINECONE_API_KEY);
+    console.log("ENV:", process.env.PINECONE_ENVIRONMENT);
+
   await client.init({
     apiKey: process.env.PINECONE_API_KEY,
     environment: process.env.PINECONE_ENVIRONMENT, // e.g., "us-west1-gcp"
