@@ -1,13 +1,13 @@
-const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
+// controllers/userController.js (ESM version)
+
+import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
+import Journal from "../models/journalModel.js";
 
 const userController = {
   async register(req, res) {
     try {
-      console.log("Req sent to register");
       const { username, email, password } = req.body;
-      console.log("req.body", req.body);
-      // Check if all fields are provided
       if (!username || !email || !password) {
         return res.status(400).json({
           success: false,
@@ -15,9 +15,7 @@ const userController = {
         });
       }
 
-      // Check if user already exists
       let user = await User.findOne({ $or: [{ email }, { username }] });
-
       if (user) {
         return res.status(400).json({
           success: false,
@@ -28,16 +26,14 @@ const userController = {
         });
       }
 
-      // Create new user
       user = new User({
         username,
         email,
-        passwordHash: password, // Will be hashed by pre-save middleware
+        passwordHash: password,
       });
 
       await user.save();
 
-      // Generate token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
@@ -68,42 +64,29 @@ const userController = {
   },
 
   async login(req, res) {
-    console.log("🧪 CTRLR: JWT_SECRET from .env is:", `"${process.env.JWT_SECRET}"`);
     try {
       const { identifier, password } = req.body;
-
       if (!identifier || !password) {
         return res.status(400).json({
           success: false,
           message: "Username or email and password are required",
         });
       }
+
       const user = await User.findOne({
         $or: [{ email: identifier }, { username: identifier }],
       });
-  
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
 
-      // Check password
-      const isMatch = await user.comparePassword(password);
-
-      if (!isMatch) {
+      if (!user || !(await user.comparePassword(password))) {
         return res.status(401).json({
           success: false,
           message: "Invalid credentials",
         });
       }
 
-      // Update last login
       user.lastLogin = Date.now();
       await user.save();
 
-      // Generate token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
@@ -132,15 +115,10 @@ const userController = {
       });
     }
   },
-  /**
-   * Get user profile
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
+
   async getProfile(req, res) {
     try {
       const userId = req.user.id;
-
       const user = await User.findById(userId)
         .select("-passwordHash")
         .populate("journals", "title createdAt");
@@ -152,10 +130,7 @@ const userController = {
         });
       }
 
-      res.status(200).json({
-        success: true,
-        data: user,
-      });
+      res.status(200).json({ success: true, data: user });
     } catch (error) {
       console.error("Error fetching profile:", error);
       res.status(500).json({
@@ -166,33 +141,21 @@ const userController = {
     }
   },
 
-  /**
-   * Update user profile
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { username, email, avatar } = req.body; // 移除 profilePicture
+      const { username, email, avatar } = req.body;
 
-      // Prepare update data
       const updateData = {};
       if (username) updateData.username = username;
       if (email) updateData.email = email;
-      if (avatar !== undefined) updateData.avatar = avatar; // Allow null to remove avatar
+      if (avatar !== undefined) updateData.avatar = avatar;
 
-      // Check if username or email already exists
       if (username || email) {
         const existingUser = await User.findOne({
           $and: [
             { _id: { $ne: userId } },
-            {
-              $or: [
-                ...(username ? [{ username }] : []),
-                ...(email ? [{ email }] : []),
-              ],
-            },
+            { $or: [...(username ? [{ username }] : []), ...(email ? [{ email }] : [])] },
           ],
         });
 
@@ -229,17 +192,12 @@ const userController = {
       });
     }
   },
-  /**
-   * Change password
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
+
   async changePassword(req, res) {
     try {
       const userId = req.user.id;
       const { currentPassword, newPassword } = req.body;
 
-      // Check if inputs exist
       if (!currentPassword || !newPassword) {
         return res.status(400).json({
           success: false,
@@ -249,17 +207,14 @@ const userController = {
 
       const user = await User.findById(userId);
 
-      // Verify current password
-      const isMatch = await user.comparePassword(currentPassword);
-      if (!isMatch) {
+      if (!(await user.comparePassword(currentPassword))) {
         return res.status(401).json({
           success: false,
           message: "Current password is incorrect",
         });
       }
 
-      // Update password
-      user.passwordHash = newPassword; // Will be hashed by pre-save middleware
+      user.passwordHash = newPassword;
       await user.save();
 
       res.status(200).json({
@@ -276,37 +231,20 @@ const userController = {
     }
   },
 
-  /**
-   * Delete user account
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async deleteAccount(req, res) {
     try {
       const userId = req.user.id;
       const { password } = req.body;
 
-      // Verify password
       const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
+      if (!user || !(await user.comparePassword(password))) {
         return res.status(401).json({
           success: false,
           message: "Invalid password",
         });
       }
 
-      // Delete all user's journals
       await Journal.deleteMany({ userId });
-
-      // Delete user
       await User.findByIdAndDelete(userId);
 
       res.status(200).json({
@@ -323,17 +261,11 @@ const userController = {
     }
   },
 
-  /**
-   * Send friend request
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async sendFriendRequest(req, res) {
     try {
       const fromUserId = req.user.id;
       const { toUserId, message } = req.body;
 
-      // Check if users exist
       const [fromUser, toUser] = await Promise.all([
         User.findById(fromUserId),
         User.findById(toUserId),
@@ -346,7 +278,6 @@ const userController = {
         });
       }
 
-      // Check if already friends
       if (toUser.friends.includes(fromUserId)) {
         return res.status(400).json({
           success: false,
@@ -354,7 +285,6 @@ const userController = {
         });
       }
 
-      // Check if request already sent
       const existingRequest = toUser.friendRequests.find(
         (request) => request.from.toString() === fromUserId
       );
@@ -366,12 +296,7 @@ const userController = {
         });
       }
 
-      // Add friend request
-      toUser.friendRequests.push({
-        from: fromUserId,
-        message: message || "",
-      });
-
+      toUser.friendRequests.push({ from: fromUserId, message: message || "" });
       await toUser.save();
 
       res.status(200).json({
@@ -388,17 +313,11 @@ const userController = {
     }
   },
 
-  /**
-   * Accept or reject friend request
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async handleFriendRequest(req, res) {
     try {
       const userId = req.user.id;
       const { requestId, action } = req.body;
 
-      // Validate action
       if (!["accept", "reject"].includes(action)) {
         return res.status(400).json({
           success: false,
@@ -406,55 +325,32 @@ const userController = {
         });
       }
 
-      // Find user and request
       const user = await User.findById(userId);
-
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-
-      // Find request index
       const requestIndex = user.friendRequests.findIndex(
         (request) => request._id.toString() === requestId
       );
 
       if (requestIndex === -1) {
-        return res.status(404).json({
-          success: false,
-          message: "Friend request not found",
-        });
+        return res.status(404).json({ success: false, message: "Friend request not found" });
       }
 
-      // Get request data
       const request = user.friendRequests[requestIndex];
       const fromUserId = request.from;
 
-      // Remove request
       user.friendRequests.splice(requestIndex, 1);
 
-      // If accepting, add to friends list for both users
       if (action === "accept") {
-        // Add to current user's friends
         if (!user.friends.includes(fromUserId)) {
           user.friends.push(fromUserId);
         }
-
-        // Add to sender's friends
-        await User.findByIdAndUpdate(fromUserId, {
-          $addToSet: { friends: userId },
-        });
+        await User.findByIdAndUpdate(fromUserId, { $addToSet: { friends: userId } });
       }
 
       await user.save();
 
       res.status(200).json({
         success: true,
-        message: `Friend request ${
-          action === "accept" ? "accepted" : "rejected"
-        } successfully`,
+        message: `Friend request ${action === "accept" ? "accepted" : "rejected"} successfully`,
       });
     } catch (error) {
       console.error("Error handling friend request:", error);
@@ -465,24 +361,16 @@ const userController = {
       });
     }
   },
-  /**
-   * Get friends list
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
+
   async getFriends(req, res) {
     try {
       const userId = req.user.id;
-
       const user = await User.findById(userId)
         .populate("friends", "username email avatar avatarColor")
         .select("friends");
 
       if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
+        return res.status(404).json({ success: false, message: "User not found" });
       }
 
       res.status(200).json({
@@ -505,10 +393,7 @@ const userController = {
       const userId = req.user.id;
       const { friendId } = req.params;
 
-      // Remove friend from current user
       await User.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
-
-      // Remove current user from friend's list
       await User.findByIdAndUpdate(friendId, { $pull: { friends: userId } });
 
       res.status(200).json({
@@ -526,4 +411,4 @@ const userController = {
   },
 };
 
-module.exports = userController;
+export default userController;

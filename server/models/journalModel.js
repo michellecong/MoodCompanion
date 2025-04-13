@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const EmotionSchema = new mongoose.Schema(
   {
@@ -69,4 +69,5 @@ JournalSchema.virtual("formattedDate").get(function () {
 // Index for faster queries by userId
 JournalSchema.index({ userId: 1, createdAt: -1 });
 
-module.exports = mongoose.model("Journal", JournalSchema);
+const Journal = mongoose.model("Journal", JournalSchema);
+export default Journal;
