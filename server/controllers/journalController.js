@@ -2,20 +2,26 @@
 
 import Journal from "../models/journalModel.js";
 import User from "../models/userModel.js";
-import emotionService from "../services/emotionService.js";
+import { detectEmotions, generateFeedback } from "../services/emotionService.js";
 
 const journalController = {
+  /**
+   * Create a new journal entry with emotion detection
+   */
   async createJournal(req, res) {
     try {
       const { title, content } = req.body;
       const userId = req.user.id;
 
       if (!title || !content) {
-        return res.status(400).json({ message: "The title and content cannot be empty" });
+        return res.status(400).json({
+          success: false,
+          message: "The title and content cannot be empty",
+        });
       }
 
-      const emotionsDetected = await emotionService.detectEmotions(content);
-      const feedback = emotionService.generateFeedback(emotionsDetected);
+      const emotionsDetected = await detectEmotions(content);
+      const feedback = generateFeedback(emotionsDetected);
 
       const newJournal = new Journal({
         userId,
@@ -47,6 +53,9 @@ const journalController = {
     }
   },
 
+  /**
+   * Get all journals for the authenticated user (with pagination)
+   */
   async getUserJournals(req, res) {
     try {
       const userId = req.user.id;
@@ -77,6 +86,9 @@ const journalController = {
     }
   },
 
+  /**
+   * Delete a journal entry
+   */
   async deleteJournal(req, res) {
     try {
       const journalId = req.params.id;
@@ -113,6 +125,9 @@ const journalController = {
     }
   },
 
+  /**
+   * Get a single journal by ID
+   */
   async getJournalById(req, res) {
     try {
       const journalId = req.params.id;
@@ -127,7 +142,7 @@ const journalController = {
         return res.status(403).json({ success: false, message: "Not authorized to access this journal" });
       }
 
-      console.log('Returning journal:', journal);
+      console.log("Returning journal:", journal);
 
       res.status(200).json({
         success: true,
@@ -143,6 +158,9 @@ const journalController = {
     }
   },
 
+  /**
+   * Update a journal entry
+   */
   async updateJournal(req, res) {
     try {
       const journalId = req.params.id;
@@ -174,9 +192,9 @@ const journalController = {
         updatedContent = content;
       }
 
-      const emotionsDetected = await emotionService.detectEmotions(updatedContent);
+      const emotionsDetected = await detectEmotions(updatedContent);
       updateData.emotionsDetected = emotionsDetected;
-      updateData.feedback = emotionService.generateFeedback(emotionsDetected);
+      updateData.feedback = generateFeedback(emotionsDetected);
 
       journal = await Journal.findByIdAndUpdate(
         journalId,

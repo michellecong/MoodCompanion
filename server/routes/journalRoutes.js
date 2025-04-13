@@ -1,17 +1,10 @@
-const express = require("express");
+// routes/journalRoutes.js (ESM version)
+
+import express from "express";
 const router = express.Router();
-const {
-  createJournal,
-  getUserJournals,
-  deleteJournal,
-  getJournalById,
-  updateJournal,
-} = require("../controllers/journalController");
-const { check, validationResult } = require("express-validator");
-const auth = require("../middleware/auth");
-/**
- * @route   POST api/journals
- */
+import journalController from "../controllers/journalController.js";
+import { check, validationResult } from "express-validator";
+import auth from "../middleware/auth.js";
 
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
@@ -21,43 +14,20 @@ const validateRequest = (req, res, next) => {
   next();
 };
 
-/**
- * @route   POST api/journals
- * @desc    create a journal
- * @access  Private
- */
 router.post(
   "/",
-
   auth,
-
   // check("title", "title can not be empty").not().isEmpty(),
   // check("content", "content can not be empty").not().isEmpty(),
-
   validateRequest,
-  createJournal
+  journalController.createJournal
 );
 
-/**
- * @route   GET api/journals
- * @desc    Get all journals for the authenticated user
- * @access  Private
- */
-router.get("/", auth, getUserJournals);
+router.get("/", auth, journalController.getUserJournals);
 
-/**
- * @route   DELETE api/journals/:id
- * @desc    Delete a journal
- * @access  Private
- */
-router.delete("/:id", auth, deleteJournal);
+router.delete("/:id", auth, journalController.deleteJournal);
 
-/**
- * @route   GET api/journals/:id
- * @desc    Get a single journal by ID
- * @access  Private
- */
-router.get("/:id", auth, getJournalById);
+router.get("/:id", auth, journalController.getJournalById);
 
 router.put(
   "/:id",
@@ -67,7 +37,7 @@ router.put(
     check("content", "Content cannot be empty").optional().not().isEmpty(),
   ],
   validateRequest,
-  updateJournal
+  journalController.updateJournal
 );
 
-module.exports = router;
+export default router;

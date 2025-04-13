@@ -1,4 +1,3 @@
-// src/hooks/useUserData.js
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 
@@ -8,30 +7,34 @@ export function useUserData(isAuthenticated) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Only fetch data when the user is authenticated
-    if (isAuthenticated) {
-      fetchUserData();
-    } else {
+    const token = localStorage.getItem("token");
+
+    // Only fetch if authenticated AND token exists
+    if (isAuthenticated && token) {
+      fetchUserData(token);
+    } else if (!isAuthenticated) {
       setIsLoading(false);
     }
   }, [isAuthenticated]);
 
-  const fetchUserData = async () => {
+  const fetchUserData = async (token) => {
     try {
       setIsLoading(true);
 
-      // Fetch the current mood
-      const response = await api.get("/journals?limit=2"); // limit to 2 for recent journals
+      const response = await api.get("/journals?limit=2", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.success) {
         setRecentJournals(response.data.data);
       } else {
-        console.error("Failed to fetch recent journals");
+        console.warn("Failed to fetch recent journals");
       }
-
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching user data:", error);
+    } finally {
       setIsLoading(false);
     }
   };
