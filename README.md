@@ -56,13 +56,15 @@ VITE_AUTH0_AUDIENCE=https://moodcompanion-api
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority
 JWT_SECRET=your_jwt_secret_key
 PORT=3000
+AUTH0_DOMAIN=dev-mbnzpg6jdhzwez57.us.auth0.com
+AUTH0_AUDIENCE=https://moodcompanion-api
 GOOGLE_API_KEY=your_google_cloud_natural_language_api_key
 OPENAI_API_KEY=your_openai_api_key
 CLOUDINARY_CLOUD_NAME=dvk6pkdnc
-CLOUDINARY_API_KEY=722568152246744
+CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=YegsusQxmFAZJnV2f3EWZwryoHo
 CLOUDINARY_URL=cloudinary://722568152246744:YegsusQxmFAZJnV2f3EWZwryoHo@dvk6pkdnc
-PINECONE_API_KEY=pcsk_76M4ce_7EHhqXYYeCAD76PtK8TnbYnJKDygTYFMwWkwXs79oBy36GL1b5uddd8iBFW2KME
+PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_ENVIRONMENT=us-east-1
 ```
 
