@@ -95,7 +95,11 @@ const CreatePostPage = () => {
       tagsArray.forEach((tag) => formData.append("tags", tag));
 
       if (image) {
-        console.log("Uploading image, size:", image.size, "bytes");
+        console.log("添加图片到 FormData:", {
+          name: image.name,
+          type: image.type,
+          size: image.size,
+        });
         formData.append("image", image);
       }
 
@@ -114,6 +118,12 @@ const CreatePostPage = () => {
 
       // Create smaller timeout for image upload check
       let uploadStartTime = Date.now();
+
+      // 在调用 api.post 之前
+      console.log(
+        "准备提交 FormData，包含字段:",
+        Array.from(formData.entries()).map((entry) => entry[0])
+      );
 
       const response = await api.post("/wishing-well/posts", formData, {
         headers: {

@@ -67,25 +67,14 @@ const multerErrorHandler = (err, req, res, next) => {
 router.post(
   "/",
   auth,
-  upload.single("image"),
-  multerErrorHandler, // handle multer errors
   (req, res, next) => {
-    console.log("Cloudinary upload completed, checking file data:");
-    if (req.file) {
-      console.log("File data:", {
-        path: req.file.path, // 这是 Cloudinary URL
-        filename: req.file.filename,
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-      });
-    } else {
-      console.log("No file uploaded or file data missing");
-    }
-
-    // 检查请求体内容
-    console.log("Request body after upload:", req.body);
+    console.log("Auth middleware passed, proceeding to multer...");
+    console.log("Request headers:", req.headers);
     next();
   },
+  upload.single("image"),
+  multerErrorHandler, // handle multer errors
+
   [
     check("content", "Content cannot be empty").not().isEmpty(),
     check("content", "Content is too long").isLength({ max: 1000 }),
