@@ -4,6 +4,11 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const FriendRequestSchema = new mongoose.Schema({
+  auth0Id: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   from: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

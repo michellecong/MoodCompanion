@@ -4,40 +4,38 @@ import express from "express";
 const router = express.Router();
 import journalController from "../controllers/journalController.js";
 import { check, validationResult } from "express-validator";
-import auth from "../middleware/auth.js";
+import { validateRequest } from "../middleware/validators.js";
 
-const validateRequest = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  next();
-};
-
+// POST /api/journals - Create new journal
 router.post(
   "/",
-  auth,
-  // check("title", "title can not be empty").not().isEmpty(),
-  // check("content", "content can not be empty").not().isEmpty(),
-  validateRequest,
+  [
+    // optional: uncomment these validators if needed
+    // check("title", "Title cannot be empty").not().isEmpty(),
+    // check("content", "Content cannot be empty").not().isEmpty(),
+    validateRequest,
+  ],
   journalController.createJournal
 );
 
-router.get("/", auth, journalController.getUserJournals);
+// GET /api/journals - Get all journals for the authenticated user
+router.get("/", journalController.getUserJournals);
 
-router.delete("/:id", auth, journalController.deleteJournal);
+// GET /api/journals/:id - Get a single journal by ID
+router.get("/:id", journalController.getJournalById);
 
-router.get("/:id", auth, journalController.getJournalById);
-
+// PUT /api/journals/:id - Update a journal
 router.put(
   "/:id",
-  auth,
   [
     check("title", "Title cannot be empty").optional().not().isEmpty(),
     check("content", "Content cannot be empty").optional().not().isEmpty(),
+    validateRequest,
   ],
-  validateRequest,
   journalController.updateJournal
 );
+
+// DELETE /api/journals/:id - Delete a journal
+router.delete("/:id", journalController.deleteJournal);
 
 export default router;
