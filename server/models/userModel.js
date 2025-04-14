@@ -33,6 +33,12 @@ const UserSchema = new mongoose.Schema({
     minlength: 3,
     maxlength: 30,
   },
+  // 添加 Auth0 ID 字段
+  auth0Id: {
+    type: String,
+    unique: true,
+    sparse: true, // 允许非Auth0用户有null值
+  },
   role: {
     type: String,
     default: "user",

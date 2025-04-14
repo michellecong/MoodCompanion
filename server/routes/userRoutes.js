@@ -79,13 +79,21 @@ const handleFileUpload = (req, res) => {
   }
 };
 
-router.post("/upload", auth, upload.single("file"), multerErrorHandler, handleFileUpload);
+router.post(
+  "/upload",
+  auth,
+  upload.single("file"),
+  multerErrorHandler,
+  handleFileUpload
+);
 
 router.post(
   "/register",
   [
     check("password", "password is required").not().isEmpty(),
-    check("password", "password must be at least 6 characters").isLength({ min: 6 }),
+    check("password", "password must be at least 6 characters").isLength({
+      min: 6,
+    }),
   ],
   validateRequest,
   userController.register
@@ -99,7 +107,9 @@ router.put(
   "/profile",
   auth,
   [
-    check("username", "Username must be between 3 and 30 characters").optional().isLength({ min: 3, max: 30 }),
+    check("username", "Username must be between 3 and 30 characters")
+      .optional()
+      .isLength({ min: 3, max: 30 }),
     check("email", "Please include a valid email").optional().isEmail(),
   ],
   validateRequest,
@@ -111,7 +121,9 @@ router.put(
   auth,
   [
     check("currentPassword", "Current password is required").not().isEmpty(),
-    check("newPassword", "New password must be at least 6 characters").isLength({ min: 6 }),
+    check("newPassword", "New password must be at least 6 characters").isLength(
+      { min: 6 }
+    ),
   ],
   validateRequest,
   userController.changePassword
@@ -138,10 +150,15 @@ router.put(
   auth,
   [
     check("requestId", "Request ID is required").not().isEmpty(),
-    check("action", "Action must be 'accept' or 'reject'").isIn(["accept", "reject"]),
+    check("action", "Action must be 'accept' or 'reject'").isIn([
+      "accept",
+      "reject",
+    ]),
   ],
   validateRequest,
   userController.handleFriendRequest
 );
+// Auth0用户同步端点
+router.post("/auth0-sync", userController.syncAuth0User);
 
 export default router;

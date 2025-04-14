@@ -1,23 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import api from "../api/axios";
 import "./CreatePostPage.css";
 
 const CreatePostPage = () => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
-  const [image, setImage] = useState(null); // add image state
-  const [previewUrl, setPreviewUrl] = useState(null); // add preview URL state
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const navigate = useNavigate();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
-  // deal with image upload
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // If using Auth0, ensure we have a fresh token
+        if (isAuthenticated) {
+          const token = await getAccessTokenSilently();
+          localStorage.setItem("token", token);
+          console.log("Auth0 token refreshed and stored");
+        }
+
+        // Check if we have any token stored
+        const hasToken =
+          localStorage.getItem("token") || localStorage.getItem("app_token");
+        if (!hasToken) {
+          console.log("No authentication token found");
+          navigate("/login");
+          return;
+        }
+
+        setAuthChecked(true);
+      } catch (error) {
+        console.error("Authentication check failed:", error);
+        setError("Authentication failed. Please log in again.");
+        navigate("/login");
+      }
+    };
+
+    checkAuth();
+  }, [isAuthenticated, getAccessTokenSilently, navigate]);
+
+  // Handle image upload
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Image file size should be less than 5MB");
+        return;
+      }
+
       setImage(file);
-      // create a preview URL for the selected image
+      // Create a preview URL for the selected image
       const fileReader = new FileReader();
       fileReader.onload = () => {
         setPreviewUrl(fileReader.result);
@@ -26,7 +65,7 @@ const CreatePostPage = () => {
     }
   };
 
-  // remove image
+  // Remove image
   const handleRemoveImage = () => {
     setImage(null);
     setPreviewUrl(null);
@@ -50,7 +89,7 @@ const CreatePostPage = () => {
         .map((tag) => tag.trim())
         .filter((tag) => tag !== "");
 
-      // use FormData to handle file upload
+      // Use FormData to handle file upload
       const formData = new FormData();
       formData.append("content", content);
       tagsArray.forEach((tag) => formData.append("tags", tag));
@@ -59,9 +98,22 @@ const CreatePostPage = () => {
         formData.append("image", image);
       }
 
+      // If using Auth0, ensure we have the latest token
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently();
+          localStorage.setItem("token", token);
+          console.log("Auth0 token refreshed before submission");
+        } catch (err) {
+          console.error("Failed to refresh Auth0 token:", err);
+        }
+      }
+
+      console.log("Submitting post with FormData");
+
       const response = await api.post("/wishing-well/posts", formData, {
         headers: {
-          "Content-Type": "multipart/form-data", // important for file upload
+          "Content-Type": "multipart/form-data", // Important for file upload
         },
       });
 
@@ -73,14 +125,40 @@ const CreatePostPage = () => {
         setError(response.data.message || "Failed to create post");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "An error occurred. Please try again."
-      );
       console.error("Error creating post:", err);
+
+      const errorMessage =
+        err.response?.data?.message || "An error occurred. Please try again.";
+
+      // Add specific handling for authentication errors
+      if (err.response?.status === 401) {
+        setError("Authentication error. Please log in again.");
+
+        // Clear tokens on auth failure
+        localStorage.removeItem("token");
+        localStorage.removeItem("app_token");
+
+        // Redirect to login after a short delay
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Show loading state until auth is checked
+  if (!authChecked) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="create-post-container">

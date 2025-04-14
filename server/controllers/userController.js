@@ -155,7 +155,12 @@ const userController = {
         const existingUser = await User.findOne({
           $and: [
             { _id: { $ne: userId } },
-            { $or: [...(username ? [{ username }] : []), ...(email ? [{ email }] : [])] },
+            {
+              $or: [
+                ...(username ? [{ username }] : []),
+                ...(email ? [{ email }] : []),
+              ],
+            },
           ],
         });
 
@@ -331,7 +336,9 @@ const userController = {
       );
 
       if (requestIndex === -1) {
-        return res.status(404).json({ success: false, message: "Friend request not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Friend request not found" });
       }
 
       const request = user.friendRequests[requestIndex];
@@ -343,14 +350,18 @@ const userController = {
         if (!user.friends.includes(fromUserId)) {
           user.friends.push(fromUserId);
         }
-        await User.findByIdAndUpdate(fromUserId, { $addToSet: { friends: userId } });
+        await User.findByIdAndUpdate(fromUserId, {
+          $addToSet: { friends: userId },
+        });
       }
 
       await user.save();
 
       res.status(200).json({
         success: true,
-        message: `Friend request ${action === "accept" ? "accepted" : "rejected"} successfully`,
+        message: `Friend request ${
+          action === "accept" ? "accepted" : "rejected"
+        } successfully`,
       });
     } catch (error) {
       console.error("Error handling friend request:", error);
@@ -370,7 +381,9 @@ const userController = {
         .select("friends");
 
       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
 
       res.status(200).json({
@@ -405,6 +418,124 @@ const userController = {
       res.status(500).json({
         success: false,
         message: "Failed to remove friend",
+        error: error.message,
+      });
+    }
+  },
+  // Enhanced syncAuth0User method for userController.js
+
+  async syncAuth0User(req, res) {
+    try {
+      const { auth0Id, email, username, avatar, name } = req.body;
+
+      if (!auth0Id || !email) {
+        return res.status(400).json({
+          success: false,
+          message: "Auth0 ID and email are required",
+        });
+      }
+
+      // Check if the user already exists by auth0Id or email
+      let user = await User.findOne({
+        $or: [{ auth0Id }, { email }],
+      });
+
+      let isNewUser = false;
+      let lastLogin = new Date();
+
+      if (user) {
+        // User exists, update fields if necessary
+        const updates = {};
+
+        // Always update auth0Id if it doesn't exist
+        if (!user.auth0Id) {
+          updates.auth0Id = auth0Id;
+        }
+
+        // Update lastLogin
+        updates.lastLogin = lastLogin;
+
+        // Conditionally update other fields if they're provided and different
+        if (name && user.username !== name) {
+          updates.username = name;
+        } else if (username && user.username !== username) {
+          updates.username = username;
+        }
+
+        if (email && user.email !== email) {
+          updates.email = email;
+        }
+
+        if (avatar && user.avatar !== avatar) {
+          updates.avatar = avatar;
+        }
+
+        // Only update if there are changes to make
+        if (Object.keys(updates).length > 0) {
+          user = await User.findByIdAndUpdate(
+            user._id,
+            { $set: updates },
+            { new: true }
+          ).select("-passwordHash");
+        }
+      } else {
+        // Create a new user
+        isNewUser = true;
+
+        // Generate a secure random password that won't be used for login
+        // (Auth0 will handle authentication)
+        const randomPassword = Array(32)
+          .fill(
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*"
+          )
+          .map((x) => x[Math.floor(Math.random() * x.length)])
+          .join("");
+
+        user = new User({
+          username: username || name || email.split("@")[0],
+          email,
+          auth0Id,
+          passwordHash: randomPassword,
+          avatar: avatar || null,
+          lastLogin: lastLogin,
+        });
+
+        await user.save();
+      }
+
+      // Generate our own JWT token as backup
+      const token = jwt.sign(
+        { id: user._id, role: user.role, auth0Id: user.auth0Id },
+        process.env.JWT_SECRET,
+        { expiresIn: "70d" }
+      );
+
+      // Return user data
+      const userResponse = {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        avatarColor: user.avatarColor,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
+        isNewUser: isNewUser,
+      };
+
+      res.status(200).json({
+        success: true,
+        message: isNewUser
+          ? "User created successfully"
+          : "User synced successfully",
+        user: userResponse,
+        token: token, // App's own JWT token
+      });
+    } catch (error) {
+      console.error("Auth0 sync error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to sync Auth0 user",
         error: error.message,
       });
     }
