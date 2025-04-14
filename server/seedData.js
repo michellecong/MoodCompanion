@@ -13,7 +13,7 @@ const __dirname = dirname(__filename);
 
 // ✅ Create Pinecone client
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
-const index = pinecone.index("mental-health-companion-zy5p830");
+const index = pinecone.index("mental-health-companion");
 
 // ✅ Get OpenAI embedding
 async function getEmbedding(text) {

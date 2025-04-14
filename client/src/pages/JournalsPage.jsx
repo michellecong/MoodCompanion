@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from 'react-router-dom';
 import JournalPreview from "../components/journal/JournalPreview";
 import "./JournalsPage.css";
 import api from "../api/axios";
 
 function JournalsPage() {
+  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [newJournal, setNewJournal] = useState({
     title: "",
     content: "",
@@ -34,14 +36,26 @@ function JournalsPage() {
       }
     };
 
-    fetchJournals();
-  }, []);
+    if (!isLoading && isAuthenticated && localStorage.getItem("token")) {
+      fetchJournals();
+    }
+  }, [isLoading, isAuthenticated]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
   
+    if (isLoading || !isAuthenticated) {
+      setError("You must be logged in to create a journal.");
+      return;
+    }
+  
     try {
+      // 🔐 Get a fresh token just before request
+      const token = await getAccessTokenSilently();
+      localStorage.setItem("token", token); // optional: for other components
+      console.log("✅ Fresh token fetched before POST:", token);
+  
       const response = await api.post("/journals", {
         title: newJournal.title,
         content: newJournal.content,
@@ -49,15 +63,12 @@ function JournalsPage() {
   
       if (response.data.success) {
         const newJournalData = response.data.data;
-        // update journals state
         setJournals((prevJournals) => [newJournalData, ...prevJournals]);
-        // update filteredJournals state
         setFilteredJournals((prevFiltered) => {
-          // if no filter is applied, add the new journal to the top
           if (!tempFilter.emotion && !tempFilter.startDate && !tempFilter.endDate) {
             return [newJournalData, ...prevFiltered];
           }
-          // if filter is applied, check if the new journal matches the filter
+  
           let matchesFilter = true;
           if (tempFilter.emotion) {
             const topEmotion = newJournalData.emotionsDetected?.reduce(
@@ -78,6 +89,7 @@ function JournalsPage() {
           }
           return matchesFilter ? [newJournalData, ...prevFiltered] : prevFiltered;
         });
+  
         setNewJournal({ title: "", content: "" });
         setError(null);
       } else {
@@ -88,8 +100,14 @@ function JournalsPage() {
       console.error("Error creating journal:", err);
     }
   };
+  
 
   const handleDelete = async (journalId) => {
+    if (isLoading || !isAuthenticated || !localStorage.getItem("token")) {
+      setError("You must be logged in to delete a journal.");
+      return;
+    }
+
     try {
       const response = await api.delete(`/journals/${journalId}`);
 
@@ -142,19 +160,15 @@ function JournalsPage() {
     if (tempFilter.startDate || tempFilter.endDate) {
       filtered = filtered.filter((journal) => {
         const journalDate = new Date(journal.createdAt);
-        // ensure journalDate is a valid date
         if (isNaN(journalDate.getTime())) return false;
 
-        // convert journalDate to YYYY-MM-DD format
         const journalDateStr = journalDate.toISOString().split("T")[0];
 
-        // if there is startDate, compare if greater than or equal
         let afterStart = true;
         if (tempFilter.startDate) {
           afterStart = journalDateStr >= tempFilter.startDate;
         }
 
-        // if there is endDate, compare if less than or equal
         let beforeEnd = true;
         if (tempFilter.endDate) {
           beforeEnd = journalDateStr <= tempFilter.endDate;

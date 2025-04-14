@@ -8,6 +8,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import auth from "./middleware/auth.js";
 
 import connectDB from "./utils/db.js";
 
@@ -43,7 +44,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "../client/build")));
 
-app.use("/api/journals", journalRoutes);
+app.use("/api/journals", auth, journalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wishing-well/posts", wishingWellPostRoutes);
 app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
