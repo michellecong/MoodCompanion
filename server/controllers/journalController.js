@@ -11,7 +11,11 @@ const journalController = {
   async createJournal(req, res) {
     try {
       const { title, content } = req.body;
-      const userId = req.user.id;
+      const auth0Id = req.user?.sub;
+
+      if (!auth0Id) {
+        return res.status(401).json({ success: false, message: "Missing user identity" });
+      }
 
       if (!title || !content) {
         return res.status(400).json({
@@ -20,11 +24,17 @@ const journalController = {
         });
       }
 
+      // ✅ Find the user by Auth0 ID (not Mongo _id)
+      const user = await User.findOne({ auth0Id });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
       const emotionsDetected = await detectEmotions(content);
       const feedback = generateFeedback(emotionsDetected);
 
       const newJournal = new Journal({
-        userId,
+        userId: user._id, // ✅ Use MongoDB ObjectId from the user document
         title,
         content,
         emotionsDetected,
@@ -34,7 +44,7 @@ const journalController = {
       await newJournal.save();
 
       await User.findByIdAndUpdate(
-        userId,
+        user._id,
         { $push: { journals: newJournal._id } },
         { new: true }
       );
@@ -58,7 +68,7 @@ const journalController = {
    */
   async getUserJournals(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.sub;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
@@ -92,7 +102,7 @@ const journalController = {
   async deleteJournal(req, res) {
     try {
       const journalId = req.params.id;
-      const userId = req.user.id;
+      const userId = req.user?.sub;
 
       const journal = await Journal.findById(journalId);
       if (!journal) {
@@ -131,7 +141,7 @@ const journalController = {
   async getJournalById(req, res) {
     try {
       const journalId = req.params.id;
-      const userId = req.user.id;
+      const userId = req.user?.sub;
 
       const journal = await Journal.findById(journalId);
       if (!journal) {
@@ -164,7 +174,7 @@ const journalController = {
   async updateJournal(req, res) {
     try {
       const journalId = req.params.id;
-      const userId = req.user.id;
+      const userId = req.user?.sub;
       const { title, content } = req.body;
 
       if (!title && !content) {
