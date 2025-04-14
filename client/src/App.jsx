@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import Auth0ProviderWithHistory from "./components/Auth0Provider";
+import api from "./api/axios"; // 添加这行导入
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import HomePage from "./pages/HomePage";
@@ -22,27 +22,57 @@ import Profile from "./components/Personal/Profile";
 import "./App.css";
 
 function App() {
-  const { logout } = useAuth0();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const { logout, isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+  const [localAuth, setLocalAuth] = useState(false);
+  const [localUser, setLocalUser] = useState(null);
   
-
+  // 同步Auth0状态到本地状态
+  useEffect(() => {
+    console.log("App: Auth0 state changed", isAuthenticated);
+    const syncAuth0State = async () => {
+      if (isAuthenticated && user) {
+        try {
+          console.log("App: User authenticated with Auth0, syncing with backend");
+          const accessToken = await getAccessTokenSilently();
+          const response = await api.post("/users/auth0-callback", { 
+            user,
+            token: accessToken 
+          });
+          
+          if (response.data.token) {
+            console.log("App: Backend auth successful, updating local state");
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+            setLocalAuth(true);
+            setLocalUser(response.data.user);
+          }
+        } catch (error) {
+          console.error("Error syncing Auth0 state:", error);
+        }
+      }
+    };
+    
+    syncAuth0State();
+  }, [isAuthenticated, user, getAccessTokenSilently]);
+  
+  // 检查本地存储的身份验证信息
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
     
     if (token && userData) {
-      setIsAuthenticated(true);
-      // console.log("FE: Authenticated:", token);
-      setUser(JSON.parse(userData));
+      console.log("App: Found local auth data, setting local state");
+      setLocalAuth(true);
+      setLocalUser(JSON.parse(userData));
     }
   }, []);
 
   const handleLogout = () => {
+    console.log("App: Handling logout");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setIsAuthenticated(false);
-    setUser(null);
+    setLocalAuth(false);
+    setLocalUser(null);
 
     logout({ 
       logoutParams: {
@@ -55,9 +85,9 @@ function App() {
     <Router>
       <div className="app-container">
         <Navbar
-          isAuthenticated={isAuthenticated}
+          isAuthenticated={localAuth}
           onLogout={handleLogout}
-          user={user}
+          user={localUser}
         />
         <main className="main-content">
           <ErrorBoundary>
@@ -65,13 +95,13 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <HomePage isAuthenticated={isAuthenticated} user={user} />
+                  <HomePage isAuthenticated={localAuth} user={localUser} />
                 }
               />
               <Route
                 path="/login"
                 element={
-                  <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
+                  <LoginPage onLogin={setLocalAuth} onUser={setLocalUser} />
                 }
               />
               <Route path="/register" element={<RegisterPage />} />
@@ -82,8 +112,8 @@ function App() {
                 path="/post/:id"
                 element={
                   <PostDetailPage
-                    isAuthenticated={isAuthenticated}
-                    user={user}
+                    isAuthenticated={localAuth}
+                    user={localUser}
                   />
                 }
               />
@@ -92,7 +122,7 @@ function App() {
               <Route
                 path="/followed-posts"
                 element={
-                  <FollowedPostsPage isAuthenticated={isAuthenticated} />
+                  <FollowedPostsPage isAuthenticated={localAuth} />
                 }
               />
               <Route path="/chat" element={<ChatPage />} />
@@ -100,7 +130,7 @@ function App() {
               <Route
                 path="/profile"
                 element={
-                  <Profile user={user} isAuthenticated={isAuthenticated} />
+                  <Profile user={localUser} isAuthenticated={localAuth} />
                 }
               />
             </Routes>
