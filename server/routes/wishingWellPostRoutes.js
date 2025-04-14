@@ -66,7 +66,7 @@ const multerErrorHandler = (err, req, res, next) => {
  */
 router.post(
   "/",
-  auth,
+
   (req, res, next) => {
     console.log("Auth middleware passed, proceeding to multer...");
     console.log("Request headers:", req.headers);
