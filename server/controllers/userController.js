@@ -422,12 +422,11 @@ const userController = {
       });
     }
   },
-  // 在userController.js中添加此方法
+  // Enhanced syncAuth0User method for userController.js
 
-  // Auth0用户同步，确保Auth0用户存在于我们的数据库中
   async syncAuth0User(req, res) {
     try {
-      const { auth0Id, email, username, avatar } = req.body;
+      const { auth0Id, email, username, avatar, name } = req.body;
 
       if (!auth0Id || !email) {
         return res.status(400).json({
@@ -436,39 +435,82 @@ const userController = {
         });
       }
 
-      // 检查用户是否已存在（基于auth0Id或email）
+      // Check if the user already exists by auth0Id or email
       let user = await User.findOne({
         $or: [{ auth0Id }, { email }],
       });
 
+      let isNewUser = false;
+      let lastLogin = new Date();
+
       if (user) {
-        // 用户已存在，更新Auth0 ID（如果之前没有）
+        // User exists, update fields if necessary
+        const updates = {};
+
+        // Always update auth0Id if it doesn't exist
         if (!user.auth0Id) {
-          user.auth0Id = auth0Id;
-          await user.save();
+          updates.auth0Id = auth0Id;
         }
 
-        // 可能需要更新其他字段，如头像
+        // Update lastLogin
+        updates.lastLogin = lastLogin;
+
+        // Conditionally update other fields if they're provided and different
+        if (name && user.username !== name) {
+          updates.username = name;
+        } else if (username && user.username !== username) {
+          updates.username = username;
+        }
+
+        if (email && user.email !== email) {
+          updates.email = email;
+        }
+
         if (avatar && user.avatar !== avatar) {
-          user.avatar = avatar;
-          await user.save();
+          updates.avatar = avatar;
+        }
+
+        // Only update if there are changes to make
+        if (Object.keys(updates).length > 0) {
+          user = await User.findByIdAndUpdate(
+            user._id,
+            { $set: updates },
+            { new: true }
+          ).select("-passwordHash");
         }
       } else {
-        // 创建新用户
-        const randomPassword = Math.random().toString(36).slice(-8);
+        // Create a new user
+        isNewUser = true;
+
+        // Generate a secure random password that won't be used for login
+        // (Auth0 will handle authentication)
+        const randomPassword = Array(32)
+          .fill(
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*"
+          )
+          .map((x) => x[Math.floor(Math.random() * x.length)])
+          .join("");
 
         user = new User({
-          username: username || email.split("@")[0],
+          username: username || name || email.split("@")[0],
           email,
           auth0Id,
-          passwordHash: randomPassword, // 生成随机密码，因为通过Auth0登录的用户不会用到这个密码
+          passwordHash: randomPassword,
           avatar: avatar || null,
+          lastLogin: lastLogin,
         });
 
         await user.save();
       }
 
-      // 返回数据库中的用户详情（不含密码）
+      // Generate our own JWT token as backup
+      const token = jwt.sign(
+        { id: user._id, role: user.role, auth0Id: user.auth0Id },
+        process.env.JWT_SECRET,
+        { expiresIn: "70d" }
+      );
+
+      // Return user data
       const userResponse = {
         id: user._id,
         username: user.username,
@@ -477,13 +519,17 @@ const userController = {
         avatar: user.avatar,
         avatarColor: user.avatarColor,
         createdAt: user.createdAt,
-        lastLogin: user.lastLogin || new Date(),
+        lastLogin: user.lastLogin,
+        isNewUser: isNewUser,
       };
 
       res.status(200).json({
         success: true,
-        message: "User synced successfully",
+        message: isNewUser
+          ? "User created successfully"
+          : "User synced successfully",
         user: userResponse,
+        token: token, // App's own JWT token
       });
     } catch (error) {
       console.error("Auth0 sync error:", error);

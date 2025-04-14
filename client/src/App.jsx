@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
@@ -17,6 +17,8 @@ import FollowedPostsPage from "./pages/FollowedPostsPage";
 import ChatPage from "./pages/ChatPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import Profile from "./components/Personal/Profile";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import api from "./api/axios";
 import "./App.css";
 
 function App() {
@@ -29,65 +31,131 @@ function App() {
     isLoading,
   } = useAuth0();
 
-  console.log("Auth0", {
-    isLoading,
-    isAuthenticated,
-    user,
-    pathname: window.location.pathname,
-    search: window.location.search,
-  });
-  // 在App.jsx的useEffect中，在获取令牌后添加
+  const [appLoading, setAppLoading] = useState(true);
+  const [syncError, setSyncError] = useState(null);
+
   useEffect(() => {
     const syncUserWithDatabase = async () => {
       if (isAuthenticated && user) {
         try {
-          const token = await getAccessTokenSilently();
+          console.log("Auth0 authentication detected, syncing user");
+
+          // Get the Auth0 token
+          const token = await getAccessTokenSilently({
+            authorizationParams: {
+              // Ensure we're requesting the right audience and scope
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+              scope: "openid profile email",
+            },
+          });
+
+          console.log("Auth0 token obtained, length:", token.length);
+
+          // Store the Auth0 token in localStorage
           localStorage.setItem("token", token);
 
-          // 尝试同步用户到后端
+          // Log the first part of the token for debugging (don't log full tokens in production)
+          console.log(
+            "Auth0 token first 20 chars:",
+            token.substring(0, 20) + "..."
+          );
+
+          // Extract useful fields from Auth0 user object
           const syncResponse = await api.post("/users/auth0-sync", {
             auth0Id: user.sub,
             email: user.email,
             username: user.nickname || user.name || user.email.split("@")[0],
-            avatar: null,
+            name: user.name,
+            avatar: user.picture || null,
           });
 
-          // 保存后端返回的用户信息，它包含了数据库用户ID和其他数据库字段
-          localStorage.setItem("user", JSON.stringify(syncResponse.data.user));
-          console.log("User synced with database:", syncResponse.data);
+          // Store the user information from our database
+          if (syncResponse.data.success) {
+            console.log(
+              "User sync successful:",
+              syncResponse.data.user.username
+            );
+            localStorage.setItem(
+              "user",
+              JSON.stringify(syncResponse.data.user)
+            );
+
+            // Store our application JWT token as backup
+            if (syncResponse.data.token) {
+              localStorage.setItem("app_token", syncResponse.data.token);
+              console.log("App token stored as backup");
+            }
+
+            // Update last login time
+            if (syncResponse.data.user.isNewUser) {
+              console.log("Welcome new user! First time login detected.");
+              // You could redirect to an onboarding page here
+            }
+          } else {
+            console.error(
+              "User sync response indicates failure:",
+              syncResponse.data
+            );
+            setSyncError("Failed to sync user data");
+          }
         } catch (error) {
           console.error("Error syncing user with database:", error);
+          // More detailed error logging
+          if (error.response) {
+            console.error("Response error data:", error.response.data);
+            console.error("Response status:", error.response.status);
+          }
+          setSyncError(error.message || "Failed to sync user with database");
+        } finally {
+          setAppLoading(false);
         }
-      }
-    };
-
-    syncUserWithDatabase();
-  }, [isAuthenticated, user, getAccessTokenSilently]);
-
-  useEffect(() => {
-    const storeToken = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(user));
-          console.log("Token stored in localStorage:", token);
-        } catch (error) {
-          console.error("Error fetching token:", error);
-        }
-      } else {
+      } else if (!isLoading) {
+        // Not authenticated and not loading, clear stored data
+        console.log("User not authenticated, clearing stored auth data");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("app_token");
+        setAppLoading(false);
       }
     };
-    storeToken();
-  }, [isAuthenticated, user, getAccessTokenSilently]);
+
+    if (!isLoading) {
+      syncUserWithDatabase();
+    }
+  }, [isAuthenticated, user, getAccessTokenSilently, isLoading]);
 
   const handleLogout = () => {
+    // Clear all authentication data
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("app_token");
+
+    // Use Auth0 logout
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  // Show loading indicator while Auth0 is loading or while we're syncing
+  if (isLoading || appLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading application...</p>
+      </div>
+    );
+  }
+
+  // Show error if user sync failed
+  if (syncError && isAuthenticated) {
+    return (
+      <div className="error-container">
+        <h2>Authentication Error</h2>
+        <p>{syncError}</p>
+        <button onClick={handleLogout} className="btn btn-primary">
+          Logout and Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -111,9 +179,30 @@ function App() {
               element={<LoginPage onLogin={() => loginWithRedirect()} />}
             />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/journals" element={<JournalsPage />} />
-            <Route path="/journal/:id" element={<SingleJournalPage />} />
-            <Route path="/mood-tracking" element={<MoodTrackingPage />} />
+            <Route
+              path="/journals"
+              element={
+                <ProtectedRoute>
+                  <JournalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/journal/:id"
+              element={
+                <ProtectedRoute>
+                  <SingleJournalPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mood-tracking"
+              element={
+                <ProtectedRoute>
+                  <MoodTrackingPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/post/:id"
               element={
@@ -121,19 +210,39 @@ function App() {
               }
             />
             <Route path="/posts" element={<PostsListPage />} />
-            <Route path="/create-post" element={<CreatePostPage />} />
+            <Route
+              path="/create-post"
+              element={
+                <ProtectedRoute>
+                  <CreatePostPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/followed-posts"
-              element={<FollowedPostsPage isAuthenticated={isAuthenticated} />}
+              element={
+                <ProtectedRoute>
+                  <FollowedPostsPage isAuthenticated={isAuthenticated} />
+                </ProtectedRoute>
+              }
             />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="*" element={<NotFoundPage />} />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/profile"
               element={
-                <Profile user={user} isAuthenticated={isAuthenticated} />
+                <ProtectedRoute>
+                  <Profile user={user} isAuthenticated={isAuthenticated} />
+                </ProtectedRoute>
               }
             />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </ErrorBoundary>
       </main>
