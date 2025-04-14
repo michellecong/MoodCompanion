@@ -3,20 +3,20 @@ const router = express.Router();
 const { check } = require("express-validator");
 const { validateRequest } = require("../middleware/validators");
 const {
-  register,
-  login,
   getProfile,
   updateProfile,
-  changePassword,
   deleteAccount,
   sendFriendRequest,
   handleFriendRequest,
+  handleAuth0Login,    
+  handleAuth0Registration   
 } = require("../controllers/userController");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
 const cloudinary = require("../utils/cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 // use multer-storage-cloudinary to store images in Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -101,22 +101,6 @@ router.post(
   handleFileUpload
 );
 
-// Public routes
-router.post(
-  "/register",
-  [
-    check("password", "password is required").not().isEmpty(),
-    check("password", "password must be at least 6 characters").isLength({
-      min: 6,
-    }),
-  ],
-  validateRequest,
-  register
-);
-
-// login route
-router.post("/login", login);
-
 /**
  * @route   GET api/users/profile
  * @desc    Get user profile
@@ -140,24 +124,6 @@ router.put(
   ],
   validateRequest,
   updateProfile
-);
-
-/**
- * @route   PUT api/users/change-password
- * @desc    Change user password
- * @access  Private
- */
-router.put(
-  "/change-password",
-  auth,
-  [
-    check("currentPassword", "Current password is required").not().isEmpty(),
-    check("newPassword", "New password must be at least 6 characters").isLength(
-      { min: 6 }
-    ),
-  ],
-  validateRequest,
-  changePassword
 );
 
 /**
@@ -204,5 +170,19 @@ router.put(
   validateRequest,
   handleFriendRequest
 );
+
+/**
+ * @route   POST api/users/auth0-callback
+ * @desc    Handle Auth0 login callback
+ * @access  Public
+ */
+router.post("/auth0-callback", handleAuth0Login);
+
+/**
+ * @route   POST api/users/auth0-register
+ * @desc    Handle Auth0 registration
+ * @access  Public
+ */
+router.post("/auth0-register", handleAuth0Registration);
 
 module.exports = router;

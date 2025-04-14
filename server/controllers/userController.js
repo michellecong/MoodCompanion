@@ -1,49 +1,64 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const auth0 = require('auth0');
+
+// create an Auth0 Management client
+const auth0ManagementClient = new auth0.ManagementClient({
+  domain: process.env.AUTH0_DOMAIN,
+  clientId: process.env.AUTH0_CLIENT_ID,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET,
+});
 
 const userController = {
-  async register(req, res) {
+  // replace the original register method
+  async handleAuth0Registration(req, res) {
     try {
-      console.log("Req sent to register");
-      const { username, email, password } = req.body;
-      console.log("req.body", req.body);
-      // Check if all fields are provided
-      if (!username || !email || !password) {
-        return res.status(400).json({
-          success: false,
-          message: "All fields (username, email, password) are required",
-        });
-      }
-
-      // Check if user already exists
-      let user = await User.findOne({ $or: [{ email }, { username }] });
-
+      // get user info from Auth0
+      const { sub, email, nickname } = req.body.user;
+      
+      // check if user exists
+      let user = await User.findOne({ email });
+      
       if (user) {
-        return res.status(400).json({
-          success: false,
-          message:
-            user.email === email
-              ? "Email already registered"
-              : "Username already taken",
+        // user exists, update last login time
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "70d" }
+        );
+        
+        return res.status(200).json({
+          success: true,
+          token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            avatarColor: user.avatarColor,
+            createdAt: user.createdAt,
+          },
         });
       }
-
-      // Create new user
+      
+      // create new user
       user = new User({
-        username,
+        username: nickname || email.split('@')[0],
         email,
-        passwordHash: password, // Will be hashed by pre-save middleware
+        passwordHash: Math.random().toString(36), // random password
+        auth0Id: sub, // store Auth0 ID
       });
-
+      
       await user.save();
-
-      // Generate token
+      
+      // generate JWT token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-
+      
       res.status(201).json({
         success: true,
         token,
@@ -58,7 +73,7 @@ const userController = {
         },
       });
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Auth0 registration error:", error);
       res.status(500).json({
         success: false,
         message: "Registration failed",
@@ -66,50 +81,34 @@ const userController = {
       });
     }
   },
-
-  async login(req, res) {
-    console.log("🧪 CTRLR: JWT_SECRET from .env is:", `"${process.env.JWT_SECRET}"`);
-    try {
-      const { identifier, password } = req.body;
-
-      if (!identifier || !password) {
-        return res.status(400).json({
-          success: false,
-          message: "Username or email and password are required",
-        });
-      }
-      const user = await User.findOne({
-        $or: [{ email: identifier }, { username: identifier }],
-      });
   
+  // replace the original login method
+  async handleAuth0Login(req, res) {
+    try {
+      // get user info from Auth0
+      const { sub, email } = req.body.user;
+      
+      // check if user exists
+      const user = await User.findOne({ email });
+      
       if (!user) {
         return res.status(404).json({
           success: false,
-          message: "User not found",
+          message: "User not found, please register first",
         });
       }
-
-      // Check password
-      const isMatch = await user.comparePassword(password);
-
-      if (!isMatch) {
-        return res.status(401).json({
-          success: false,
-          message: "Invalid credentials",
-        });
-      }
-
-      // Update last login
+      
+      // update last login time
       user.lastLogin = Date.now();
       await user.save();
-
-      // Generate token
+      
+      // generate JWT token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-
+      
       res.status(200).json({
         success: true,
         token,
@@ -124,7 +123,7 @@ const userController = {
         },
       });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Auth0 login error:", error);
       res.status(500).json({
         success: false,
         message: "Login failed",
@@ -132,6 +131,7 @@ const userController = {
       });
     }
   },
+
   /**
    * Get user profile
    * @param {Object} req - Express request object
@@ -229,52 +229,48 @@ const userController = {
       });
     }
   },
-  /**
-   * Change password
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
-  async changePassword(req, res) {
-    try {
-      const userId = req.user.id;
-      const { currentPassword, newPassword } = req.body;
+  
+  // async changePassword(req, res) {
+  //   try {
+  //     const userId = req.user.id;
+  //     const { currentPassword, newPassword } = req.body;
 
-      // Check if inputs exist
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({
-          success: false,
-          message: "Current password and new password are required",
-        });
-      }
+  //     // Check if inputs exist
+  //     if (!currentPassword || !newPassword) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Current password and new password are required",
+  //       });
+  //     }
 
-      const user = await User.findById(userId);
+  //     const user = await User.findById(userId);
 
-      // Verify current password
-      const isMatch = await user.comparePassword(currentPassword);
-      if (!isMatch) {
-        return res.status(401).json({
-          success: false,
-          message: "Current password is incorrect",
-        });
-      }
+  //     // Verify current password
+  //     const isMatch = await user.comparePassword(currentPassword);
+  //     if (!isMatch) {
+  //       return res.status(401).json({
+  //         success: false,
+  //         message: "Current password is incorrect",
+  //       });
+  //     }
 
-      // Update password
-      user.passwordHash = newPassword; // Will be hashed by pre-save middleware
-      await user.save();
+  //     // Update password
+  //     user.passwordHash = newPassword; // Will be hashed by pre-save middleware
+  //     await user.save();
 
-      res.status(200).json({
-        success: true,
-        message: "Password changed successfully",
-      });
-    } catch (error) {
-      console.error("Error changing password:", error);
-      res.status(500).json({
-        success: false,
-        message: "Failed to change password",
-        error: error.message,
-      });
-    }
-  },
+  //     res.status(200).json({
+  //       success: true,
+  //       message: "Password changed successfully",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error changing password:", error);
+  //     res.status(500).json({
+  //       success: false,
+  //       message: "Failed to change password",
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 
   /**
    * Delete user account
