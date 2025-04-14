@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import "./Navbar.css";
 import Avatar from "../Personal/Avatar";
 import ProfileDropdown from "../Personal/ProfileDropdown";
-
+import { useAuth0 } from "@auth0/auth0-react";
 import { getAssetUrl } from "../../api/helpers";
 
 function Navbar({ isAuthenticated, onLogout, user }) {
+
   return (
     <nav className="navbar">
       <div className="container navbar-container">

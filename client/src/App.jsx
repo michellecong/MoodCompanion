@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import Auth0ProviderWithHistory from "./components/Auth0Provider";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
@@ -21,13 +22,15 @@ import Profile from "./components/Personal/Profile";
 import "./App.css";
 
 function App() {
+  const { logout } = useAuth0();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
-
+    
     if (token && userData) {
       setIsAuthenticated(true);
       // console.log("FE: Authenticated:", token);
@@ -40,68 +43,72 @@ function App() {
     localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
+
+    logout({ 
+      logoutParams: {
+        returnTo: window.location.origin 
+      }
+    });
   };
 
   return (
-    <Auth0ProviderWithHistory>
-      <Router>
-        <div className="app-container">
-          <Navbar
-            isAuthenticated={isAuthenticated}
-            onLogout={handleLogout}
-            user={user}
-          />
-          <main className="main-content">
-            <ErrorBoundary>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <HomePage isAuthenticated={isAuthenticated} user={user} />
-                  }
-                />
-                <Route
-                  path="/login"
-                  element={
-                    <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
-                  }
-                />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/journals" element={<JournalsPage />} />
-                <Route path="/journal/:id" element={<SingleJournalPage />} />
-                <Route path="/mood-tracking" element={<MoodTrackingPage />} />
-                <Route
-                  path="/post/:id"
-                  element={
-                    <PostDetailPage
-                      isAuthenticated={isAuthenticated}
-                      user={user}
-                    />
-                  }
-                />
-                <Route path="/posts" element={<PostsListPage />} />
-                <Route path="/create-post" element={<CreatePostPage />} />
-                <Route
-                  path="/followed-posts"
-                  element={
-                    <FollowedPostsPage isAuthenticated={isAuthenticated} />
-                  }
-                />
-                <Route path="/chat" element={<ChatPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-                <Route
-                  path="/profile"
-                  element={
-                    <Profile user={user} isAuthenticated={isAuthenticated} />
-                  }
-                />
-              </Routes>
-            </ErrorBoundary>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </Auth0ProviderWithHistory>
+    <Router>
+      <div className="app-container">
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          onLogout={handleLogout}
+          user={user}
+        />
+        <main className="main-content">
+          <ErrorBoundary>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <HomePage isAuthenticated={isAuthenticated} user={user} />
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <LoginPage onLogin={setIsAuthenticated} onUser={setUser} />
+                }
+              />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/journals" element={<JournalsPage />} />
+              <Route path="/journal/:id" element={<SingleJournalPage />} />
+              <Route path="/mood-tracking" element={<MoodTrackingPage />} />
+              <Route
+                path="/post/:id"
+                element={
+                  <PostDetailPage
+                    isAuthenticated={isAuthenticated}
+                    user={user}
+                  />
+                }
+              />
+              <Route path="/posts" element={<PostsListPage />} />
+              <Route path="/create-post" element={<CreatePostPage />} />
+              <Route
+                path="/followed-posts"
+                element={
+                  <FollowedPostsPage isAuthenticated={isAuthenticated} />
+                }
+              />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+              <Route
+                path="/profile"
+                element={
+                  <Profile user={user} isAuthenticated={isAuthenticated} />
+                }
+              />
+            </Routes>
+          </ErrorBoundary>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
