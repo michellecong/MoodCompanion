@@ -155,7 +155,12 @@ const userController = {
         const existingUser = await User.findOne({
           $and: [
             { _id: { $ne: userId } },
-            { $or: [...(username ? [{ username }] : []), ...(email ? [{ email }] : [])] },
+            {
+              $or: [
+                ...(username ? [{ username }] : []),
+                ...(email ? [{ email }] : []),
+              ],
+            },
           ],
         });
 
@@ -331,7 +336,9 @@ const userController = {
       );
 
       if (requestIndex === -1) {
-        return res.status(404).json({ success: false, message: "Friend request not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "Friend request not found" });
       }
 
       const request = user.friendRequests[requestIndex];
@@ -343,14 +350,18 @@ const userController = {
         if (!user.friends.includes(fromUserId)) {
           user.friends.push(fromUserId);
         }
-        await User.findByIdAndUpdate(fromUserId, { $addToSet: { friends: userId } });
+        await User.findByIdAndUpdate(fromUserId, {
+          $addToSet: { friends: userId },
+        });
       }
 
       await user.save();
 
       res.status(200).json({
         success: true,
-        message: `Friend request ${action === "accept" ? "accepted" : "rejected"} successfully`,
+        message: `Friend request ${
+          action === "accept" ? "accepted" : "rejected"
+        } successfully`,
       });
     } catch (error) {
       console.error("Error handling friend request:", error);
@@ -370,7 +381,9 @@ const userController = {
         .select("friends");
 
       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
 
       res.status(200).json({
@@ -405,6 +418,78 @@ const userController = {
       res.status(500).json({
         success: false,
         message: "Failed to remove friend",
+        error: error.message,
+      });
+    }
+  },
+  // 在userController.js中添加此方法
+
+  // Auth0用户同步，确保Auth0用户存在于我们的数据库中
+  async syncAuth0User(req, res) {
+    try {
+      const { auth0Id, email, username, avatar } = req.body;
+
+      if (!auth0Id || !email) {
+        return res.status(400).json({
+          success: false,
+          message: "Auth0 ID and email are required",
+        });
+      }
+
+      // 检查用户是否已存在（基于auth0Id或email）
+      let user = await User.findOne({
+        $or: [{ auth0Id }, { email }],
+      });
+
+      if (user) {
+        // 用户已存在，更新Auth0 ID（如果之前没有）
+        if (!user.auth0Id) {
+          user.auth0Id = auth0Id;
+          await user.save();
+        }
+
+        // 可能需要更新其他字段，如头像
+        if (avatar && user.avatar !== avatar) {
+          user.avatar = avatar;
+          await user.save();
+        }
+      } else {
+        // 创建新用户
+        const randomPassword = Math.random().toString(36).slice(-8);
+
+        user = new User({
+          username: username || email.split("@")[0],
+          email,
+          auth0Id,
+          passwordHash: randomPassword, // 生成随机密码，因为通过Auth0登录的用户不会用到这个密码
+          avatar: avatar || null,
+        });
+
+        await user.save();
+      }
+
+      // 返回数据库中的用户详情（不含密码）
+      const userResponse = {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        avatarColor: user.avatarColor,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin || new Date(),
+      };
+
+      res.status(200).json({
+        success: true,
+        message: "User synced successfully",
+        user: userResponse,
+      });
+    } catch (error) {
+      console.error("Auth0 sync error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to sync Auth0 user",
         error: error.message,
       });
     }

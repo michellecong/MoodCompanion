@@ -20,7 +20,6 @@ import Profile from "./components/Personal/Profile";
 import "./App.css";
 
 function App() {
-  
   const {
     isAuthenticated,
     user,
@@ -37,7 +36,34 @@ function App() {
     pathname: window.location.pathname,
     search: window.location.search,
   });
-  
+  // 在App.jsx的useEffect中，在获取令牌后添加
+  useEffect(() => {
+    const syncUserWithDatabase = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = await getAccessTokenSilently();
+          localStorage.setItem("token", token);
+
+          // 尝试同步用户到后端
+          const syncResponse = await api.post("/users/auth0-sync", {
+            auth0Id: user.sub,
+            email: user.email,
+            username: user.nickname || user.name || user.email.split("@")[0],
+            avatar: null,
+          });
+
+          // 保存后端返回的用户信息，它包含了数据库用户ID和其他数据库字段
+          localStorage.setItem("user", JSON.stringify(syncResponse.data.user));
+          console.log("User synced with database:", syncResponse.data);
+        } catch (error) {
+          console.error("Error syncing user with database:", error);
+        }
+      }
+    };
+
+    syncUserWithDatabase();
+  }, [isAuthenticated, user, getAccessTokenSilently]);
+
   useEffect(() => {
     const storeToken = async () => {
       if (isAuthenticated) {
@@ -76,7 +102,9 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<HomePage isAuthenticated={isAuthenticated} user={user} />}
+              element={
+                <HomePage isAuthenticated={isAuthenticated} user={user} />
+              }
             />
             <Route
               path="/login"
@@ -88,7 +116,9 @@ function App() {
             <Route path="/mood-tracking" element={<MoodTrackingPage />} />
             <Route
               path="/post/:id"
-              element={<PostDetailPage isAuthenticated={isAuthenticated} user={user} />}
+              element={
+                <PostDetailPage isAuthenticated={isAuthenticated} user={user} />
+              }
             />
             <Route path="/posts" element={<PostsListPage />} />
             <Route path="/create-post" element={<CreatePostPage />} />
@@ -100,7 +130,9 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
             <Route
               path="/profile"
-              element={<Profile user={user} isAuthenticated={isAuthenticated} />}
+              element={
+                <Profile user={user} isAuthenticated={isAuthenticated} />
+              }
             />
           </Routes>
         </ErrorBoundary>
