@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import api from "./api/axios"; // 添加这行导入
+import api from "./api/axios"; 
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
 import JournalsPage from "./pages/JournalsPage";
 import SingleJournalPage from "./pages/SingleJournalPage";
 import PostDetailPage from "./pages/PostDetailPage";
@@ -26,7 +25,6 @@ function App() {
   const [localAuth, setLocalAuth] = useState(false);
   const [localUser, setLocalUser] = useState(null);
   
-  // 同步Auth0状态到本地状态
   useEffect(() => {
     console.log("App: Auth0 state changed", isAuthenticated);
     const syncAuth0State = async () => {
@@ -55,7 +53,7 @@ function App() {
     syncAuth0State();
   }, [isAuthenticated, user, getAccessTokenSilently]);
   
-  // 检查本地存储的身份验证信息
+  // check for local auth data on initial load
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
@@ -104,7 +102,6 @@ function App() {
                   <LoginPage onLogin={setLocalAuth} onUser={setLocalUser} />
                 }
               />
-              <Route path="/register" element={<RegisterPage />} />
               <Route path="/journals" element={<JournalsPage />} />
               <Route path="/journal/:id" element={<SingleJournalPage />} />
               <Route path="/mood-tracking" element={<MoodTrackingPage />} />

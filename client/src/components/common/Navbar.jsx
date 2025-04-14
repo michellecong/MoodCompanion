@@ -6,6 +6,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { getAssetUrl } from "../../api/helpers";
 
 function Navbar({ isAuthenticated, onLogout, user }) {
+  const { loginWithRedirect } = useAuth0();
 
   return (
     <nav className="navbar">
@@ -62,9 +63,17 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/register" className="nav-link register-btn">
+                <button 
+                  onClick={() => loginWithRedirect({
+                    authorizationParams: {
+                      prompt: "login",
+                      screen_hint: "signup"
+                    }
+                  })} 
+                  className="nav-link register-btn"
+                >
                   Register
-                </Link>
+                </button>
               </li>
             </>
           )}
