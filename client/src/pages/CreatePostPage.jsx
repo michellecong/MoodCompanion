@@ -95,6 +95,11 @@ const CreatePostPage = () => {
       tagsArray.forEach((tag) => formData.append("tags", tag));
 
       if (image) {
+        console.log("添加图片到 FormData:", {
+          name: image.name,
+          type: image.type,
+          size: image.size,
+        });
         formData.append("image", image);
       }
 
@@ -111,9 +116,25 @@ const CreatePostPage = () => {
 
       console.log("Submitting post with FormData");
 
+      // Create smaller timeout for image upload check
+      let uploadStartTime = Date.now();
+
+      // 在调用 api.post 之前
+      console.log(
+        "准备提交 FormData，包含字段:",
+        Array.from(formData.entries()).map((entry) => entry[0])
+      );
+
       const response = await api.post("/wishing-well/posts", formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Important for file upload
+        },
+        onUploadProgress: (progressEvent) => {
+          console.log(
+            "Upload progress:",
+            Math.round((progressEvent.loaded * 100) / progressEvent.total),
+            "%"
+          );
         },
       });
 
@@ -127,23 +148,30 @@ const CreatePostPage = () => {
     } catch (err) {
       console.error("Error creating post:", err);
 
-      const errorMessage =
-        err.response?.data?.message || "An error occurred. Please try again.";
-
-      // Add specific handling for authentication errors
-      if (err.response?.status === 401) {
-        setError("Authentication error. Please log in again.");
-
-        // Clear tokens on auth failure
-        localStorage.removeItem("token");
-        localStorage.removeItem("app_token");
-
-        // Redirect to login after a short delay
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+      // Check if it's a timeout error
+      if (err.code === "ECONNABORTED") {
+        setError(
+          "The upload is taking too long. Please try with a smaller image or try again later."
+        );
       } else {
-        setError(errorMessage);
+        const errorMessage =
+          err.response?.data?.message || "An error occurred. Please try again.";
+
+        // Add specific handling for authentication errors
+        if (err.response?.status === 401) {
+          setError("Authentication error. Please log in again.");
+
+          // Clear tokens on auth failure
+          localStorage.removeItem("token");
+          localStorage.removeItem("app_token");
+
+          // Redirect to login after a short delay
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        } else {
+          setError(errorMessage);
+        }
       }
     } finally {
       setSubmitting(false);

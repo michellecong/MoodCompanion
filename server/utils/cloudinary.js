@@ -1,4 +1,7 @@
-import cloudinary from 'cloudinary';
+import cloudinary from "cloudinary";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Cloudinary will automatically use CLOUDINARY_URL if present
 // Otherwise it will use the individual environment variables

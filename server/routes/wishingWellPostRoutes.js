@@ -66,9 +66,15 @@ const multerErrorHandler = (err, req, res, next) => {
  */
 router.post(
   "/",
-  auth,
+
+  (req, res, next) => {
+    console.log("Auth middleware passed, proceeding to multer...");
+    console.log("Request headers:", req.headers);
+    next();
+  },
   upload.single("image"),
   multerErrorHandler, // handle multer errors
+
   [
     check("content", "Content cannot be empty").not().isEmpty(),
     check("content", "Content is too long").isLength({ max: 1000 }),
