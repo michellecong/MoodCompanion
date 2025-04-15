@@ -1,6 +1,6 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const auth0 = require('auth0');
+const auth0 = require("auth0");
 
 // create an Auth0 Management client
 const auth0ManagementClient = new auth0.ManagementClient({
@@ -15,10 +15,10 @@ const userController = {
     try {
       // get user info from Auth0
       const { sub, email, nickname } = req.body.user;
-      
+
       // check if user exists
       let user = await User.findOne({ email });
-      
+
       if (user) {
         // user exists, update last login time
         const token = jwt.sign(
@@ -26,7 +26,7 @@ const userController = {
           process.env.JWT_SECRET,
           { expiresIn: "70d" }
         );
-        
+
         return res.status(200).json({
           success: true,
           token,
@@ -41,24 +41,24 @@ const userController = {
           },
         });
       }
-      
+
       // create new user
       user = new User({
-        username: nickname || email.split('@')[0],
+        username: nickname || email.split("@")[0],
         email,
         passwordHash: Math.random().toString(36), // random password
         auth0Id: sub, // store Auth0 ID
       });
-      
+
       await user.save();
-      
+
       // generate JWT token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-      
+
       res.status(201).json({
         success: true,
         token,
@@ -81,52 +81,98 @@ const userController = {
       });
     }
   },
-  
-  // replace the original login method
+
   async handleAuth0Login(req, res) {
     try {
-      // get user info from Auth0
-      const { sub, email } = req.body.user;
-      
-      // check if user exists
-      const user = await User.findOne({ email });
-      
-      if (!user) {
-        return res.status(404).json({
+      console.log("Auth0 callback request body:", req.body);
+
+      // check if user info is present
+      if (!req.body.user || !req.body.user.email) {
+        return res.status(400).json({
           success: false,
-          message: "User not found, please register first",
+          message: "Missing required Auth0 user information",
         });
       }
-      
-      // update last login time
-      user.lastLogin = Date.now();
-      await user.save();
-      
-      // generate JWT token
-      const token = jwt.sign(
-        { id: user._id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "70d" }
-      );
-      
-      res.status(200).json({
-        success: true,
-        token,
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          avatar: user.avatar,
-          avatarColor: user.avatarColor,
-          lastLogin: user.lastLogin,
-        },
-      });
+
+      // get user info from Auth0
+      const { sub, email, nickname } = req.body.user;
+
+      // check if user exists
+      let user = await User.findOne({ email });
+
+      if (user) {
+        // current user exists, update last login time
+        // Check if the user is already linked to Auth0
+        user.lastLogin = Date.now();
+        await user.save();
+
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "70d" }
+        );
+
+        return res.status(200).json({
+          success: true,
+          token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            avatarColor: user.avatarColor,
+            lastLogin: user.lastLogin,
+            createdAt: user.createdAt,
+          },
+        });
+      }
+
+      // create new user
+      // Check if the user already exists in Auth0
+      try {
+        user = new User({
+          username: nickname || email.split("@")[0],
+          email,
+          passwordHash: Math.random().toString(36),
+        });
+
+        await user.save();
+
+        // generate JWT token
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "70d" }
+        );
+
+        return res.status(201).json({
+          success: true,
+          token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            avatarColor: user.avatarColor,
+            lastLogin: user.lastLogin,
+            createdAt: user.createdAt,
+          },
+        });
+      } catch (saveError) {
+        console.error("Error saving new user:", saveError);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to create new user",
+          error: saveError.message,
+        });
+      }
     } catch (error) {
-      console.error("Auth0 login error:", error);
+      console.error("Auth0 registration error:", error);
       res.status(500).json({
         success: false,
-        message: "Login failed",
+        message: "Registration failed",
         error: error.message,
       });
     }
@@ -229,7 +275,7 @@ const userController = {
       });
     }
   },
-  
+
   // async changePassword(req, res) {
   //   try {
   //     const userId = req.user.id;

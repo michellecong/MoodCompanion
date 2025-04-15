@@ -31,6 +31,12 @@ const UserSchema = new mongoose.Schema({
     default: "user",
   },
 
+  auth0Id: {
+    type: String,
+    sparse: true,
+    index: true,
+  },
+
   // New avatar fields
   avatar: {
     type: String,
