@@ -27,7 +27,7 @@ function HomePage({ isAuthenticated, user }) {
           {!isAuthenticated ? (
             <div className="cta-buttons">
               <Link to="/login" className="cta-secondary">
-                Login
+                Get Started
               </Link>
             </div>
           ) : (

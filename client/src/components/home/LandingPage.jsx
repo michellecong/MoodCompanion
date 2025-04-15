@@ -1,5 +1,4 @@
-
-import { Link } from 'react-router-dom'; 
+import { Link } from "react-router-dom";
 import journalImg from "../../assets/images/journal.jpg";
 import chatImg from "../../assets/images/chat.jpg";
 import diagramImg from "../../assets/images/diagram.jpg";
@@ -11,53 +10,57 @@ function LandingPage() {
       <h2>Features to Support Your Emotional Well-being</h2>
 
       <div className="features-grid">
-        <div className="feature-card">
-          <div className="feature-icon">
-            <img src={journalImg} alt="Digital Journal" />
+        <Link to="/journals" className="feature-card-link">
+          <div className="feature-card">
+            <div className="feature-icon">
+              <img src={journalImg} alt="Digital Journal" />
+            </div>
+            <h3>Digital Journal</h3>
+            <p>
+              Record your thoughts and emotions with our AI-powered journal that
+              provides emotional insights.
+            </p>
           </div>
-          <h3>Digital Journal</h3>
-          <p>
-            Record your thoughts and emotions with our AI-powered journal that
-            provides emotional insights.
-          </p>
-          <Link to="/journals">Go to Journals</Link>
-        </div>
+        </Link>
 
-        <div className="feature-card">
-          <div className="feature-icon">
-            <img src={chatImg} alt="AI Companion" />
+        <Link to="/chat" className="feature-card-link">
+          <div className="feature-card">
+            <div className="feature-icon">
+              <img src={chatImg} alt="AI Companion" />
+            </div>
+            <h3>AI Companion</h3>
+            <p>
+              Chat with our AI assistant for emotional support, encouragement,
+              and personalized advice.
+            </p>
           </div>
-          <h3>AI Companion</h3>
-          <p>
-            Chat with our AI assistant for emotional support, encouragement, and
-            personalized advice.
-          </p>
-          <Link to="/chat">Go to Chat</Link>
-        </div>
+        </Link>
 
-        <div className="feature-card">
-          <div className="feature-icon">
-            <img src={diagramImg} alt="Mood Tracking" />
+        <Link to="/mood-tracking" className="feature-card-link">
+          <div className="feature-card">
+            <div className="feature-icon">
+              <img src={diagramImg} alt="Mood Tracking" />
+            </div>
+            <h3>Mood Tracking</h3>
+            <p>
+              Visualize your emotional patterns over time to build greater
+              self-awareness.
+            </p>
           </div>
-          <h3>Mood Tracking</h3>
-          <p>
-            Visualize your emotional patterns over time to build greater
-            self-awareness.
-          </p>
-          <Link to="/mood-tracking">View Mood Trends</Link>
-        </div>
+        </Link>
 
-        <div className="feature-card">
-          <div className="feature-icon">
-            <img src={wishingImg} alt="Wishing Well Community" />
+        <Link to="/posts" className="feature-card-link">
+          <div className="feature-card">
+            <div className="feature-icon">
+              <img src={wishingImg} alt="Wishing Well Community" />
+            </div>
+            <h3>Wishing Well Community</h3>
+            <p>
+              Share thoughts anonymously and connect with others facing similar
+              experiences.
+            </p>
           </div>
-          <h3>Wishing Well Community</h3>
-          <p>
-            Share thoughts anonymously and connect with others facing similar
-            experiences.
-          </p>
-          <Link to="/posts">Go to posts</Link>
-        </div>
+        </Link>
       </div>
     </div>
   );
