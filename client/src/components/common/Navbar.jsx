@@ -4,10 +4,30 @@ import Avatar from "../Personal/Avatar";
 import ProfileDropdown from "../Personal/ProfileDropdown";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
+import { useEffect } from "react";
 
-function Navbar({ isAuthenticated, onLogout, user }) {
+function Navbar({ isAuthenticated, onLogout, user: initialUser }) {
   const { loginWithRedirect } = useAuth0();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(initialUser);
+
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const updatedUser = JSON.parse(localStorage.getItem("user"));
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    };
+
+    window.addEventListener('user-updated', handleUserUpdate);
+    return () => {
+      window.removeEventListener('user-updated', handleUserUpdate);
+    };
+  }, []);
+  
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);

@@ -115,7 +115,7 @@ const UserProfile = () => {
         avatar: updatedFormData.avatar,
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-
+      window.dispatchEvent(new Event('user-updated'));
       // Clear avatar preview
       setAvatarPreview(null);
     } catch (err) {
