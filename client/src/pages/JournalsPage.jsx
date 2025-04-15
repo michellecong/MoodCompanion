@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import JournalPreview from "../components/journal/JournalPreview";
 import "./JournalsPage.css";
 import api from "../api/axios";
@@ -40,13 +40,13 @@ function JournalsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-  
+
     try {
       const response = await api.post("/journals", {
         title: newJournal.title,
         content: newJournal.content,
       });
-  
+
       if (response.data.success) {
         const newJournalData = response.data.data;
         // update journals state
@@ -54,7 +54,11 @@ function JournalsPage() {
         // update filteredJournals state
         setFilteredJournals((prevFiltered) => {
           // if no filter is applied, add the new journal to the top
-          if (!tempFilter.emotion && !tempFilter.startDate && !tempFilter.endDate) {
+          if (
+            !tempFilter.emotion &&
+            !tempFilter.startDate &&
+            !tempFilter.endDate
+          ) {
             return [newJournalData, ...prevFiltered];
           }
           // if filter is applied, check if the new journal matches the filter
@@ -76,7 +80,9 @@ function JournalsPage() {
               matchesFilter &&
               newJournalData.createdAt.split("T")[0] <= tempFilter.endDate;
           }
-          return matchesFilter ? [newJournalData, ...prevFiltered] : prevFiltered;
+          return matchesFilter
+            ? [newJournalData, ...prevFiltered]
+            : prevFiltered;
         });
         setNewJournal({ title: "", content: "" });
         setError(null);
@@ -200,7 +206,7 @@ function JournalsPage() {
             }
           />
         </div>
-        <button type="submit" className="submit-button">
+        <button type="submit" className="journal-submit-button">
           Create Journal
         </button>
       </form>
@@ -266,7 +272,9 @@ function JournalsPage() {
       ) : (
         <p>Loading journals...</p>
       )}
-      <Link to="/mood-tracking" className="view-mood-btn">View Mood Tracking</Link>
+      <Link to="/mood-tracking" className="view-mood-btn">
+        View Mood Tracking
+      </Link>
     </div>
   );
 }
