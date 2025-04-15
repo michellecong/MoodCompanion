@@ -154,7 +154,15 @@
 
 .view-all {
   color: var(--primary-color);
+  background-color: whitesmoke;
   font-size: 0.9rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+}
+.view-all:hover {
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .mood-card h2 {
