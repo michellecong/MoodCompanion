@@ -1,45 +1,64 @@
-// controllers/userController.js (ESM version)
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
+const auth0 = require('auth0');
 
-import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
-import Journal from "../models/journalModel.js";
+// create an Auth0 Management client
+const auth0ManagementClient = new auth0.ManagementClient({
+  domain: process.env.AUTH0_DOMAIN,
+  clientId: process.env.AUTH0_CLIENT_ID,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET,
+});
 
 const userController = {
-  async register(req, res) {
+  // replace the original register method
+  async handleAuth0Registration(req, res) {
     try {
-      const { username, email, password } = req.body;
-      if (!username || !email || !password) {
-        return res.status(400).json({
-          success: false,
-          message: "All fields (username, email, password) are required",
-        });
-      }
-
-      let user = await User.findOne({ $or: [{ email }, { username }] });
+      // get user info from Auth0
+      const { sub, email, nickname } = req.body.user;
+      
+      // check if user exists
+      let user = await User.findOne({ email });
+      
       if (user) {
-        return res.status(400).json({
-          success: false,
-          message:
-            user.email === email
-              ? "Email already registered"
-              : "Username already taken",
+        // user exists, update last login time
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "70d" }
+        );
+        
+        return res.status(200).json({
+          success: true,
+          token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            avatarColor: user.avatarColor,
+            createdAt: user.createdAt,
+          },
         });
       }
-
+      
+      // create new user
       user = new User({
-        username,
+        username: nickname || email.split('@')[0],
         email,
-        passwordHash: password,
+        passwordHash: Math.random().toString(36), // random password
+        auth0Id: sub, // store Auth0 ID
       });
-
+      
       await user.save();
-
+      
+      // generate JWT token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-
+      
       res.status(201).json({
         success: true,
         token,
@@ -54,7 +73,7 @@ const userController = {
         },
       });
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Auth0 registration error:", error);
       res.status(500).json({
         success: false,
         message: "Registration failed",
@@ -62,37 +81,34 @@ const userController = {
       });
     }
   },
-
-  async login(req, res) {
+  
+  // replace the original login method
+  async handleAuth0Login(req, res) {
     try {
-      const { identifier, password } = req.body;
-      if (!identifier || !password) {
-        return res.status(400).json({
+      // get user info from Auth0
+      const { sub, email } = req.body.user;
+      
+      // check if user exists
+      const user = await User.findOne({ email });
+      
+      if (!user) {
+        return res.status(404).json({
           success: false,
-          message: "Username or email and password are required",
+          message: "User not found, please register first",
         });
       }
-
-      const user = await User.findOne({
-        $or: [{ email: identifier }, { username: identifier }],
-      });
-
-      if (!user || !(await user.comparePassword(password))) {
-        return res.status(401).json({
-          success: false,
-          message: "Invalid credentials",
-        });
-      }
-
+      
+      // update last login time
       user.lastLogin = Date.now();
       await user.save();
-
+      
+      // generate JWT token
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-
+      
       res.status(200).json({
         success: true,
         token,
@@ -107,7 +123,7 @@ const userController = {
         },
       });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Auth0 login error:", error);
       res.status(500).json({
         success: false,
         message: "Login failed",
@@ -116,9 +132,15 @@ const userController = {
     }
   },
 
+  /**
+   * Get user profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async getProfile(req, res) {
     try {
       const userId = req.user.id;
+
       const user = await User.findById(userId)
         .select("-passwordHash")
         .populate("journals", "title createdAt");
@@ -130,7 +152,10 @@ const userController = {
         });
       }
 
-      res.status(200).json({ success: true, data: user });
+      res.status(200).json({
+        success: true,
+        data: user,
+      });
     } catch (error) {
       console.error("Error fetching profile:", error);
       res.status(500).json({
@@ -141,16 +166,23 @@ const userController = {
     }
   },
 
+  /**
+   * Update user profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { username, email, avatar } = req.body;
+      const { username, email, avatar } = req.body; // 移除 profilePicture
 
+      // Prepare update data
       const updateData = {};
       if (username) updateData.username = username;
       if (email) updateData.email = email;
-      if (avatar !== undefined) updateData.avatar = avatar;
+      if (avatar !== undefined) updateData.avatar = avatar; // Allow null to remove avatar
 
+      // Check if username or email already exists
       if (username || email) {
         const existingUser = await User.findOne({
           $and: [
@@ -197,59 +229,80 @@ const userController = {
       });
     }
   },
+  
+  // async changePassword(req, res) {
+  //   try {
+  //     const userId = req.user.id;
+  //     const { currentPassword, newPassword } = req.body;
 
-  async changePassword(req, res) {
-    try {
-      const userId = req.user.id;
-      const { currentPassword, newPassword } = req.body;
+  //     // Check if inputs exist
+  //     if (!currentPassword || !newPassword) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Current password and new password are required",
+  //       });
+  //     }
 
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({
-          success: false,
-          message: "Current password and new password are required",
-        });
-      }
+  //     const user = await User.findById(userId);
 
-      const user = await User.findById(userId);
+  //     // Verify current password
+  //     const isMatch = await user.comparePassword(currentPassword);
+  //     if (!isMatch) {
+  //       return res.status(401).json({
+  //         success: false,
+  //         message: "Current password is incorrect",
+  //       });
+  //     }
 
-      if (!(await user.comparePassword(currentPassword))) {
-        return res.status(401).json({
-          success: false,
-          message: "Current password is incorrect",
-        });
-      }
+  //     // Update password
+  //     user.passwordHash = newPassword; // Will be hashed by pre-save middleware
+  //     await user.save();
 
-      user.passwordHash = newPassword;
-      await user.save();
+  //     res.status(200).json({
+  //       success: true,
+  //       message: "Password changed successfully",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error changing password:", error);
+  //     res.status(500).json({
+  //       success: false,
+  //       message: "Failed to change password",
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 
-      res.status(200).json({
-        success: true,
-        message: "Password changed successfully",
-      });
-    } catch (error) {
-      console.error("Error changing password:", error);
-      res.status(500).json({
-        success: false,
-        message: "Failed to change password",
-        error: error.message,
-      });
-    }
-  },
-
+  /**
+   * Delete user account
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async deleteAccount(req, res) {
     try {
       const userId = req.user.id;
       const { password } = req.body;
 
+      // Verify password
       const user = await User.findById(userId);
-      if (!user || !(await user.comparePassword(password))) {
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
         return res.status(401).json({
           success: false,
           message: "Invalid password",
         });
       }
 
+      // Delete all user's journals
       await Journal.deleteMany({ userId });
+
+      // Delete user
       await User.findByIdAndDelete(userId);
 
       res.status(200).json({
@@ -266,11 +319,17 @@ const userController = {
     }
   },
 
+  /**
+   * Send friend request
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async sendFriendRequest(req, res) {
     try {
       const fromUserId = req.user.id;
       const { toUserId, message } = req.body;
 
+      // Check if users exist
       const [fromUser, toUser] = await Promise.all([
         User.findById(fromUserId),
         User.findById(toUserId),
@@ -283,6 +342,7 @@ const userController = {
         });
       }
 
+      // Check if already friends
       if (toUser.friends.includes(fromUserId)) {
         return res.status(400).json({
           success: false,
@@ -290,6 +350,7 @@ const userController = {
         });
       }
 
+      // Check if request already sent
       const existingRequest = toUser.friendRequests.find(
         (request) => request.from.toString() === fromUserId
       );
@@ -301,7 +362,12 @@ const userController = {
         });
       }
 
-      toUser.friendRequests.push({ from: fromUserId, message: message || "" });
+      // Add friend request
+      toUser.friendRequests.push({
+        from: fromUserId,
+        message: message || "",
+      });
+
       await toUser.save();
 
       res.status(200).json({
@@ -318,11 +384,17 @@ const userController = {
     }
   },
 
+  /**
+   * Accept or reject friend request
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async handleFriendRequest(req, res) {
     try {
       const userId = req.user.id;
       const { requestId, action } = req.body;
 
+      // Validate action
       if (!["accept", "reject"].includes(action)) {
         return res.status(400).json({
           success: false,
@@ -330,26 +402,43 @@ const userController = {
         });
       }
 
+      // Find user and request
       const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Find request index
       const requestIndex = user.friendRequests.findIndex(
         (request) => request._id.toString() === requestId
       );
 
       if (requestIndex === -1) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Friend request not found" });
+        return res.status(404).json({
+          success: false,
+          message: "Friend request not found",
+        });
       }
 
+      // Get request data
       const request = user.friendRequests[requestIndex];
       const fromUserId = request.from;
 
+      // Remove request
       user.friendRequests.splice(requestIndex, 1);
 
+      // If accepting, add to friends list for both users
       if (action === "accept") {
+        // Add to current user's friends
         if (!user.friends.includes(fromUserId)) {
           user.friends.push(fromUserId);
         }
+
+        // Add to sender's friends
         await User.findByIdAndUpdate(fromUserId, {
           $addToSet: { friends: userId },
         });
@@ -372,18 +461,24 @@ const userController = {
       });
     }
   },
-
+  /**
+   * Get friends list
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async getFriends(req, res) {
     try {
       const userId = req.user.id;
+
       const user = await User.findById(userId)
         .populate("friends", "username email avatar avatarColor")
         .select("friends");
 
       if (!user) {
-        return res
-          .status(404)
-          .json({ success: false, message: "User not found" });
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
       }
 
       res.status(200).json({
@@ -406,7 +501,10 @@ const userController = {
       const userId = req.user.id;
       const { friendId } = req.params;
 
+      // Remove friend from current user
       await User.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
+
+      // Remove current user from friend's list
       await User.findByIdAndUpdate(friendId, { $pull: { friends: userId } });
 
       res.status(200).json({
@@ -422,124 +520,6 @@ const userController = {
       });
     }
   },
-  // Enhanced syncAuth0User method for userController.js
-
-  async syncAuth0User(req, res) {
-    try {
-      const { auth0Id, email, username, avatar, name } = req.body;
-
-      if (!auth0Id || !email) {
-        return res.status(400).json({
-          success: false,
-          message: "Auth0 ID and email are required",
-        });
-      }
-
-      // Check if the user already exists by auth0Id or email
-      let user = await User.findOne({
-        $or: [{ auth0Id }, { email }],
-      });
-
-      let isNewUser = false;
-      let lastLogin = new Date();
-
-      if (user) {
-        // User exists, update fields if necessary
-        const updates = {};
-
-        // Always update auth0Id if it doesn't exist
-        if (!user.auth0Id) {
-          updates.auth0Id = auth0Id;
-        }
-
-        // Update lastLogin
-        updates.lastLogin = lastLogin;
-
-        // Conditionally update other fields if they're provided and different
-        if (name && user.username !== name) {
-          updates.username = name;
-        } else if (username && user.username !== username) {
-          updates.username = username;
-        }
-
-        if (email && user.email !== email) {
-          updates.email = email;
-        }
-
-        if (avatar && user.avatar !== avatar) {
-          updates.avatar = avatar;
-        }
-
-        // Only update if there are changes to make
-        if (Object.keys(updates).length > 0) {
-          user = await User.findByIdAndUpdate(
-            user._id,
-            { $set: updates },
-            { new: true }
-          ).select("-passwordHash");
-        }
-      } else {
-        // Create a new user
-        isNewUser = true;
-
-        // Generate a secure random password that won't be used for login
-        // (Auth0 will handle authentication)
-        const randomPassword = Array(32)
-          .fill(
-            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*"
-          )
-          .map((x) => x[Math.floor(Math.random() * x.length)])
-          .join("");
-
-        user = new User({
-          username: username || name || email.split("@")[0],
-          email,
-          auth0Id,
-          passwordHash: randomPassword,
-          avatar: avatar || null,
-          lastLogin: lastLogin,
-        });
-
-        await user.save();
-      }
-
-      // Generate our own JWT token as backup
-      const token = jwt.sign(
-        { id: user._id, role: user.role, auth0Id: user.auth0Id },
-        process.env.JWT_SECRET,
-        { expiresIn: "70d" }
-      );
-
-      // Return user data
-      const userResponse = {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        avatar: user.avatar,
-        avatarColor: user.avatarColor,
-        createdAt: user.createdAt,
-        lastLogin: user.lastLogin,
-        isNewUser: isNewUser,
-      };
-
-      res.status(200).json({
-        success: true,
-        message: isNewUser
-          ? "User created successfully"
-          : "User synced successfully",
-        user: userResponse,
-        token: token, // App's own JWT token
-      });
-    } catch (error) {
-      console.error("Auth0 sync error:", error);
-      res.status(500).json({
-        success: false,
-        message: "Failed to sync Auth0 user",
-        error: error.message,
-      });
-    }
-  },
 };
 
-export default userController;
+module.exports = userController;

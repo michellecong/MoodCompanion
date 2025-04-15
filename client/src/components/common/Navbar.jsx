@@ -5,8 +5,8 @@ import ProfileDropdown from "../Personal/ProfileDropdown";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAssetUrl } from "../../api/helpers";
 
-function Navbar() {
-  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+function Navbar({ isAuthenticated, onLogout, user }) {
+  const { loginWithRedirect } = useAuth0();
 
   return (
     <nav className="navbar">
@@ -43,49 +43,34 @@ function Navbar() {
                 <ProfileDropdown user={user} />
               </li>
               <li className="nav-item">
-                <button
-                  className="logout-btn"
-                  onClick={() =>
-                    logout({
-                      logoutParams: {
-                        returnTo: window.location.origin,
-                      },
-                    })
-                  }
-                >
+                <button className="logout-btn" onClick={onLogout}>
                   Logout
                 </button>
               </li>
               {user && (
                 <li className="nav-item user-welcome">
-                  <span>Hi, {user.name || user.nickname || "Friend"}</span>
+                  <span>Hi, {user.username}</span>
                 </li>
               )}
+
               <Avatar user={user} size="md" />
             </>
           ) : (
             <>
               <li className="nav-item">
-                <button
-                  className="nav-link"
-                  onClick={() =>
-                    loginWithRedirect({
-                      prompt: "login", // forces Auth0 login screen to show
-                    })
-                  }
-                >
+                <Link to="/login" className="nav-link">
                   Login
-                </button>
+                </Link>
               </li>
               <li className="nav-item">
-                <button
+                <button 
+                  onClick={() => loginWithRedirect({
+                    authorizationParams: {
+                      prompt: "login",
+                      screen_hint: "signup"
+                    }
+                  })} 
                   className="nav-link register-btn"
-                  onClick={() =>
-                    loginWithRedirect({
-                      screen_hint: "signup",
-                      prompt: "login", 
-                    })
-                  }
                 >
                   Register
                 </button>
