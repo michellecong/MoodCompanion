@@ -21,17 +21,13 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-
 .hero-content h1 {
-  font-size: 2.5rem;
+  font-size: 1.2rem;
   margin-bottom: 16px;
   color: white;
 }
-
 .hero-content p {
-  font-size: 1.2rem;
-  margin-bottom: 32px;
-  opacity: 0.9;
+  display: none;
 }
 
 .cta-buttons {
@@ -204,10 +200,12 @@
 
 /* Feature Navigation Buttons */
 .feature-nav-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 80px;
-  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 默认在小屏幕上显示2列 */
+  grid-template-rows: auto auto; /* 2行 */
+  gap: 20px; /* 小屏幕上间距小一些 */
+  margin-top: 30px;
+  padding: 0 15px;
 }
 
 .feature-button {
@@ -244,6 +242,38 @@
 }
 
 /* Desktop styles - Media query for larger screens */
+@media screen and (min-width: 576px) {
+  /* Split Content Layout when wide sreen */
+  .split-content {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  /* Feature Navigation Buttons */
+  .feature-nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-top: 40px;
+  }
+  .hero-content h1,
+  .hero-content p {
+    display: block;
+  }
+  .hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+    color: white;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 32px;
+    opacity: 0.9;
+  }
+}
+/* Desktop styles - Media query for larger screens */
 @media screen and (min-width: 768px) {
   /* Split Content Layout when wide sreen */
   .split-content {
@@ -260,15 +290,12 @@
   .split-sidebar {
     flex: 1;
   }
-}
 
-/* Desktop styles - Media query for larger screens */
-@media screen and (min-width: 576px) {
-  /* Split Content Layout when wide sreen */
-  .split-content {
+  /* Feature Navigation Buttons */
+  .feature-nav-buttons {
     display: flex;
-    flex-direction: row;
-    gap: 24px;
-    margin-bottom: 40px;
+    justify-content: center;
+    gap: 120px;
+    margin-top: 40px;
   }
 }
