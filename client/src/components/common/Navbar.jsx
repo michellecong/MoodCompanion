@@ -63,7 +63,7 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                 </Link>
               </li>
               <li className="nav-item">
-                <button 
+                {/* <button 
                   onClick={() => loginWithRedirect({
                     authorizationParams: {
                       prompt: "login",
@@ -73,7 +73,7 @@ function Navbar({ isAuthenticated, onLogout, user }) {
                   className="nav-link register-btn"
                 >
                   Register
-                </button>
+                </button> */}
               </li>
             </>
           )}
