@@ -1,23 +1,15 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
-  createPost,
-  getRecentPosts,
-  getPostById,
-  getUserPosts,
-  upvotePost,
-  followPost,
-  unfollowPost,
-  deletePost,
-  getFollowedPosts,
-} = require("../controllers/wishingWellPostController");
-const auth = require("../middleware/auth");
-const { check, validationResult } = require("express-validator");
-const { validateRequest } = require("../middleware/validators");
-const multer = require("multer");
-const path = require("path");
-const cloudinary = require("../utils/cloudinary");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+import wishingWellPostController from "../controllers/wishingWellPostController.js";
+
+import auth from "../middleware/auth.js";
+import { check, validationResult } from "express-validator";
+
+import { validateRequest } from "../middleware/validators.js";
+import multer from "multer";
+import path from "path";
+import cloudinary from "../utils/cloudinary.js";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 // use multer-storage-cloudinary to store images in Cloudinary
 const storage = new CloudinaryStorage({
@@ -74,15 +66,21 @@ const multerErrorHandler = (err, req, res, next) => {
  */
 router.post(
   "/",
-  auth,
+
+  (req, res, next) => {
+    console.log("Auth middleware passed, proceeding to multer...");
+    console.log("Request headers:", req.headers);
+    next();
+  },
   upload.single("image"),
   multerErrorHandler, // handle multer errors
+
   [
     check("content", "Content cannot be empty").not().isEmpty(),
     check("content", "Content is too long").isLength({ max: 1000 }),
   ],
   validateRequest,
-  createPost
+  wishingWellPostController.createPost
 );
 
 /**
@@ -90,14 +88,14 @@ router.post(
  * @desc    Get recent posts (optionally filtered by tag)
  * @access  Public
  */
-router.get("/", getRecentPosts);
+router.get("/", wishingWellPostController.getRecentPosts);
 
 /**
  * @route   GET api/wishing-well/posts/user
  * @desc    Get user's own posts
  * @access  Private
  */
-router.get("/me", auth, getUserPosts);
+router.get("/me", auth, wishingWellPostController.getUserPosts);
 /**
  * @route   GET api/wishing-well/posts/:id
  * @desc    Get a post by ID with its comments
@@ -109,35 +107,35 @@ router.get("/me", auth, getUserPosts);
  * @desc    Get posts followed by the user
  * @access  Private
  */
-router.get("/followed", auth, getFollowedPosts);
+router.get("/followed", auth, wishingWellPostController.getFollowedPosts);
 
-router.get("/:id", getPostById);
+router.get("/:id", wishingWellPostController.getPostById);
 
 /**
  * @route   PUT api/wishing-well/posts/:id/upvote
  * @desc    Upvote a post
  * @access  Private
  */
-router.put("/:id/upvote", auth, upvotePost);
+router.put("/:id/upvote", auth, wishingWellPostController.upvotePost);
 
 /**
  * @route   PUT api/wishing-well/posts/:id/follow
  * @desc    Follow a post
  * @access  Private
  */
-router.put("/:id/follow", auth, followPost);
+router.put("/:id/follow", auth, wishingWellPostController.followPost);
 /**
  * @route   PUT api/wishing-well/posts/:id/unfollow
  * @desc    Unfollow a post
  * @access  Private
  */
-router.put("/:id/unfollow", auth, unfollowPost);
+router.put("/:id/unfollow", auth, wishingWellPostController.unfollowPost);
 
 /**
  * @route   DELETE api/wishing-well/posts/:id
  * @desc    Delete a post
  * @access  Private
  */
-router.delete("/:id", auth, deletePost);
+router.delete("/:id", auth, wishingWellPostController.deletePost);
 
-module.exports = router;
+export default router;

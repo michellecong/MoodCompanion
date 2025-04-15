@@ -1,4 +1,6 @@
-const axios = require("axios");
+import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 
 const mapSentimentToEmotions = (sentiment, content) => {
   let emotionsDetected = [];
@@ -132,4 +134,4 @@ const generateFeedback = (emotionsDetected) => {
   }
 };
 
-module.exports = { detectEmotions, generateFeedback };
+export { detectEmotions, generateFeedback };

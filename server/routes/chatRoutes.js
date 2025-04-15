@@ -1,13 +1,10 @@
-const express = require("express");
+// routes/chatRoutes.js (ESM version)
+
+import express from "express";
 const router = express.Router();
-const {
-  chatMessage,
-  saveChat,
-  getUserChats,
-  getChatById,
-} = require("../controllers/chatController");
-const { validationResult } = require("express-validator");
-const auth = require("../middleware/auth");
+import chatController from "../controllers/chatController.js";
+import { validationResult } from "express-validator";
+import auth from "../middleware/auth.js";
 
 // Optional validation middleware
 /* const validateRequest = (req, res, next) => {
@@ -16,15 +13,14 @@ const auth = require("../middleware/auth");
     return res.status(400).json({ errors: errors.array() });
   }
   next();
-};
+}; */
 
-*/
-router.post("/", chatMessage);
+// Public
+router.post("/", chatController.chatMessage);
 
-router.post("/save", saveChat);
+// Private
+router.post("/save", auth, chatController.saveChat);
 
-// router.get("/user/:userId", getUserChats);
+router.get("/:id", auth, chatController.getChatById);
 
-router.get("/:id", getChatById);
-
-module.exports = router;
+export default router;

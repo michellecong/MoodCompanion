@@ -1,7 +1,11 @@
-const Chat = require("../models/chatModel");
-const User = require("../models/userModel");
-const chatServices = require("../services/chatServices");
-require("dotenv").config();
+// controllers/chatController.js (ESM version)
+
+import dotenv from "dotenv";
+dotenv.config();
+
+import Chat from "../models/chatModel.js";
+import User from "../models/userModel.js";
+import chatServices from "../services/chatServices.js";
 
 /**
  * Chat controller for handling chat-related operations
@@ -54,7 +58,7 @@ const chatController = {
       }
 
       const now = new Date();
-      const title = now.toLocaleString(); // or derive from first message
+      const title = now.toLocaleString();
 
       const newChat = new Chat({
         userId,
@@ -65,7 +69,6 @@ const chatController = {
       await newChat.save();
       console.log("Chat saved:", newChat);
 
-      // Optionally link chat to User model
       await User.findByIdAndUpdate(userId, {
         $push: { chats: newChat._id },
       });
@@ -90,7 +93,6 @@ const chatController = {
   async getUserChats(req, res) {
     try {
       const userId = req.user.id;
-
       const chats = await Chat.find({ userId }).sort({ createdAt: -1 });
 
       res.status(200).json({
@@ -171,7 +173,6 @@ const chatController = {
 
       await Chat.findByIdAndDelete(chatId);
 
-      // Optionally remove from user reference
       await User.findByIdAndUpdate(userId, {
         $pull: { chats: chatId },
       });
@@ -191,4 +192,4 @@ const chatController = {
   },
 };
 
-module.exports = chatController;
+export default chatController;

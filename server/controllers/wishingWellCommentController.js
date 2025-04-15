@@ -1,22 +1,14 @@
-const WishingWellComment = require("../models/wishingWellCommentModel");
-const WishingWellPost = require("../models/wishingWellPostModel");
-const mongoose = require("mongoose");
+// controllers/wishingWellCommentController.js (ESM version)
+import mongoose from "mongoose";
+import WishingWellComment from "../models/wishingWellCommentModel.js";
+import WishingWellPost from "../models/wishingWellPostModel.js";
 
-/**
- * Controller for WishingWellComment operations
- */
 const wishingWellCommentController = {
-  /**
-   * Create a new comment
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async createComment(req, res) {
     try {
       const { postId, content } = req.body;
       const userId = req.user.id;
 
-      // Validate input
       if (!content) {
         return res.status(400).json({
           success: false,
@@ -24,11 +16,7 @@ const wishingWellCommentController = {
         });
       }
 
-      // Check if post exists and is active
-      const post = await WishingWellPost.findOne({
-        _id: postId,
-        status: "active",
-      });
+      const post = await WishingWellPost.findOne({ _id: postId, status: "active" });
 
       if (!post) {
         return res.status(404).json({
@@ -37,24 +25,14 @@ const wishingWellCommentController = {
         });
       }
 
-      // Create new comment
-      const newComment = new WishingWellComment({
-        postId,
-        userId,
-        content,
-      });
-
+      const newComment = new WishingWellComment({ postId, userId, content });
       await newComment.save();
 
-      // Increment comment count in post
-      await WishingWellPost.findByIdAndUpdate(postId, {
-        $inc: { commentCount: 1 },
-      });
+      await WishingWellPost.findByIdAndUpdate(postId, { $inc: { commentCount: 1 } });
 
-      // Return comment without sensitive information
       const commentToReturn = {
         ...newComment.toObject(),
-        userId: undefined, // Hide actual user ID for privacy
+        userId: undefined,
       };
 
       res.status(201).json({
@@ -71,25 +49,15 @@ const wishingWellCommentController = {
     }
   },
 
-  /**
-   * Get comments for a post
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async getPostComments(req, res) {
     try {
       const postId = req.params.postId;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20;
       const skip = (page - 1) * limit;
-      const sortBy =
-        req.query.sortBy === "upvotes" ? { upvotes: -1 } : { createdAt: -1 };
+      const sortBy = req.query.sortBy === "upvotes" ? { upvotes: -1 } : { createdAt: -1 };
 
-      // 验证帖子存在
-      const postExists = await WishingWellPost.exists({
-        _id: postId,
-        status: "active",
-      });
+      const postExists = await WishingWellPost.exists({ _id: postId, status: "active" });
 
       if (!postExists) {
         return res.status(404).json({
@@ -98,20 +66,13 @@ const wishingWellCommentController = {
         });
       }
 
-      // 获取评论 - 只排除 upvotedBy，保留 userId
-      const comments = await WishingWellComment.find({
-        postId,
-        status: "active",
-      })
+      const comments = await WishingWellComment.find({ postId, status: "active" })
         .sort(sortBy)
         .skip(skip)
         .limit(limit)
-        .select("-upvotedBy"); // 只排除 upvotedBy
+        .select("-upvotedBy");
 
-      const total = await WishingWellComment.countDocuments({
-        postId,
-        status: "active",
-      });
+      const total = await WishingWellComment.countDocuments({ postId, status: "active" });
 
       res.status(200).json({
         success: true,
@@ -131,17 +92,11 @@ const wishingWellCommentController = {
     }
   },
 
-  /**
-   * Upvote a comment
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async upvoteComment(req, res) {
     try {
       const commentId = req.params.id;
       const userId = req.user.id;
 
-      // Find comment
       const comment = await WishingWellComment.findById(commentId);
 
       if (!comment || comment.status !== "active") {
@@ -151,7 +106,6 @@ const wishingWellCommentController = {
         });
       }
 
-      // Check if user already upvoted
       if (comment.upvotedBy.includes(userId)) {
         return res.status(400).json({
           success: false,
@@ -159,15 +113,11 @@ const wishingWellCommentController = {
         });
       }
 
-      // Update comment
       const updatedComment = await WishingWellComment.findByIdAndUpdate(
         commentId,
-        {
-          $inc: { upvotes: 1 },
-          $push: { upvotedBy: userId },
-        },
+        { $inc: { upvotes: 1 }, $push: { upvotedBy: userId } },
         { new: true }
-      ).select("-upvotedBy -userId"); // Don't expose user IDs or who upvoted
+      ).select("-upvotedBy -userId");
 
       res.status(200).json({
         success: true,
@@ -183,28 +133,18 @@ const wishingWellCommentController = {
     }
   },
 
-  /**
-   * Delete a comment
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async deleteComment(req, res) {
     try {
       const commentId = req.params.id;
       const userId = req.user.id;
       const userRole = req.user.role;
 
-      // Find comment
       const comment = await WishingWellComment.findById(commentId);
 
       if (!comment) {
-        return res.status(404).json({
-          success: false,
-          message: "Comment not found",
-        });
+        return res.status(404).json({ success: false, message: "Comment not found" });
       }
 
-      // Check if user is authorized (comment owner or admin)
       if (comment.userId.toString() !== userId && userRole !== "admin") {
         return res.status(403).json({
           success: false,
@@ -212,15 +152,8 @@ const wishingWellCommentController = {
         });
       }
 
-      // Soft delete - update status instead of removing
-      await WishingWellComment.findByIdAndUpdate(commentId, {
-        status: "deleted",
-      });
-
-      // Decrement comment count in post
-      await WishingWellPost.findByIdAndUpdate(comment.postId, {
-        $inc: { commentCount: -1 },
-      });
+      await WishingWellComment.findByIdAndUpdate(commentId, { status: "deleted" });
+      await WishingWellPost.findByIdAndUpdate(comment.postId, { $inc: { commentCount: -1 } });
 
       res.status(200).json({
         success: true,
@@ -236,11 +169,6 @@ const wishingWellCommentController = {
     }
   },
 
-  /**
-   * Get user's own comments
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async getUserComments(req, res) {
     try {
       const userId = req.user.id;
@@ -248,21 +176,14 @@ const wishingWellCommentController = {
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
-      // Fetch comments
-      const comments = await WishingWellComment.find({
-        userId,
-        status: { $ne: "deleted" },
-      })
+      const comments = await WishingWellComment.find({ userId, status: { $ne: "deleted" } })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .populate("postId", "content tags")
-        .select("-upvotedBy"); // Don't expose who upvoted
+        .select("-upvotedBy");
 
-      const total = await WishingWellComment.countDocuments({
-        userId,
-        status: { $ne: "deleted" },
-      });
+      const total = await WishingWellComment.countDocuments({ userId, status: { $ne: "deleted" } });
 
       res.status(200).json({
         success: true,
@@ -282,17 +203,11 @@ const wishingWellCommentController = {
     }
   },
 
-  /**
-   * Report a comment
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   async reportComment(req, res) {
     try {
       const commentId = req.params.id;
       const { reason } = req.body;
 
-      // Find and update comment
       const comment = await WishingWellComment.findByIdAndUpdate(
         commentId,
         { status: "reported" },
@@ -300,14 +215,8 @@ const wishingWellCommentController = {
       );
 
       if (!comment) {
-        return res.status(404).json({
-          success: false,
-          message: "Comment not found",
-        });
+        return res.status(404).json({ success: false, message: "Comment not found" });
       }
-
-      // Here you could log the report to a separate collection if needed
-      // For simplicity, we're just changing the status
 
       res.status(200).json({
         success: true,
@@ -324,4 +233,4 @@ const wishingWellCommentController = {
   },
 };
 
-module.exports = wishingWellCommentController;
+export default wishingWellCommentController;

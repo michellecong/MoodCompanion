@@ -1,4 +1,7 @@
-const cloudinary = require("cloudinary").v2;
+import cloudinary from "cloudinary";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Cloudinary will automatically use CLOUDINARY_URL if present
 // Otherwise it will use the individual environment variables
@@ -8,4 +11,4 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-module.exports = cloudinary;
+export default cloudinary;

@@ -1,7 +1,14 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+// models/userModel.js (ESM version)
+
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const FriendRequestSchema = new mongoose.Schema({
+  auth0Id: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   from: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -26,12 +33,16 @@ const UserSchema = new mongoose.Schema({
     minlength: 3,
     maxlength: 30,
   },
+  // 添加 Auth0 ID 字段
+  auth0Id: {
+    type: String,
+    unique: true,
+    sparse: true, // 允许非Auth0用户有null值
+  },
   role: {
     type: String,
     default: "user",
   },
-
-  // New avatar fields
   avatar: {
     type: String,
     default: null,
@@ -39,7 +50,6 @@ const UserSchema = new mongoose.Schema({
   avatarColor: {
     type: String,
     default: function () {
-      // Generate a random color on user creation
       const colors = [
         "#4299E1",
         "#48BB78",
@@ -82,7 +92,6 @@ const UserSchema = new mongoose.Schema({
       ref: "Journal",
     },
   ],
-
   friends: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -98,7 +107,6 @@ const UserSchema = new mongoose.Schema({
   ],
 });
 
-// Pre-save middleware to hash password
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("passwordHash")) return next();
 
@@ -111,9 +119,9 @@ UserSchema.pre("save", async function (next) {
   }
 });
 
-// Method to compare password
 UserSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.passwordHash);
 };
 
-module.exports = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
+export default User;

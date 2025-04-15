@@ -1,46 +1,54 @@
-const Journal = require("../models/journalModel");
-const User = require("../models/userModel");
-const emotionService = require("../services/emotionService");
+// controllers/journalController.js (ESM version)
 
-/**
- * Journal controller for handling journal-related operations
- */
+import Journal from "../models/journalModel.js";
+import User from "../models/userModel.js";
+import { detectEmotions, generateFeedback } from "../services/emotionService.js";
+
 const journalController = {
   /**
    * Create a new journal entry with emotion detection
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
    */
   async createJournal(req, res) {
     try {
       const { title, content } = req.body;
-      const userId = req.user.id;
-  
-      if (!title || !content) {
-        return res
-          .status(400)
-          .json({ message: "The title and content cannot be empty" });
+      const auth0Id = req.user?.sub;
+
+      if (!auth0Id) {
+        return res.status(401).json({ success: false, message: "Missing user identity" });
       }
-  
-      const emotionsDetected = await emotionService.detectEmotions(content);
-      const feedback = emotionService.generateFeedback(emotionsDetected);
-  
+
+      if (!title || !content) {
+        return res.status(400).json({
+          success: false,
+          message: "The title and content cannot be empty",
+        });
+      }
+
+      // ✅ Find the user by Auth0 ID (not Mongo _id)
+      const user = await User.findOne({ auth0Id });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      const emotionsDetected = await detectEmotions(content);
+      const feedback = generateFeedback(emotionsDetected);
+
       const newJournal = new Journal({
-        userId,
+        userId: user._id, // ✅ Use MongoDB ObjectId from the user document
         title,
         content,
         emotionsDetected,
         feedback,
       });
-  
+
       await newJournal.save();
-  
+
       await User.findByIdAndUpdate(
-        userId,
+        user._id,
         { $push: { journals: newJournal._id } },
         { new: true }
       );
-  
+
       res.status(201).json({
         success: true,
         data: newJournal,
@@ -56,24 +64,17 @@ const journalController = {
   },
 
   /**
-   * Get all journals for the authenticated user
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
+   * Get all journals for the authenticated user (with pagination)
    */
   async getUserJournals(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.sub;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
       const [journals, total] = await Promise.all([
-        Journal.find({ userId })
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
-          .lean(),
-
+        Journal.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
         Journal.countDocuments({ userId }),
       ]);
 
@@ -97,38 +98,23 @@ const journalController = {
 
   /**
    * Delete a journal entry
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
    */
-
   async deleteJournal(req, res) {
     try {
       const journalId = req.params.id;
-      const userId = req.user.id;
+      const userId = req.user?.sub;
 
-      // Find the journal
       const journal = await Journal.findById(journalId);
-
-      // Check if journal exists
       if (!journal) {
-        return res.status(404).json({
-          success: false,
-          message: "Journal not found",
-        });
+        return res.status(404).json({ success: false, message: "Journal not found" });
       }
 
-      // Check if the journal belongs to the authenticated user
       if (journal.userId.toString() !== userId) {
-        return res.status(403).json({
-          success: false,
-          message: "Not authorized to delete this journal",
-        });
+        return res.status(403).json({ success: false, message: "Not authorized to delete this journal" });
       }
 
-      // Delete the journal
       await Journal.findByIdAndDelete(journalId);
 
-      // Remove journal reference from user
       await User.findByIdAndUpdate(
         userId,
         { $pull: { journals: journalId } },
@@ -148,34 +134,25 @@ const journalController = {
       });
     }
   },
+
   /**
    * Get a single journal by ID
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
    */
   async getJournalById(req, res) {
     try {
       const journalId = req.params.id;
-      const userId = req.user.id;
+      const userId = req.user?.sub;
 
       const journal = await Journal.findById(journalId);
-
-      // Check if journal exists
       if (!journal) {
-        return res.status(404).json({
-          success: false,
-          message: "Journal not found",
-        });
+        return res.status(404).json({ success: false, message: "Journal not found" });
       }
 
-      // Check if the journal belongs to the authenticated user
       if (journal.userId.toString() !== userId) {
-        return res.status(403).json({
-          success: false,
-          message: "Not authorized to access this journal",
-        });
+        return res.status(403).json({ success: false, message: "Not authorized to access this journal" });
       }
-      console.log('Returning journal:', journal); // 添加日志
+
+      console.log("Returning journal:", journal);
 
       res.status(200).json({
         success: true,
@@ -193,56 +170,48 @@ const journalController = {
 
   /**
    * Update a journal entry
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
    */
   async updateJournal(req, res) {
     try {
       const journalId = req.params.id;
-      const userId = req.user.id;
+      const userId = req.user?.sub;
       const { title, content } = req.body;
-  
+
       if (!title && !content) {
         return res.status(400).json({
           success: false,
           message: "Please provide title or content to update",
         });
       }
-  
+
       let journal = await Journal.findById(journalId);
       if (!journal) {
-        return res.status(404).json({
-          success: false,
-          message: "Journal not found",
-        });
+        return res.status(404).json({ success: false, message: "Journal not found" });
       }
-  
+
       if (journal.userId.toString() !== userId) {
-        return res.status(403).json({
-          success: false,
-          message: "Not authorized to update this journal",
-        });
+        return res.status(403).json({ success: false, message: "Not authorized to update this journal" });
       }
-  
+
       const updateData = {};
       let updatedContent = journal.content;
-  
+
       if (title) updateData.title = title;
       if (content) {
         updateData.content = content;
         updatedContent = content;
       }
-  
-      const emotionsDetected = await emotionService.detectEmotions(updatedContent);
+
+      const emotionsDetected = await detectEmotions(updatedContent);
       updateData.emotionsDetected = emotionsDetected;
-      updateData.feedback = emotionService.generateFeedback(emotionsDetected);
-  
+      updateData.feedback = generateFeedback(emotionsDetected);
+
       journal = await Journal.findByIdAndUpdate(
         journalId,
         { $set: updateData },
         { new: true, runValidators: true }
       );
-  
+
       res.status(200).json({
         success: true,
         data: journal,
@@ -256,6 +225,6 @@ const journalController = {
       });
     }
   }
-}
+};
 
-module.exports = journalController;
+export default journalController;

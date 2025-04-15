@@ -1,16 +1,16 @@
-const app = require("./app");
-// const config = require("config");
-const http = require("http");
-require("dotenv").config();
+// server.js (ESM version)
 
-// aquire port from environment or use default
+import http from "http";
+import dotenv from "dotenv";
+import app from "./app.js";
+
+dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 app.set("port", PORT);
 
-// create server
 const server = http.createServer(app);
 
-// handle server errors
 server.on("error", (error) => {
   if (error.syscall !== "listen") {
     throw error;
@@ -30,7 +30,6 @@ server.on("error", (error) => {
   }
 });
 
-// start server
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
