@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import JournalPreview from "../journal/JournalPreview";
 
-
 function Dashboard({ isLoading, recentJournals }) {
   if (isLoading) {
     return <div className="loading">Loading your personal dashboard...</div>;
@@ -10,42 +9,43 @@ function Dashboard({ isLoading, recentJournals }) {
   // calculate the recent emotion summary
   const getRecentEmotionSummary = () => {
     if (!recentJournals || recentJournals.length === 0) {
-      return { topEmotion: 'neutral', emoji: '😐' };
+      return { topEmotion: "neutral", emoji: "😐" };
     }
 
     // summarize the emotions from recent journals
     const emotionCounts = {};
-    recentJournals.forEach(journal => {
+    recentJournals.forEach((journal) => {
       if (journal.emotionsDetected && journal.emotionsDetected.length > 0) {
         const topEmotion = journal.emotionsDetected.reduce((prev, current) =>
           prev.score > current.score ? prev : current
         );
-        emotionCounts[topEmotion.name] = (emotionCounts[topEmotion.name] || 0) + 1;
+        emotionCounts[topEmotion.name] =
+          (emotionCounts[topEmotion.name] || 0) + 1;
       }
     });
 
     // find the most frequent emotion
-    const topEmotion = Object.keys(emotionCounts).reduce((a, b) =>
-      emotionCounts[a] > emotionCounts[b] ? a : b,
-      'neutral'
+    const topEmotion = Object.keys(emotionCounts).reduce(
+      (a, b) => (emotionCounts[a] > emotionCounts[b] ? a : b),
+      "neutral"
     );
 
     const emojiMap = {
-      excited: '🤩',
-      content: '😊',
-      depressed: '😔',
-      lonely: '🥀',
-      frustrated: '😤',
-      irritated: '😠',
-      nervous: '😟',
-      worried: '😰',
-      calm: '😌',
-      indifferent: '😐',
+      excited: "🤩",
+      content: "😊",
+      depressed: "😔",
+      lonely: "🥀",
+      frustrated: "😤",
+      irritated: "😠",
+      nervous: "😟",
+      worried: "😰",
+      calm: "😌",
+      indifferent: "😐",
     };
 
     return {
-      topEmotion: topEmotion || 'neutral',
-      emoji: emojiMap[topEmotion] || '😐',
+      topEmotion: topEmotion || "neutral",
+      emoji: emojiMap[topEmotion] || "😐",
     };
   };
 
@@ -57,9 +57,15 @@ function Dashboard({ isLoading, recentJournals }) {
         <div className="dashboard-card mood-card">
           <h2>Recent Emotion Overview</h2>
           <p>
-            Based on your recent journals, you seem to be feeling mostly <strong>{topEmotion}</strong> {emoji}.
+            Based on your recent journals, you seem to be feeling mostly{" "}
+            <strong>{topEmotion}</strong> {emoji}.
           </p>
-          <Link to="/mood-tracking" className="view-trends-btn">
+          <Link
+            to="/mood-tracking"
+            className="view-trends-btn"
+            aria-label="View Mood Trends"
+            role="button"
+          >
             View Mood Trends
           </Link>
         </div>
