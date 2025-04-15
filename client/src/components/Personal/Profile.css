@@ -1,4 +1,3 @@
-/* 主容器样式 */
 .profile-container {
   max-width: 42rem;
   margin: 2.5rem auto;
@@ -8,7 +7,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 标题栏样式 */
 .profile-header {
   display: flex;
   justify-content: space-between;
@@ -19,6 +17,15 @@
 .profile-title {
   font-size: 1.5rem;
   font-weight: bold;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
 }
 
 .btn-edit {
@@ -34,13 +41,12 @@
   background-color: #4f7df3;
   color: white;
 }
-/* 加载状态样式 */
+
 .loading-spinner {
   text-align: center;
   padding: 2.5rem 0;
 }
 
-/* 错误信息样式 */
 .error-container {
   max-width: 28rem;
   margin: 2.5rem auto;
@@ -59,7 +65,6 @@
   margin-bottom: 1rem;
 }
 
-/* 按钮样式 */
 .btn {
   font-weight: bold;
   padding: 0.5rem 1rem;
@@ -104,7 +109,6 @@
   background-color: #2563eb;
 }
 
-/* 表单样式 */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -141,7 +145,24 @@
   margin-top: 1.5rem;
 }
 
-/* 头像样式 */
+.avatar-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.avatar-btn {
+  width: 100%;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
 .avatar-container {
   margin-right: 1.5rem;
 }
@@ -188,7 +209,6 @@
   display: none;
 }
 
-/* 用户信息显示样式 */
 .user-info-header {
   display: flex;
   align-items: center;
@@ -213,7 +233,6 @@
   color: #6b7280;
 }
 
-/* 个人资料区块样式 */
 .profile-section {
   background-color: #f3f4f6;
   padding: 1rem;
@@ -226,7 +245,6 @@
   margin-bottom: 0.5rem;
 }
 
-/* 信息表格样式 */
 .info-table {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -238,7 +256,6 @@
   color: #6b7280;
 }
 
-/* 日记列表样式 */
 .journal-list {
   display: flex;
   flex-direction: column;

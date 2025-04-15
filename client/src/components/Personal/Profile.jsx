@@ -68,6 +68,11 @@ const UserProfile = () => {
         avatar: profile.avatar,
       });
       setAvatarPreview(null);
+    } else {
+      setFormData(prevData => ({
+        ...prevData,
+        avatar: profile.avatar || null
+      }));
     }
     setIsEditing(!isEditing);
   };
@@ -180,25 +185,27 @@ const UserProfile = () => {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <label htmlFor="avatar" className="avatar-upload-label">
-                  Upload New Avatar
-                </label>
-                {formData.avatar && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        avatar: null,
-                        avatarFile: null,
-                      });
-                      setAvatarPreview(null);
-                    }}
-                    className="avatar-remove-btn"
-                  >
-                    Remove Avatar
-                  </button>
-                )}
+                <div className="avatar-buttons">
+                  <label htmlFor="avatar" className="btn btn-primary avatar-btn">
+                    Upload New Avatar
+                  </label>
+                  {formData.avatar && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          avatar: null,
+                          avatarFile: null,
+                        });
+                        setAvatarPreview(null);
+                      }}
+                      className="btn btn-danger avatar-btn"
+                    >
+                      Remove Avatar
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
