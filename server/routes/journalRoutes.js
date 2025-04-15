@@ -1,73 +1,41 @@
-const express = require("express");
+// routes/journalRoutes.js (ESM version)
+
+import express from "express";
 const router = express.Router();
-const {
-  createJournal,
-  getUserJournals,
-  deleteJournal,
-  getJournalById,
-  updateJournal,
-} = require("../controllers/journalController");
-const { check, validationResult } = require("express-validator");
-const auth = require("../middleware/auth");
-/**
- * @route   POST api/journals
- */
+import journalController from "../controllers/journalController.js";
+import { check, validationResult } from "express-validator";
+import { validateRequest } from "../middleware/validators.js";
 
-const validateRequest = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  next();
-};
-
-/**
- * @route   POST api/journals
- * @desc    create a journal
- * @access  Private
- */
+// POST /api/journals - Create new journal
 router.post(
   "/",
-
-  auth,
-
-  // check("title", "title can not be empty").not().isEmpty(),
-  // check("content", "content can not be empty").not().isEmpty(),
-
-  validateRequest,
-  createJournal
+  [
+    // optional: uncomment these validators if needed
+    // check("title", "Title cannot be empty").not().isEmpty(),
+    // check("content", "Content cannot be empty").not().isEmpty(),
+    validateRequest,
+  ],
+  journalController.createJournal
 );
 
-/**
- * @route   GET api/journals
- * @desc    Get all journals for the authenticated user
- * @access  Private
- */
-router.get("/", auth, getUserJournals);
+// GET /api/journals - Get all journals for the authenticated user
+router.get("/", journalController.getUserJournals);
 
-/**
- * @route   DELETE api/journals/:id
- * @desc    Delete a journal
- * @access  Private
- */
-router.delete("/:id", auth, deleteJournal);
+// GET /api/journals/:id - Get a single journal by ID
+router.get("/:id", journalController.getJournalById);
 
-/**
- * @route   GET api/journals/:id
- * @desc    Get a single journal by ID
- * @access  Private
- */
-router.get("/:id", auth, getJournalById);
-
+// PUT /api/journals/:id - Update a journal
 router.put(
   "/:id",
-  auth,
   [
     check("title", "Title cannot be empty").optional().not().isEmpty(),
     check("content", "Content cannot be empty").optional().not().isEmpty(),
+    validateRequest,
   ],
-  validateRequest,
-  updateJournal
+  journalController.updateJournal
 );
 
-module.exports = router;
+// DELETE /api/journals/:id - Delete a journal
+router.delete("/:id", journalController.deleteJournal);
+
+export default router;

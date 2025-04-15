@@ -4,8 +4,8 @@ import "./ChatPage.css";
 import api from "../api/axios";
 
 function ChatPage() {
-  const [savedChats, setSavedChats] = useState([]); // Only saved chats go here
-  const [unsavedMessages, setUnsavedMessages] = useState([]); // Current chat
+  const [savedChats, setSavedChats] = useState([]); 
+  const [unsavedMessages, setUnsavedMessages] = useState([]); 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 

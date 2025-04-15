@@ -45,6 +45,9 @@ To run the web app locally, create a `.env` file with the following configuratio
 ```sh
 VITE_API_URL=http://localhost:3000/api
 VITE_WEATHER_API_KEY=your_weather_api_key
+VITE_AUTH0_DOMAIN=dev-mbnzpg6jdhzwez57.us.auth0.com
+VITE_AUTH0_CLIENT_ID=hetpd1zpthmbLoQ2at7Rki9H0U6Mlh3T
+VITE_AUTH0_AUDIENCE=https://moodcompanion-api
 ```
 
 **Backend:**
@@ -53,8 +56,16 @@ VITE_WEATHER_API_KEY=your_weather_api_key
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority
 JWT_SECRET=your_jwt_secret_key
 PORT=3000
+AUTH0_DOMAIN=dev-mbnzpg6jdhzwez57.us.auth0.com
+AUTH0_AUDIENCE=https://moodcompanion-api
 GOOGLE_API_KEY=your_google_cloud_natural_language_api_key
 OPENAI_API_KEY=your_openai_api_key
+CLOUDINARY_CLOUD_NAME=dvk6pkdnc
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=YegsusQxmFAZJnV2f3EWZwryoHo
+CLOUDINARY_URL=cloudinary://722568152246744:YegsusQxmFAZJnV2f3EWZwryoHo@dvk6pkdnc
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_ENVIRONMENT=us-east-1
 ```
 
 ## Server

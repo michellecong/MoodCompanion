@@ -1,26 +1,27 @@
-const OpenAI = require("openai");
-require("dotenv").config();
+// services/chatServices.js (ESM version)
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, 
-});
+import OpenAI from "openai";
+import dotenv from "dotenv";
+dotenv.config();
+
+import { retrieveContext } from "./retrievalService.js";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const chatServices = {
-    async getAIResponse(message) {
-        try {
-            const response = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo", 
-                messages: [{role:"system",content:"You are a mental health specialist who helps reframe thoughts into positive ones."},{ role: "user", content: message }],
-                //Fine-tune the system message as per your requirement
-                max_tokens: 100,
-            });
+  async getAIResponse(message) {
+    const context = await retrieveContext(message);
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: "You are a mental health specialist. Use the following context to support the user." },
+        { role: "user", content: `User message: ${message}\n\nContext:\n${context}` },
+      ],
+      max_tokens: 200,
+    });
 
-            return response.choices[0].message.content;
-        } catch (error) {
-            console.error("Error generating AI response:", error);
-            throw new Error("Failed to fetch response from AI.");
-        }
-    }
+    return response.choices[0].message.content;
+  },
 };
 
-module.exports = chatServices;
+export default chatServices;

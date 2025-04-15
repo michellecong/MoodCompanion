@@ -1,5 +1,6 @@
-// models/chatModel.js
-const mongoose = require("mongoose");
+// models/chatModel.js (ESM version)
+
+import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
@@ -22,4 +23,5 @@ ChatSchema.pre("save", function (next) {
   next();
 });
 
-module.exports = mongoose.model("Chat", ChatSchema);
+const Chat = mongoose.model("Chat", ChatSchema);
+export default Chat;

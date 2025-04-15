@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const WishingWellPostSchema = new mongoose.Schema({
   userId: {
@@ -63,4 +63,5 @@ WishingWellPostSchema.virtual("comments", {
   foreignField: "postId",
 });
 
-module.exports = mongoose.model("WishingWellPost", WishingWellPostSchema);
+const WishingWellPost = mongoose.model("WishingWellPost", WishingWellPostSchema);
+export default WishingWellPost;
