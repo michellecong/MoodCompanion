@@ -8,8 +8,8 @@ const {
   deleteAccount,
   sendFriendRequest,
   handleFriendRequest,
-  handleAuth0Login,    
-  handleAuth0Registration   
+  handleAuth0Login,
+  handleAuth0Registration,
 } = require("../controllers/userController");
 const auth = require("../middleware/auth");
 const multer = require("multer");
@@ -183,6 +183,6 @@ router.post("/auth0-callback", handleAuth0Login);
  * @desc    Handle Auth0 registration
  * @access  Public
  */
-router.post("/auth0-register", handleAuth0Registration);
+// router.post("/auth0-register", handleAuth0Registration);
 
 module.exports = router;
