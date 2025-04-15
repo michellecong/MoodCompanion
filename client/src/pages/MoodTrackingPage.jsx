@@ -220,7 +220,7 @@ function MoodTrackingPage() {
             You haven't written any journals yet. Start journaling to track your
             mood!
           </p>
-          <Link to="/journals/new" className="button primary">
+          <Link to="/journals" className="button primary">
             Write New Journal
           </Link>
         </div>
