@@ -4,13 +4,32 @@ import "./ProfileDropdown.css";
 import { getAssetUrl } from "../../api/helpers";
 import Avatar from "./Avatar";
 
-function ProfileDropdown({ user }) {
+function ProfileDropdown({ user: initialUser }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [user, setUser] = useState(initialUser);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const updatedUser = JSON.parse(localStorage.getItem("user"));
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    };
+
+    window.addEventListener('user-updated', handleUserUpdate);
+    return () => {
+      window.removeEventListener('user-updated', handleUserUpdate);
+    };
+  }, []);
+  
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

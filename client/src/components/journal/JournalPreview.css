@@ -17,6 +17,11 @@
   color: #333;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  background: linear-gradient(
+    135deg,
+    rgba(165, 193, 233, 0.5),
+    rgba(224, 232, 181, 0.5)
+  );
 }
 
 .journal-card:hover {
@@ -34,7 +39,10 @@
 .journal-header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #007bff;
+  color: var(--primary-dark);
+}
+.journal-card:hover .journal-header h3 {
+  color: var(--primary-light);
 }
 
 .journal-date {
@@ -60,14 +68,17 @@
   right: 10px;
   background: none;
   border: none;
-  font-size: 1.2rem;
   cursor: pointer;
-  color: #dc3545;
-  transition: color 0.2s;
+  padding: 5px;
+
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
 .delete-journal-btn:hover {
-  color: #b02a37;
+  opacity: 1;
+  background-color: transparent;
+  transform: scale(1.2) rotate(10deg);
 }
 
 .no-journals {
@@ -75,4 +86,42 @@
   color: #888;
   padding: 30px 0;
   font-size: 1.1rem;
+}
+
+@media screen and (min-width: 576px) {
+  .journal-preview {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .journal-card-container {
+    position: relative;
+    flex: 1; /* Equal width distribution */
+    min-width: 280px;
+  }
+
+  .journal-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Fill the height of parent */
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  /* Make the excerpt grow to fill available space */
+  .journal-excerpt {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  /* Keep header and emotions at top and bottom */
+  .journal-header,
+  .journal-emotions {
+    flex-shrink: 0;
+  }
 }
