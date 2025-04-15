@@ -39,7 +39,10 @@
 .journal-header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #007bff;
+  color: var(--primary-dark);
+}
+.journal-card:hover .journal-header h3 {
+  color: var(--primary-light);
 }
 
 .journal-date {

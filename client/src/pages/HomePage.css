@@ -293,6 +293,10 @@
     gap: 80px;
     margin-top: 40px;
   }
+
+  .feature-button:hover {
+    background-color: transparent;
+  }
   .hero-content h1,
   .hero-content p {
     display: block;

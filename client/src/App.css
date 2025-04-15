@@ -1,7 +1,8 @@
 :root {
-  --primary-color: #6a98d0;
-  --primary-light: #a5c1e9;
-  --primary-dark: #4a76b3;
+  --primary-color: #4ecdc4; /* 中等薄荷绿 */
+  --primary-light: #a8eae5; /* 浅薄荷绿 */
+  --primary-dark: #2b9e95; /* 深薄荷绿 */
+
   --secondary-color: #fcd0a1;
   --secondary-light: #ffe2c7;
   --secondary-dark: #e5b980;
