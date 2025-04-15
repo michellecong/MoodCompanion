@@ -2,6 +2,7 @@
 
 import express from "express";
 const router = express.Router();
+<<<<<<< HEAD
 import { check } from "express-validator";
 import { validateRequest } from "../middleware/validators.js";
 import userController from "../controllers/userController.js";
@@ -11,6 +12,26 @@ import path from "path";
 import cloudinary from "../utils/cloudinary.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
+=======
+const { check } = require("express-validator");
+const { validateRequest } = require("../middleware/validators");
+const {
+  getProfile,
+  updateProfile,
+  deleteAccount,
+  sendFriendRequest,
+  handleFriendRequest,
+  handleAuth0Login,    
+  handleAuth0Registration   
+} = require("../controllers/userController");
+const auth = require("../middleware/auth");
+const multer = require("multer");
+const path = require("path");
+const cloudinary = require("../utils/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+// use multer-storage-cloudinary to store images in Cloudinary
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -87,6 +108,7 @@ router.post(
   handleFileUpload
 );
 
+<<<<<<< HEAD
 router.post(
   "/register",
   [
@@ -102,6 +124,14 @@ router.post(
 router.post("/login", userController.login);
 
 router.get("/profile", auth, userController.getProfile);
+=======
+/**
+ * @route   GET api/users/profile
+ * @desc    Get user profile
+ * @access  Private
+ */
+router.get("/profile", auth, getProfile);
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
 
 router.put(
   "/profile",
@@ -116,6 +146,7 @@ router.put(
   userController.updateProfile
 );
 
+<<<<<<< HEAD
 router.put(
   "/change-password",
   auth,
@@ -129,6 +160,13 @@ router.put(
   userController.changePassword
 );
 
+=======
+/**
+ * @route   DELETE api/users/account
+ * @desc    Delete user account
+ * @access  Private
+ */
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
 router.delete(
   "/account",
   auth,
@@ -161,4 +199,22 @@ router.put(
 // Auth0用户同步端点
 router.post("/auth0-sync", userController.syncAuth0User);
 
+<<<<<<< HEAD
 export default router;
+=======
+/**
+ * @route   POST api/users/auth0-callback
+ * @desc    Handle Auth0 login callback
+ * @access  Public
+ */
+router.post("/auth0-callback", handleAuth0Login);
+
+/**
+ * @route   POST api/users/auth0-register
+ * @desc    Handle Auth0 registration
+ * @access  Public
+ */
+router.post("/auth0-register", handleAuth0Registration);
+
+module.exports = router;
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7

@@ -1,12 +1,27 @@
+<<<<<<< HEAD
 // controllers/userController.js (ESM version)
 
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import Journal from "../models/journalModel.js";
+=======
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
+const auth0 = require('auth0');
+
+// create an Auth0 Management client
+const auth0ManagementClient = new auth0.ManagementClient({
+  domain: process.env.AUTH0_DOMAIN,
+  clientId: process.env.AUTH0_CLIENT_ID,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET,
+});
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
 
 const userController = {
-  async register(req, res) {
+  // replace the original register method
+  async handleAuth0Registration(req, res) {
     try {
+<<<<<<< HEAD
       const { username, email, password } = req.body;
       if (!username || !email || !password) {
         return res.status(400).json({
@@ -16,30 +31,66 @@ const userController = {
       }
 
       let user = await User.findOne({ $or: [{ email }, { username }] });
+=======
+      // get user info from Auth0
+      const { sub, email, nickname } = req.body.user;
+      
+      // check if user exists
+      let user = await User.findOne({ email });
+      
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
       if (user) {
-        return res.status(400).json({
-          success: false,
-          message:
-            user.email === email
-              ? "Email already registered"
-              : "Username already taken",
+        // user exists, update last login time
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "70d" }
+        );
+        
+        return res.status(200).json({
+          success: true,
+          token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            avatarColor: user.avatarColor,
+            createdAt: user.createdAt,
+          },
         });
       }
+<<<<<<< HEAD
 
+=======
+      
+      // create new user
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
       user = new User({
-        username,
+        username: nickname || email.split('@')[0],
         email,
+<<<<<<< HEAD
         passwordHash: password,
+=======
+        passwordHash: Math.random().toString(36), // random password
+        auth0Id: sub, // store Auth0 ID
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
       });
-
+      
       await user.save();
+<<<<<<< HEAD
 
+=======
+      
+      // generate JWT token
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-
+      
       res.status(201).json({
         success: true,
         token,
@@ -54,7 +105,7 @@ const userController = {
         },
       });
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Auth0 registration error:", error);
       res.status(500).json({
         success: false,
         message: "Registration failed",
@@ -62,6 +113,7 @@ const userController = {
       });
     }
   },
+<<<<<<< HEAD
 
   async login(req, res) {
     try {
@@ -87,12 +139,36 @@ const userController = {
       user.lastLogin = Date.now();
       await user.save();
 
+=======
+  
+  // replace the original login method
+  async handleAuth0Login(req, res) {
+    try {
+      // get user info from Auth0
+      const { sub, email } = req.body.user;
+      
+      // check if user exists
+      const user = await User.findOne({ email });
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found, please register first",
+        });
+      }
+      
+      // update last login time
+      user.lastLogin = Date.now();
+      await user.save();
+      
+      // generate JWT token
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "70d" }
       );
-
+      
       res.status(200).json({
         success: true,
         token,
@@ -107,7 +183,7 @@ const userController = {
         },
       });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Auth0 login error:", error);
       res.status(500).json({
         success: false,
         message: "Login failed",
@@ -116,6 +192,14 @@ const userController = {
     }
   },
 
+<<<<<<< HEAD
+=======
+  /**
+   * Get user profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
   async getProfile(req, res) {
     try {
       const userId = req.user.id;
@@ -197,6 +281,7 @@ const userController = {
       });
     }
   },
+<<<<<<< HEAD
 
   async changePassword(req, res) {
     try {
@@ -209,9 +294,25 @@ const userController = {
           message: "Current password and new password are required",
         });
       }
+=======
+  
+  // async changePassword(req, res) {
+  //   try {
+  //     const userId = req.user.id;
+  //     const { currentPassword, newPassword } = req.body;
 
-      const user = await User.findById(userId);
+  //     // Check if inputs exist
+  //     if (!currentPassword || !newPassword) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Current password and new password are required",
+  //       });
+  //     }
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
 
+  //     const user = await User.findById(userId);
+
+<<<<<<< HEAD
       if (!(await user.comparePassword(currentPassword))) {
         return res.status(401).json({
           success: false,
@@ -221,20 +322,34 @@ const userController = {
 
       user.passwordHash = newPassword;
       await user.save();
+=======
+  //     // Verify current password
+  //     const isMatch = await user.comparePassword(currentPassword);
+  //     if (!isMatch) {
+  //       return res.status(401).json({
+  //         success: false,
+  //         message: "Current password is incorrect",
+  //       });
+  //     }
 
-      res.status(200).json({
-        success: true,
-        message: "Password changed successfully",
-      });
-    } catch (error) {
-      console.error("Error changing password:", error);
-      res.status(500).json({
-        success: false,
-        message: "Failed to change password",
-        error: error.message,
-      });
-    }
-  },
+  //     // Update password
+  //     user.passwordHash = newPassword; // Will be hashed by pre-save middleware
+  //     await user.save();
+>>>>>>> 5f4ae191b526ab0293cc073bcc2208273020cbd7
+
+  //     res.status(200).json({
+  //       success: true,
+  //       message: "Password changed successfully",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error changing password:", error);
+  //     res.status(500).json({
+  //       success: false,
+  //       message: "Failed to change password",
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 
   async deleteAccount(req, res) {
     try {

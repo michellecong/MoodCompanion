@@ -5,9 +5,7 @@ import ProfileDropdown from "../Personal/ProfileDropdown";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getAssetUrl } from "../../api/helpers";
 
-function Navbar() {
-  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
-
+function Navbar({ isAuthenticated, onLogout, user }) {
   return (
     <nav className="navbar">
       <div className="container navbar-container">
@@ -78,15 +76,7 @@ function Navbar() {
                 </button>
               </li>
               <li className="nav-item">
-                <button
-                  className="nav-link register-btn"
-                  onClick={() =>
-                    loginWithRedirect({
-                      screen_hint: "signup",
-                      prompt: "login", 
-                    })
-                  }
-                >
+                <Link to="/register" className="nav-link register-btn">
                   Register
                 </button>
               </li>
