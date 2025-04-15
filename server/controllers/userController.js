@@ -43,8 +43,24 @@ const userController = {
       }
 
       // create new user
+      let username = nickname || email.split("@")[0];
+      
+      // if username length is less than 3, add random number or character to ensure length
+      if (username.length < 3) {
+        // add random number to ensure length is at least 3
+        username = `${username}${Math.floor(Math.random() * 1000)}`;
+      }
+      
+      // ensure username is unique
+      const existingUsername = await User.findOne({ username });
+      if (existingUsername) {
+        // if username already exists, add unique identifier
+        username = `${username}${Math.floor(Math.random() * 10000)}`;
+      }
+
+      // create new user
       user = new User({
-        username: nickname || email.split("@")[0],
+        username: username,
         email,
         passwordHash: Math.random().toString(36), // random password
         auth0Id: sub, // store Auth0 ID
@@ -131,8 +147,18 @@ const userController = {
       // create new user
       // Check if the user already exists in Auth0
       try {
+        let username = nickname || email.split("@")[0];
+        if (username.length < 3) {
+          username = `${username}${Math.floor(Math.random() * 1000)}`;
+        }
+
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+          username = `${username}${Math.floor(Math.random() * 10000)}`;
+        }
+
         user = new User({
-          username: nickname || email.split("@")[0],
+          username: username,
           email,
           passwordHash: Math.random().toString(36),
         });
@@ -220,7 +246,7 @@ const userController = {
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { username, email, avatar } = req.body; // 移除 profilePicture
+      const { username, email, avatar } = req.body; // remove password from body
 
       // Prepare update data
       const updateData = {};
