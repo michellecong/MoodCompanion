@@ -251,7 +251,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* 删除按钮样式 - 适中宽度 */
 .delete-button {
   background-color: #eb7575;
   color: white;
@@ -278,7 +277,6 @@
   cursor: not-allowed;
 }
 
-/* 评论的删除按钮 */
 .delete-button.small {
   background-color: transparent;
   color: #f56c6c;
@@ -361,8 +359,6 @@
   border-radius: 8px;
 }
 
-/* 媒体查询 - 小屏幕设备 */
-/* 适用于小屏幕设备（如手机） */
 @media (max-width: 600px) {
   .post-detail-card {
     padding: 15px;

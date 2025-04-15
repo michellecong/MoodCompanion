@@ -75,19 +75,17 @@ const wishingWellPostController = {
         });
       }
 
-      // 准备帖子响应 - 保留userId并添加isOwner标志
       const postResponse = {
         ...post.toObject(),
-        isOwner: userId && String(post.userId) === String(userId), // 添加isOwner标志
+        isOwner: userId && String(post.userId) === String(userId), 
       };
 
-      // 获取评论
       const comments = await WishingWellComment.find({
         postId,
         status: "active",
       })
         .sort({ createdAt: -1 })
-        .select("-upvotedBy"); // 不暴露谁点赞
+        .select("-upvotedBy");
 
       res.status(200).json({
         success: true,

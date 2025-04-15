@@ -6,8 +6,6 @@ const path = require("path");
 const connectDB = require("./utils/db");
 require("dotenv").config();
 
-// routes import
-
 const journalRoutes = require("./routes/journalRoutes");
 const userRoutes = require("./routes/userRoutes");
 const wishingWellPostRoutes = require("./routes/wishingWellPostRoutes");
@@ -32,22 +30,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// 修改为使用绝对路径
-app.use(express.static(path.join(__dirname, "public"))); // 用于默认图片
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // 用于上传的图片
-
-// 放在后面，避免前端路由和API冲突
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "../client/build")));
-// routes
-// app.use("/api/auth", authRoutes);
 app.use("/api/journals", journalRoutes);
-// app.use("/api/wishingwell", wishingwellRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wishing-well/posts", wishingWellPostRoutes);
 app.use("/api/wishing-well/comments", wishingWellCommentRoutes);
 app.use("/api/chat", chatRoutes);
-
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });

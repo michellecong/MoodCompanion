@@ -107,7 +107,7 @@ input[type="text"]:focus {
   margin-bottom: 1rem;
   text-align: center;
 }
-/* 添加到CreatePostPage.css末尾 */
+
 .image-upload-container {
   margin-top: 10px;
   display: flex;

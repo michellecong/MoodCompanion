@@ -30,10 +30,6 @@ router.post(
   "/",
 
   auth,
-
-  // check("title", "title can not be empty").not().isEmpty(),
-  // check("content", "content can not be empty").not().isEmpty(),
-
   validateRequest,
   createJournal
 );
