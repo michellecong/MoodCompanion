@@ -68,12 +68,12 @@
 }
 
 .filter-button {
-  background-color: #007bff;
+  background-color: var(--primary-dark);
   color: white;
 }
 
 .filter-button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color);
 }
 
 .reset-button {
@@ -82,7 +82,7 @@
 }
 
 .reset-button:hover {
-  background-color: #5a6268;
+  background-color: #bb41ae;
 }
 
 .create-journal {
@@ -130,7 +130,7 @@
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  background-color: var(--primary-color);
+  background-color: var(--primary-dark);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease, transform 0.3s ease,
     box-shadow 0.3s ease;
@@ -142,7 +142,7 @@
 }
 
 .journal-submit-button:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-color);
   transform: scale(1.1);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
@@ -175,7 +175,7 @@
   display: inline-block;
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: var(--primary-dark);
   color: white;
   text-decoration: none;
   border-radius: 5px;
@@ -184,5 +184,5 @@
 }
 
 .view-mood-btn:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color);
 }
