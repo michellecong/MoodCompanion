@@ -68,7 +68,7 @@ const PostsListPage = () => {
     <div className="posts-list-container">
       <div className="page-header">
         <div className="header-content">
-          <h1 className="page-title">Wishing Well</h1>
+          <h1 className="community-page-title">Wishing Well Community</h1>
           <p className="page-description">
             Share your thoughts, wishes, and connect with others in this
             anonymous space.
