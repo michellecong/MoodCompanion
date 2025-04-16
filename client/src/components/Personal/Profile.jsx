@@ -69,9 +69,9 @@ const UserProfile = () => {
       });
       setAvatarPreview(null);
     } else {
-      setFormData(prevData => ({
+      setFormData((prevData) => ({
         ...prevData,
-        avatar: profile.avatar || null
+        avatar: profile.avatar || null,
       }));
     }
     setIsEditing(!isEditing);
@@ -120,7 +120,7 @@ const UserProfile = () => {
         avatar: updatedFormData.avatar,
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      window.dispatchEvent(new Event('user-updated'));
+      window.dispatchEvent(new Event("user-updated"));
       // Clear avatar preview
       setAvatarPreview(null);
     } catch (err) {
@@ -145,6 +145,19 @@ const UserProfile = () => {
       </div>
     );
   }
+  // Get the 3 most recent journals
+  const recentJournals =
+    profile.journals && profile.journals.length > 0
+      ? [...profile.journals]
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 3)
+      : [];
+
+  // Determine the appropriate title text based on journal count
+  const journalTitleText =
+    profile.journals && profile.journals.length > 3
+      ? `Recent Journals (${recentJournals.length}/${profile.journals.length})`
+      : `My Journals (${recentJournals.length})`;
 
   return (
     <div className="profile-container">
@@ -186,7 +199,10 @@ const UserProfile = () => {
                   className="hidden"
                 />
                 <div className="avatar-buttons">
-                  <label htmlFor="avatar" className="btn btn-primary avatar-btn">
+                  <label
+                    htmlFor="avatar"
+                    className="btn btn-primary avatar-btn"
+                  >
                     Upload New Avatar
                   </label>
                   {formData.avatar && (
@@ -293,14 +309,12 @@ const UserProfile = () => {
             </div>
           </div>
 
-          {profile.journals && profile.journals.length > 0 && (
+          {recentJournals.length > 0 && (
             <div className="profile-section">
-              <h4 className="section-title">
-                My Journals ({profile.journals.length})
-              </h4>
+              <h4 className="section-title">{journalTitleText}</h4>
 
               <div className="journal-list">
-                {profile.journals.map((journal) => (
+                {recentJournals.map((journal) => (
                   <div key={journal._id} className="journal-item">
                     <div className="journal-header">
                       <p className="journal-title">{journal.title}</p>
