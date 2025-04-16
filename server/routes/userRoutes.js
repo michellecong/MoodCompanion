@@ -10,6 +10,7 @@ const {
   handleFriendRequest,
   handleAuth0Login,
 } = require("../controllers/userController");
+const userController = require("../controllers/userController");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
@@ -183,4 +184,44 @@ router.post("/auth0-callback", handleAuth0Login);
  * @access  Public
  */
 
+/**
+ * @route   GET api/users/search
+ * @desc    Search for users
+ * @access  Private
+ */
+router.get("/search", auth, userController.searchUsers);
+
+/**
+ * @route   GET api/users/friends
+ * @desc    Get user's friends list
+ * @access  Private
+ */
+router.get("/friends", auth, userController.getFriends);
+
+/**
+ * @route   GET api/users/friend-requests
+ * @desc    Get pending friend requests
+ * @access  Private
+ */
+router.get("/friend-requests", auth, userController.getFriendRequests);
+
+/**
+ * @route   DELETE api/users/friends/:friendId
+ * @desc    Remove a friend
+ * @access  Private
+ */
+router.delete("/friends/:friendId", auth, userController.removeFriend);
+
+/**
+ * @route   POST api/users/friend-request
+ * @desc    Send a friend request
+ * @access  Private
+ */
+router.post(
+  "/friend-request",
+  auth,
+  [check("toUserId", "User ID to send request to is required").not().isEmpty()],
+  validateRequest,
+  userController.sendFriendRequest
+);
 module.exports = router;

@@ -80,6 +80,11 @@ function ProfileDropdown({ user: initialUser }) {
                 My Posts
               </Link>
             </li>
+            <li>
+              <Link to="/friends" onClick={() => setIsOpen(false)}>
+                Friends
+              </Link>
+            </li>
           </ul>
         </div>
       )}
