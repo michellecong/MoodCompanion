@@ -137,17 +137,34 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     if (!isAuthenticated || !currentUser) return;
 
     try {
-      const response = await api.get("/user/me");
+      setFollowLoading(true);
+
+      const response = await api.get("/wishing-well/posts/followed");
+
+      console.log("Complete response:", response.data);
 
       if (response.data && response.data.success) {
-        const userFollowingPosts = response.data.data.followingPosts || [];
-        setFollowingPosts(userFollowingPosts);
+        // Correctly get the posts array
+        const followedPosts = response.data.data || [];
+        console.log("Followed posts:", followedPosts);
 
-        // check if the current post is in the user's followed posts
-        setIsFollowing(userFollowingPosts.includes(id));
+        // Check if the current post is in the followed list
+        const isCurrentPostFollowed = followedPosts.some(
+          (post) => String(post._id) === String(id)
+        );
+
+        console.log("Current post status:", {
+          currentPostId: id,
+          isFollowed: isCurrentPostFollowed,
+        });
+
+        setIsFollowing(isCurrentPostFollowed);
       }
+
+      setFollowLoading(false);
     } catch (err) {
-      console.error("Error in handling followed posts:", err);
+      console.error("Failed to get follow status:", err);
+      setFollowLoading(false);
     }
   };
 

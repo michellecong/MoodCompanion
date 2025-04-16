@@ -10,6 +10,7 @@ const {
   unfollowPost,
   deletePost,
   getFollowedPosts,
+  checkFollowStatus,
 } = require("../controllers/wishingWellPostController");
 const auth = require("../middleware/auth");
 const { check, validationResult } = require("express-validator");
@@ -146,7 +147,11 @@ router.delete("/:id", auth, deletePost);
  * @desc    Check if the user has upvoted a post
  * @access  Private
  */
-router.get("/:id/upvote-status", auth, wishingWellPostController.checkUpvoteStatus);
+router.get(
+  "/:id/upvote-status",
+  auth,
+  wishingWellPostController.checkUpvoteStatus
+);
 
 /**
  * @route   PUT api/wishing-well/posts/:id/remove-upvote
@@ -154,5 +159,14 @@ router.get("/:id/upvote-status", auth, wishingWellPostController.checkUpvoteStat
  * @access  Private
  */
 router.put("/:id/remove-upvote", auth, wishingWellPostController.removeUpvote);
-
+/**
+ * @route   GET api/wishing-well/posts/:id/follow-status
+ * @desc    Check if the user has followed a post
+ * @access  Private
+ */
+router.get(
+  "/:id/follow-status",
+  auth,
+  wishingWellPostController.checkFollowStatus
+);
 module.exports = router;
