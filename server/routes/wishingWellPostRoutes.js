@@ -18,6 +18,7 @@ const multer = require("multer");
 const path = require("path");
 const cloudinary = require("../utils/cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const wishingWellPostController = require("../controllers/wishingWellPostController");
 
 // use multer-storage-cloudinary to store images in Cloudinary
 const storage = new CloudinaryStorage({
@@ -139,5 +140,19 @@ router.put("/:id/unfollow", auth, unfollowPost);
  * @access  Private
  */
 router.delete("/:id", auth, deletePost);
+
+/**
+ * @route   GET api/wishing-well/posts/:id/upvote-status
+ * @desc    Check if the user has upvoted a post
+ * @access  Private
+ */
+router.get("/:id/upvote-status", auth, wishingWellPostController.checkUpvoteStatus);
+
+/**
+ * @route   PUT api/wishing-well/posts/:id/remove-upvote
+ * @desc    Remove upvote from a post
+ * @access  Private
+ */
+router.put("/:id/remove-upvote", auth, wishingWellPostController.removeUpvote);
 
 module.exports = router;
