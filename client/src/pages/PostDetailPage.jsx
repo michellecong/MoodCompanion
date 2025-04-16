@@ -30,6 +30,8 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const handleGoBack = () => {
     if (from === "followed") {
       navigate("/followed-posts");
+    } else if (from === "myposts") {
+      navigate("/my-posts");
     } else {
       navigate("/posts"); // or navigate to a default page
     }
@@ -141,22 +143,19 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
       const response = await api.get("/wishing-well/posts/followed");
 
-      console.log("Complete response:", response.data);
-
       if (response.data && response.data.success) {
         // Correctly get the posts array
         const followedPosts = response.data.data || [];
-        console.log("Followed posts:", followedPosts);
 
         // Check if the current post is in the followed list
         const isCurrentPostFollowed = followedPosts.some(
           (post) => String(post._id) === String(id)
         );
 
-        console.log("Current post status:", {
-          currentPostId: id,
-          isFollowed: isCurrentPostFollowed,
-        });
+        // console.log("Current post status:", {
+        //   currentPostId: id,
+        //   isFollowed: isCurrentPostFollowed,
+        // });
 
         setIsFollowing(isCurrentPostFollowed);
       }

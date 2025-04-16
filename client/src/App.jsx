@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import api from "./api/axios"; 
+import api from "./api/axios";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import HomePage from "./pages/HomePage";
@@ -17,26 +17,28 @@ import FollowedPostsPage from "./pages/FollowedPostsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import Profile from "./components/Personal/Profile";
-
+import MyPostsPage from "./pages/MyPostsPage";
 import "./App.css";
 
 function App() {
   const { logout, isAuthenticated, user, getAccessTokenSilently } = useAuth0();
   const [localAuth, setLocalAuth] = useState(false);
   const [localUser, setLocalUser] = useState(null);
-  
+
   useEffect(() => {
     console.log("App: Auth0 state changed", isAuthenticated);
     const syncAuth0State = async () => {
       if (isAuthenticated && user) {
         try {
-          console.log("App: User authenticated with Auth0, syncing with backend");
+          console.log(
+            "App: User authenticated with Auth0, syncing with backend"
+          );
           const accessToken = await getAccessTokenSilently();
-          const response = await api.post("/users/auth0-callback", { 
+          const response = await api.post("/users/auth0-callback", {
             user,
-            token: accessToken 
+            token: accessToken,
           });
-          
+
           if (response.data.token) {
             console.log("App: Backend auth successful, updating local state");
             localStorage.setItem("token", response.data.token);
@@ -49,15 +51,15 @@ function App() {
         }
       }
     };
-    
+
     syncAuth0State();
   }, [isAuthenticated, user, getAccessTokenSilently]);
-  
+
   // check for local auth data on initial load
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
-    
+
     if (token && userData) {
       console.log("App: Found local auth data, setting local state");
       setLocalAuth(true);
@@ -72,10 +74,10 @@ function App() {
     setLocalAuth(false);
     setLocalUser(null);
 
-    logout({ 
+    logout({
       logoutParams: {
-        returnTo: window.location.origin 
-      }
+        returnTo: window.location.origin,
+      },
     });
   };
 
@@ -118,9 +120,11 @@ function App() {
               <Route path="/create-post" element={<CreatePostPage />} />
               <Route
                 path="/followed-posts"
-                element={
-                  <FollowedPostsPage isAuthenticated={localAuth} />
-                }
+                element={<FollowedPostsPage isAuthenticated={localAuth} />}
+              />
+              <Route
+                path="/my-posts"
+                element={<MyPostsPage isAuthenticated={localAuth} />}
               />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="*" element={<NotFoundPage />} />

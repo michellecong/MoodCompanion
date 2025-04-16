@@ -21,12 +21,12 @@ function ProfileDropdown({ user: initialUser }) {
       }
     };
 
-    window.addEventListener('user-updated', handleUserUpdate);
+    window.addEventListener("user-updated", handleUserUpdate);
     return () => {
-      window.removeEventListener('user-updated', handleUserUpdate);
+      window.removeEventListener("user-updated", handleUserUpdate);
     };
   }, []);
-  
+
   useEffect(() => {
     setUser(initialUser);
   }, [initialUser]);
@@ -73,6 +73,11 @@ function ProfileDropdown({ user: initialUser }) {
             <li>
               <Link to="/mood-tracking" onClick={() => setIsOpen(false)}>
                 Mood History
+              </Link>
+            </li>
+            <li>
+              <Link to="/my-posts" onClick={() => setIsOpen(false)}>
+                My Posts
               </Link>
             </li>
           </ul>
