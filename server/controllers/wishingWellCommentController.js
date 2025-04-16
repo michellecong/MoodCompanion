@@ -85,7 +85,6 @@ const wishingWellCommentController = {
       const sortBy =
         req.query.sortBy === "upvotes" ? { upvotes: -1 } : { createdAt: -1 };
 
-      // 验证帖子存在
       const postExists = await WishingWellPost.exists({
         _id: postId,
         status: "active",
@@ -98,7 +97,6 @@ const wishingWellCommentController = {
         });
       }
 
-      // 获取评论 - 只排除 upvotedBy，保留 userId
       const comments = await WishingWellComment.find({
         postId,
         status: "active",
@@ -106,7 +104,7 @@ const wishingWellCommentController = {
         .sort(sortBy)
         .skip(skip)
         .limit(limit)
-        .select("-upvotedBy"); // 只排除 upvotedBy
+        .select("-upvotedBy"); 
 
       const total = await WishingWellComment.countDocuments({
         postId,
@@ -322,6 +320,97 @@ const wishingWellCommentController = {
       });
     }
   },
+
+  /**
+   * Check if user has upvoted a comment
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async checkCommentUpvoteStatus(req, res) {
+    try {
+      const commentId = req.params.id;
+      const userId = req.user.id;
+
+      // Find comment
+      const comment = await WishingWellComment.findById(commentId);
+
+      if (!comment) {
+        return res.status(404).json({
+          success: false,
+          message: "Comment not found",
+        });
+      }
+
+      // Check if user has upvoted this comment
+      const hasUpvoted = comment.upvotedBy.includes(userId);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          hasUpvoted
+        },
+      });
+    } catch (error) {
+      console.error("Error checking comment upvote status:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to check comment upvote status",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Remove upvote from a comment
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async removeCommentUpvote(req, res) {
+    try {
+      const commentId = req.params.id;
+      const userId = req.user.id;
+
+      // Find comment
+      const comment = await WishingWellComment.findById(commentId);
+
+      if (!comment) {
+        return res.status(404).json({
+          success: false,
+          message: "Comment not found",
+        });
+      }
+
+      // Check if user has upvoted
+      if (!comment.upvotedBy.includes(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: "You have not upvoted this comment",
+        });
+      }
+
+      // Update comment to remove upvote
+      const updatedComment = await WishingWellComment.findByIdAndUpdate(
+        commentId,
+        {
+          $inc: { upvotes: -1 },
+          $pull: { upvotedBy: userId },
+        },
+        { new: true }
+      ).select("-upvotedBy"); // Don't expose who upvoted
+
+      res.status(200).json({
+        success: true,
+        data: updatedComment,
+      });
+    } catch (error) {
+      console.error("Error removing comment upvote:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to remove comment upvote",
+        error: error.message,
+      });
+    }
+  }
 };
 
 module.exports = wishingWellCommentController;
