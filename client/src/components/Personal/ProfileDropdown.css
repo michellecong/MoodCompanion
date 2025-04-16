@@ -32,7 +32,9 @@
 .profile-dropdown-menu {
   position: absolute;
   top: 45px;
+
   right: 0;
+
   width: 250px;
   background-color: var(--background-white);
   border-radius: var(--border-radius);
@@ -122,4 +124,13 @@
 
 .dropdown-links li a:hover {
   background-color: var(--hover-light);
+}
+
+/* Media query for small screens */
+@media screen and (max-width: 768px) {
+  .profile-dropdown-menu {
+    left: 120%;
+
+    top: -50px;
+  }
 }

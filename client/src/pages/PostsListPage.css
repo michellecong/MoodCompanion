@@ -15,10 +15,24 @@
   flex: 1;
 }
 
-.page-title {
+.community-page-title {
   font-size: 2rem;
   margin-bottom: 0.5rem;
-  color: #333;
+
+  /* Create text gradient effect */
+  background: linear-gradient(
+    to right,
+
+    rgb(111, 111, 233),
+    #f0f,
+    pink
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  font-family: "Arial", sans-serif;
+  justify-self: center;
 }
 
 .page-description {
@@ -73,6 +87,7 @@
 .post-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  background-color: transparent;
 }
 
 .post-link {
@@ -80,6 +95,10 @@
   padding: 20px;
   color: inherit;
   text-decoration: none;
+}
+
+a.post-link:hover {
+  background-color: transparent;
 }
 
 .post-content {
@@ -153,23 +172,24 @@
 }
 .followed-posts-button,
 .create-post-button {
-  background-color: #4a90e2;
+  background-color: var(--primary-dark);
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 8px 24px; 
+  padding: 8px 24px;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
-  font-weight: 500; 
+  width: auto;
+  font-weight: 500;
 }
 
 .followed-posts-button:hover,
 .create-post-button:hover {
-  background-color: #3a80d2;
-  transform: translateY(-2px); 
-  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4); 
+  background-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4);
 }
 
 @media (max-width: 768px) {

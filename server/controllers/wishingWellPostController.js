@@ -77,7 +77,7 @@ const wishingWellPostController = {
 
       const postResponse = {
         ...post.toObject(),
-        isOwner: userId && String(post.userId) === String(userId), 
+        isOwner: userId && String(post.userId) === String(userId),
       };
 
       const comments = await WishingWellComment.find({
@@ -527,7 +527,7 @@ const wishingWellPostController = {
       res.status(200).json({
         success: true,
         data: {
-          hasUpvoted
+          hasUpvoted,
         },
       });
     } catch (error) {
@@ -590,7 +590,39 @@ const wishingWellPostController = {
         error: error.message,
       });
     }
-  }
+  },
+  async checkFollowStatus(req, res) {
+    try {
+      const postId = req.params.id;
+      const userId = req.user.id;
+
+      const user = await User.findById(userId).select("followingPosts");
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const isFollowing =
+        user.followingPosts && user.followingPosts.includes(postId);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          isFollowing,
+        },
+      });
+    } catch (error) {
+      console.error("Error checking follow status:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to check follow status",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = wishingWellPostController;
