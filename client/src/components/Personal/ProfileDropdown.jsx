@@ -48,7 +48,7 @@ function ProfileDropdown({ user: initialUser }) {
   return (
     <div className="profile-dropdown-container" ref={dropdownRef}>
       <button className="profile-dropdown-trigger" onClick={toggleDropdown}>
-        Profile
+        Me
         <span className={`dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
       </button>
 
@@ -67,7 +67,7 @@ function ProfileDropdown({ user: initialUser }) {
           <ul className="dropdown-links">
             <li>
               <Link to="/profile" onClick={() => setIsOpen(false)}>
-                View Profile
+                My Profile
               </Link>
             </li>
             <li>
