@@ -18,6 +18,9 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const from = queryParams.get("from") || "";
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+  const [hasUpvotedComments, setHasUpvotedComments] = useState({});
+  const [notification, setNotification] = useState('');
 
   // use state to manage authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(propIsAuthenticated);
@@ -81,6 +84,43 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
     fetchPostDetails();
   }, [id]);
+
+  useEffect(() => {
+    if (post && isAuthenticated) {
+      checkPostUpvoteStatus();
+    }
+  }, [post, isAuthenticated]);
+
+  const checkPostUpvoteStatus = async () => {
+    try {
+      const response = await api.get(`/wishing-well/posts/${id}/upvote-status`);
+      if (response.data && response.data.data) {
+        setHasUpvoted(response.data.data.hasUpvoted);
+      }
+    } catch (err) {
+      console.error("Error checking post upvote status:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (comments.length > 0 && isAuthenticated) {
+      comments.forEach(comment => checkCommentUpvoteStatus(comment._id));
+    }
+  }, [comments, isAuthenticated]);
+
+  const checkCommentUpvoteStatus = async (commentId) => {
+    try {
+      const response = await api.get(`/wishing-well/comments/${commentId}/upvote-status`);
+      if (response.data && response.data.data) {
+        setHasUpvotedComments(prev => ({
+          ...prev,
+          [commentId]: response.data.data.hasUpvoted
+        }));
+      }
+    } catch (err) {
+      console.error(`Error checking comment upvote status for ${commentId}:`, err);
+    }
+  };
 
   // 1. add state to manage the follow status and loading state
   const [isFollowing, setIsFollowing] = useState(false);
@@ -221,16 +261,32 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
 
     try {
-      const response = await api.put(`/wishing-well/posts/${id}/upvote`);
-      if (response.data && response.data.data) {
-        setPost({ ...post, upvotes: response.data.data.upvotes });
+      if (hasUpvoted) {
+        const response = await api.put(`/wishing-well/posts/${id}/remove-upvote`);
+        if (response.data && response.data.success) {
+          setHasUpvoted(false);
+          setPost(prev => ({ ...prev, upvotes: prev.upvotes - 1 }));
+
+          setNotification('You removed your upvote');
+          setTimeout(() => setNotification(''), 3000);
+        }
+      } else {
+        const response = await api.put(`/wishing-well/posts/${id}/upvote`);
+        if (response.data && response.data.data) {
+          setHasUpvoted(true);
+          setPost({ ...post, upvotes: response.data.data.upvotes });
+
+          setNotification('You upvoted this post');
+          setTimeout(() => setNotification(''), 3000);
+        }
       }
     } catch (err) {
-      console.error("Error upvoting post:", err);
-      alert("You have already upvoted this post.");
+      console.error("Error toggling post upvote:", err);
+      setNotification('Operation failed, please try again later');
+      setTimeout(() => setNotification(''), 3000);
     }
   };
-
+  // handle comment upvote
   const handleUpvoteComment = async (commentId) => {
     if (!isAuthenticated) {
       window.location.href = `/login?redirect=/post/${id}`;
@@ -238,20 +294,56 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
     }
 
     try {
-      const response = await api.put(
-        `/wishing-well/comments/${commentId}/upvote`
-      );
-      if (response.data && response.data.data) {
-        const updatedComments = comments.map((comment) =>
-          comment._id === commentId
-            ? { ...comment, upvotes: response.data.data.upvotes }
-            : comment
-        );
-        setComments(updatedComments);
+      const hasUpvoted = hasUpvotedComments[commentId];
+
+      if (hasUpvoted) {
+        const response = await api.put(`/wishing-well/comments/${commentId}/remove-upvote`);
+        if (response.data && response.data.success) {
+          // update state
+          setHasUpvotedComments(prev => ({
+            ...prev,
+            [commentId]: false
+          }));
+          
+          // update comment upvotes
+          const updatedComments = comments.map(comment => 
+            comment._id === commentId 
+              ? { ...comment, upvotes: comment.upvotes - 1 } 
+              : comment
+          );
+          setComments(updatedComments);
+          
+          // show notification
+          setNotification('You removed your comment upvote');
+          setTimeout(() => setNotification(''), 3000);
+        }
+      } else {
+        // upvote the comment
+        const response = await api.put(`/wishing-well/comments/${commentId}/upvote`);
+        if (response.data && response.data.data) {
+          // update state
+          setHasUpvotedComments(prev => ({
+            ...prev,
+            [commentId]: true
+          }));
+          
+          // update comment upvotes
+          const updatedComments = comments.map(comment => 
+            comment._id === commentId 
+              ? { ...comment, upvotes: response.data.data.upvotes } 
+              : comment
+          );
+          setComments(updatedComments);
+          
+          // show notification
+          setNotification('You upvoted this comment');
+          setTimeout(() => setNotification(''), 3000);
+        }
       }
     } catch (err) {
-      console.error("Error upvoting comment:", err);
-      alert("You have already upvoted this comment.");
+      console.error("Error toggling comment upvote:", err);
+      setNotification('Operation failed, please try again later');
+      setTimeout(() => setNotification(''), 3000);
     }
   };
 
@@ -363,6 +455,12 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
 
   return (
     <div className="post-detail-container">
+      {notification && (
+        <div className="notification-toast">
+          {notification}
+        </div>
+      )}
+      
       <div className="back-link">
         {from === "followed" ? (
           <a onClick={handleGoBack} className="back-link-text">
@@ -400,11 +498,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
         <div className="post-footer">
           <div className="post-stats">
             <button
-              className="upvote-button"
+              className={`upvote-button ${hasUpvoted ? 'upvoted' : ''}`}
               onClick={handleUpvotePost}
               disabled={!isAuthenticated}
             >
-              ❤️ {post.upvotes}
+              {hasUpvoted ? '❤️' : '🤍'} {post.upvotes}
             </button>
             <span className="comments-count">
               💬 {post.commentCount || comments.length}
@@ -502,11 +600,11 @@ const PostDetailPage = ({ isAuthenticated: propIsAuthenticated, user }) => {
                 <div className="comment-content">{comment.content}</div>
                 <div className="comment-footer">
                   <button
-                    className="upvote-button small"
+                    className={`upvote-button small ${hasUpvotedComments[comment._id] ? 'upvoted' : ''}`}
                     onClick={() => handleUpvoteComment(comment._id)}
                     disabled={!isAuthenticated}
                   >
-                    ❤️ {comment.upvotes}
+                    {hasUpvotedComments[comment._id] ? '❤️' : '🤍'} {comment.upvotes}
                   </button>
                   <span className="comment-date">
                     {formatDate(comment.createdAt)}

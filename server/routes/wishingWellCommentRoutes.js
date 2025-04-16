@@ -8,6 +8,7 @@ const {
 } = require("../controllers/wishingWellCommentController");
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
+const wishingWellCommentController = require("../controllers/wishingWellCommentController");
 
 /**
  * Middleware to validate request
@@ -57,5 +58,19 @@ router.put("/:id/upvote", auth, upvoteComment);
  * @access  Private
  */
 router.delete("/:id", auth, deleteComment);
+
+/**
+ * @route   GET api/wishing-well/comments/:id/upvote-status
+ * @desc    Check if the user has upvoted a comment
+ * @access  Private
+ */
+router.get("/:id/upvote-status", auth, wishingWellCommentController.checkCommentUpvoteStatus);
+
+/**
+ * @route   PUT api/wishing-well/comments/:id/remove-upvote
+ * @desc    Remove upvote from a comment
+ * @access  Private
+ */
+router.put("/:id/remove-upvote", auth, wishingWellCommentController.removeCommentUpvote);
 
 module.exports = router;

@@ -51,6 +51,17 @@ function Login({ onLogin, onUser }) {
     loginWithRedirect();
   };
   
+  // handle register link click
+  const handleRegister = (e) => {
+    e.preventDefault();
+    loginWithRedirect({
+      authorizationParams: {
+        prompt: "login",
+        screen_hint: "signup"
+      }
+    });
+  };
+  
   return (
     <div className="login-page">
       <div className="login-card">
@@ -59,7 +70,7 @@ function Login({ onLogin, onUser }) {
           Log In with Auth0
         </button>
         <p className="register-link">
-          Don't have an account? <a href="/register">Register here</a>
+          Don't have an account? <a href="#" onClick={handleRegister}>Register here</a>
         </p>
       </div>
     </div>

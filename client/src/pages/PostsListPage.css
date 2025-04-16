@@ -156,21 +156,20 @@
   background-color: #4a90e2;
   color: white;
   border: none;
-  border-radius: 25px; /* 改为圆角按钮 */
-  padding: 8px 24px; /* 减小内边距使按钮更紧凑 */
+  border-radius: 25px;
+  padding: 8px 24px; 
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3); /* 添加轻微阴影 */
-  width: auto; /* 避免按钮拉伸 */
-  font-weight: 500; /* 稍微加粗字体 */
+  box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
+  font-weight: 500; 
 }
 
 .followed-posts-button:hover,
 .create-post-button:hover {
   background-color: #3a80d2;
-  transform: translateY(-2px); /* 鼠标悬停时微微上浮 */
-  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4); /* 悬停时阴影更明显 */
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4); 
 }
 
 @media (max-width: 768px) {

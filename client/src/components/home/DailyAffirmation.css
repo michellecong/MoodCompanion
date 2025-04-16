@@ -48,18 +48,17 @@
   color: var(--primary-dark);
   margin-bottom: 16px;
   font-weight: 600;
-  font-family: "Georgia", serif; /* 更改标题字体 */
-  font-size: 1.8rem; /* 更改标题大小 */
-  letter-spacing: 1px; /* 添加字母间距 */
+  font-family: "Georgia", serif; 
+  font-size: 1.8rem; 
+  letter-spacing: 1px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 1),
-    0 0 15px rgba(255, 255, 255, 0.8); /* 增强文本发光效果 */
-  position: relative; /* 为伪元素定位 */
-  z-index: 2; /* 确保文本在光晕上方 */
-  display: inline-block; /* 使光晕效果只围绕文字 */
-  padding: 5px 15px; /* 为光晕效果提供空间 */
+    0 0 15px rgba(255, 255, 255, 0.8);
+  position: relative; 
+  z-index: 2; 
+  display: inline-block; 
+  padding: 5px 15px;
 }
 
-/* 为标题创建光晕背景效果 */
 .daily-affirmation h3:before {
   content: "";
   position: absolute;
@@ -73,36 +72,35 @@
     rgba(255, 255, 255, 0.5) 40%,
     rgba(255, 255, 255, 0) 80%
   );
-  z-index: -1; /* 放在文本后面 */
-  border-radius: 50% / 60%; /* 创建椭圆形状 */
-  filter: blur(4px); /* 轻微模糊边缘 */
-  transform: scale(1.1); /* 略微扩大光晕范围 */
+  z-index: -1; 
+  border-radius: 50% / 60%; 
+  filter: blur(4px); 
+  transform: scale(1.1);
 }
 
 .affirmation-slide {
-  font-size: 1.6rem; /* 增加字体大小 */
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; /* 更改文本字体 */
+  font-size: 1.6rem; 
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-style: italic;
-  font-weight: 500; /* 增加字重 */
+  font-weight: 500; 
   color: var(--text-primary);
   max-width: 80%;
   margin: 0 auto;
   line-height: 1.6;
-  letter-spacing: 0.5px; /* 轻微增加字母间距 */
+  letter-spacing: 0.5px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 1),
-    0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); /* 多层文本阴影创造光晕效果 */
+    0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); 
   transition: opacity 0.5s ease, transform 0.5s ease;
   min-height: 4.8rem; /* Ensures consistent height during transitions */
   opacity: 0; /* Start with opacity 0 for smoother transitions */
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative; /* 为伪元素定位 */
-  z-index: 2; /* 确保文本在光晕上方 */
-  padding: 10px 20px; /* 为光晕效果提供空间 */
+  position: relative; 
+  z-index: 2; 
+  padding: 10px 20px;
 }
 
-/* 为文本创建光晕背景效果 */
 .affirmation-slide:before {
   content: "";
   position: absolute;
@@ -117,9 +115,9 @@
     rgba(255, 255, 255, 0.3) 60%,
     rgba(255, 255, 255, 0) 100%
   );
-  z-index: -1; /* 放在文本后面 */
-  border-radius: 50% / 70%; /* 创建椭圆形状 */
-  filter: blur(5px); /* 轻微模糊边缘 */
+  z-index: -1; 
+  border-radius: 50% / 70%;
+  filter: blur(5px); 
 }
 /* Animation classes for the carousel */
 .fade-in {

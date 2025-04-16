@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./DailyAffirmation.css";
-
-// 导入多张背景图片 - 实际使用时替换为你的图片路径
 import bg1 from "../../assets/images/affirmationBg.jpg";
-// 以下路径需要根据你的实际项目结构调整
 import bg2 from "../../assets/images/affirmationBg2.jpg";
 import bg3 from "../../assets/images/affirmationBg3.jpg";
 import bg4 from "../../assets/images/affirmationBg4.jpg";

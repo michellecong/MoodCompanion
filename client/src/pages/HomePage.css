@@ -247,9 +247,9 @@
 /* Feature Navigation Buttons */
 .feature-nav-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 默认在小屏幕上显示2列 */
-  grid-template-rows: auto auto; /* 2行 */
-  gap: 20px; /* 小屏幕上间距小一些 */
+  grid-template-columns: 1fr 1fr; 
+  grid-template-rows: auto auto; 
+  gap: 20px; 
   margin-top: 30px;
   padding: 0 15px;
   text-shadow: none;

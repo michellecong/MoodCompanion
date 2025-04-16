@@ -75,19 +75,17 @@ const wishingWellPostController = {
         });
       }
 
-      // 准备帖子响应 - 保留userId并添加isOwner标志
       const postResponse = {
         ...post.toObject(),
-        isOwner: userId && String(post.userId) === String(userId), // 添加isOwner标志
+        isOwner: userId && String(post.userId) === String(userId), 
       };
 
-      // 获取评论
       const comments = await WishingWellComment.find({
         postId,
         status: "active",
       })
         .sort({ createdAt: -1 })
-        .select("-upvotedBy"); // 不暴露谁点赞
+        .select("-upvotedBy");
 
       res.status(200).json({
         success: true,
@@ -502,6 +500,97 @@ const wishingWellPostController = {
       });
     }
   },
+
+  /**
+   * Check if user has upvoted a post
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async checkUpvoteStatus(req, res) {
+    try {
+      const postId = req.params.id;
+      const userId = req.user.id;
+
+      // Find post
+      const post = await WishingWellPost.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found",
+        });
+      }
+
+      // Check if user has upvoted this post
+      const hasUpvoted = post.upvotedBy.includes(userId);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          hasUpvoted
+        },
+      });
+    } catch (error) {
+      console.error("Error checking upvote status:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to check upvote status",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Remove upvote from a post
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async removeUpvote(req, res) {
+    try {
+      const postId = req.params.id;
+      const userId = req.user.id;
+
+      // Find post
+      const post = await WishingWellPost.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found",
+        });
+      }
+
+      // Check if user has upvoted
+      if (!post.upvotedBy.includes(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: "You have not upvoted this post",
+        });
+      }
+
+      // Update post to remove upvote
+      const updatedPost = await WishingWellPost.findByIdAndUpdate(
+        postId,
+        {
+          $inc: { upvotes: -1 },
+          $pull: { upvotedBy: userId },
+        },
+        { new: true }
+      ).select("-upvotedBy -userId"); // Don't expose user IDs or who upvoted
+
+      res.status(200).json({
+        success: true,
+        data: updatedPost,
+      });
+    } catch (error) {
+      console.error("Error removing upvote:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to remove upvote",
+        error: error.message,
+      });
+    }
+  }
 };
 
 module.exports = wishingWellPostController;
