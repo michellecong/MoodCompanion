@@ -15,6 +15,7 @@ const CompactWeather = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [locationName, setLocationName] = useState("Your Location");
+  const [statusMessage, setStatusMessage] = useState(""); // 新增状态消息
 
   // API key - in a real app, use environment variables
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY; // Replace with your OpenWeatherMap API key
@@ -125,7 +126,8 @@ const CompactWeather = () => {
       }
       setError(null);
     } catch (err) {
-      console.error("Error fetching weather data by coordinates:", err);
+      // 修改：不再使用console.error，改用状态消息
+      setStatusMessage("Unable to get weather data, showing default data");
       setError("Unable to get weather data for your location.");
 
       // Using mock data for display purposes
@@ -144,7 +146,7 @@ const CompactWeather = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=Beijing&appid=${API_KEY}&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?q=Vancouver&appid=${API_KEY}&units=metric`
       );
 
       if (!response.ok) {
@@ -153,17 +155,17 @@ const CompactWeather = () => {
 
       const data = await response.json();
       setWeather(data);
-      setLocationName("Beijing");
+      setLocationName("Vancouver");
       setError(null);
     } catch (err) {
-      console.error("Error fetching default weather data:", err);
+      setStatusMessage("Unable to get weather data");
       setError("Unable to get weather data. Please refresh the page.");
 
       // Using mock data for display purposes
       setWeather({
-        name: "Beijing",
-        main: { temp: 18 },
-        weather: [{ main: "Clear", description: "clear sky" }],
+        name: "Vancouver",
+        main: { temp: 15 },
+        weather: [{ main: "Clouds", description: "few clouds" }],
       });
     } finally {
       setLoading(false);
@@ -181,13 +183,30 @@ const CompactWeather = () => {
           );
         },
         (error) => {
-          console.error("Error getting location:", error);
-          setError("Unable to access your location. Showing default weather.");
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              setStatusMessage(
+                "unable to get location, showing default city weather"
+              );
+              break;
+            case error.TIMEOUT:
+              setStatusMessage(
+                "request timed out, showing default city weather"
+              );
+              break;
+            default:
+              setStatusMessage(
+                "unable to get location, showing default city weather"
+              );
+          }
           fetchDefaultWeather();
         },
         { timeout: 10000, enableHighAccuracy: true }
       );
     } else {
+      setStatusMessage(
+        "Geolocation not supported by your browser, showing default city weather"
+      );
       setError(
         "Geolocation is not supported by your browser. Showing default weather."
       );
@@ -200,16 +219,6 @@ const CompactWeather = () => {
       <div className="weather-container">
         <div className="loading-state">
           <p>Loading weather information...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container">
-        <div className="error-state">
-          <p>{error}</p>
         </div>
       </div>
     );
@@ -231,6 +240,9 @@ const CompactWeather = () => {
           </span>
         </span>
       </div>
+
+      {/* message */}
+      {statusMessage && <div className="status-message">{statusMessage}</div>}
 
       {/* Highlighted comfort message */}
       <div className="message-container">
