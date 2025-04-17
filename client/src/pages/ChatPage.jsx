@@ -55,8 +55,6 @@ function ChatPage() {
 
   return (
     <div className="chat-layout">
-      <ChatSidebar chats={savedChats} onSelectChat={loadChat} />
-
       <div className="chat-container">
         <div className="chat-messages">
           {unsavedMessages.map((msg, index) => (
@@ -86,6 +84,7 @@ function ChatPage() {
           </button>
         </div>
       </div>
+      <ChatSidebar chats={savedChats} onSelectChat={loadChat} />
     </div>
   );
 }
