@@ -239,8 +239,14 @@ npm run dev
   - Standardized avatar upload/removal button styles.
   - Enhanced username generation to ensure uniqueness and minimum length.
   - Implemented bidirectional upvoting for posts/comments with toast notifications.
-- **Shurui Liu**:
 
+- **Shurui Liu**:
+  - Improved the layout of Navbar, merging "profile dropdown" and "Me" to achieve minialistic UI.
+  - Improved Chatbot page layout.
+  - Integrated auth0 register/login management, switching from JWT. 
+  - Refactored `getAIResponse` so that the model first tells whether user message contains any cognitive distortion. If yes, adopt an RAG enhanced model; otherwise, adopt the turbo-3.5 model. 
+  - Added SeedData to PineCone, a vector database to enable similarity search using embeddings.
+  - Added `embedService.js `, `retrievalService.js`, and `vectorService.js` to enable Retrieval-Augmented Generation.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
