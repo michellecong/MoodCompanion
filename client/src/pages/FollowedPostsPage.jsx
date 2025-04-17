@@ -135,7 +135,7 @@ const FollowedPostsPage = ({ isAuthenticated }) => {
   return (
     <div className="followed-posts-container">
       <div className="page-header">
-        <h1 className="page-title">Posts I Follow</h1>
+        <h1 className="page-title followed-page-title">Posts I Follow</h1>
         <Link to="/posts" className="back-to-posts-button">
           All Posts
         </Link>

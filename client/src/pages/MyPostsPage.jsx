@@ -77,7 +77,7 @@ const MyPostsPage = ({ isAuthenticated }) => {
 
   return (
     <div className="my-posts-container">
-      <h1 className="page-title">My Posts</h1>
+      <h1 className="myposts-page-title">My Posts</h1>
 
       <div className="page-actions">
         <Link to="/create-post" className="create-post-btn">

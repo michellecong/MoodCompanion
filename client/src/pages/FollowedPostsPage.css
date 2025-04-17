@@ -5,6 +5,25 @@
   width: 100%;
 }
 
+.followed-page-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+
+  background: linear-gradient(
+    to right,
+
+    #ff9900,
+    #33cc33,
+    #3366ff,
+    #9900cc
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .post-card {
   background-color: white;
   border-radius: 8px;
@@ -28,6 +47,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
