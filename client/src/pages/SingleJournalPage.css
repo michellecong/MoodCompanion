@@ -62,6 +62,7 @@
   margin-top: 20px;
   display: flex;
   gap: 10px;
+  justify-content: space-evenly;
 }
 
 .journal-actions button {
@@ -71,24 +72,25 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: background-color 0.2s;
+  width: auto;
 }
 
 .journal-actions button:first-child {
-  background-color: #007bff;
+  background-color: var(--primary-dark);
   color: white;
 }
 
 .journal-actions button:first-child:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color);
 }
 
 .journal-actions .delete-btn {
-  background-color: #dc3545;
+  background-color: rgb(147, 6, 147);
   color: white;
 }
 
 .journal-actions .delete-btn:hover {
-  background-color: #b02a37;
+  background-color: #ab31db;
 }
 
 .single-journal-page form {
