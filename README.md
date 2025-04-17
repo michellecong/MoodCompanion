@@ -246,6 +246,12 @@ npm run dev
   - Refactored `getAIResponse` so that the model first tells whether user message contains any cognitive distortion. If yes, adopt an RAG enhanced model; otherwise, adopt the turbo-3.5 model. 
   - Added SeedData to PineCone, a vector database to enable similarity search using embeddings.
   - Added `embedService.js `, `retrievalService.js`, and `vectorService.js` to enable Retrieval-Augmented Generation.
+
+## Accessibility report
+- [Mobile Accessibility Report](readme_images/Accessibility_report/mobile.pdf)
+- [Desktop Accessibility Report](readme_images/Accessibility_report/desktop.pdf)
+
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
