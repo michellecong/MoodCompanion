@@ -21,6 +21,7 @@ MoodCompanion is a personal AI-powered application that helps users track their 
     - [Iteration 1](#iteration-1-1)
     - [Iteration 2](#iteration-2-1)
     - [Iteration 3](#iteration-3-1)
+  - [Accessibility report](#accessibility-report)
   - [License](#license)
 
 ## Features
