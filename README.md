@@ -21,6 +21,7 @@ MoodCompanion is a personal AI-powered application that helps users track their 
     - [Iteration 1](#iteration-1-1)
     - [Iteration 2](#iteration-2-1)
     - [Iteration 3](#iteration-3-1)
+  - [Accessibility report](#accessibility-report)
   - [License](#license)
 
 ## Features
@@ -239,6 +240,21 @@ npm run dev
   - Standardized avatar upload/removal button styles.
   - Enhanced username generation to ensure uniqueness and minimum length.
   - Implemented bidirectional upvoting for posts/comments with toast notifications.
+<<<<<<< HEAD
+=======
+- **Shurui Liu**:
+  - Improved the layout of Navbar, merging "profile dropdown" and "Me" to achieve minialistic UI.
+  - Improved Chatbot page layout.
+  - Integrated auth0 register/login management, switching from JWT. 
+  - Refactored `getAIResponse` so that the model first tells whether user message contains any cognitive distortion. If yes, adopt an RAG enhanced model; otherwise, adopt the turbo-3.5 model. 
+  - Added SeedData to PineCone, a vector database to enable similarity search using embeddings.
+  - Added `embedService.js `, `retrievalService.js`, and `vectorService.js` to enable Retrieval-Augmented Generation.
+
+## Accessibility report
+- [Mobile Accessibility Report](readme_images/Accessibility_report/mobile.pdf)
+- [Desktop Accessibility Report](readme_images/Accessibility_report/desktop.pdf)
+
+>>>>>>> 199944f5561249c7f40e9e535187d08249c0a793
 
 - **Shurui Liu**:
   - Improved the layout of Navbar, merging "profile dropdown" and "Me" to achieve minialistic UI.
