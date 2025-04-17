@@ -48,7 +48,7 @@ function ProfileDropdown({ user: initialUser }) {
   return (
     <div className="profile-dropdown-container" ref={dropdownRef}>
       <button className="profile-dropdown-trigger" onClick={toggleDropdown}>
-        Me
+      {user && (<Avatar user={user} size="md" />)}
         <span className={`dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
       </button>
 

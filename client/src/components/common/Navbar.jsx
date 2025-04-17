@@ -101,12 +101,7 @@ function Navbar({ isAuthenticated, onLogout, user: initialUser }) {
                   Logout
                 </button>
               </li>
-              {user && (
-                <li className="nav-item user-welcome">
-                  <span>Hi, {user.username}</span>
-                  <Avatar user={user} size="md" />
-                </li>
-              )}
+        
             </>
           ) : (
             <>
