@@ -93,19 +93,22 @@ function Navbar({ isAuthenticated, onLogout, user: initialUser }) {
                   Chatbot
                 </Link>
               </li>
-              <li className="nav-item dropdown-container">
-                <ProfileDropdown user={user} />
-              </li>
               <li className="nav-item">
                 <button className="logout-btn" onClick={onLogout}>
                   Logout
                 </button>
               </li>
+              <li className="nav-item">
+              {user &&  (
+              <div className="welcome-user">
+                  <span>Hi, {user.username.length > 10 ? user.username.slice(0, 10) + "..." : user.username}</span>
+               </div> 
+              )}
+              </li>
               {user && (
-                <li className="nav-item user-welcome">
-                  <span>Hi, {user.username}</span>
-                  <Avatar user={user} size="md" />
-                </li>
+              <li className="nav-item dropdown-container">
+                <ProfileDropdown user={user} />
+              </li>
               )}
             </>
           ) : (

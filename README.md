@@ -16,9 +16,12 @@ MoodCompanion is a personal AI-powered application that helps users track their 
   - [Current State](#current-state)
     - [Iteration 1](#iteration-1)
     - [Iteration 2](#iteration-2)
+    - [Iteration 3](#iteration-3)
   - [Contributions](#contributions)
     - [Iteration 1](#iteration-1-1)
     - [Iteration 2](#iteration-2-1)
+    - [Iteration 3](#iteration-3-1)
+  - [Accessibility report](#accessibility-report)
   - [License](#license)
 
 ## Features
@@ -45,6 +48,9 @@ To run the web app locally, create a `.env` file with the following configuratio
 ```sh
 VITE_API_URL=http://localhost:3000/api
 VITE_WEATHER_API_KEY=your_weather_api_key
+VITE_AUTH0_DOMAIN=your_auth0_domain
+VITE_AUTH0_CLIENT_ID=your_auth0_client_id
+VITE_AUTH0_AUDIENCE=your_auth0_audience
 ```
 
 **Backend:**
@@ -55,11 +61,26 @@ JWT_SECRET=your_jwt_secret_key
 PORT=3000
 GOOGLE_API_KEY=your_google_cloud_natural_language_api_key
 OPENAI_API_KEY=your_openai_api_key
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+CLOUDINARY_URL=your_cloudinary_url
+AUTH0_DOMAIN=your_auth0_domain
+AUTH0_CLIENT_ID=your_auth0_client_id
+AUTH0_CLIENT_SECRET=your_auth0_secret
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_ENVIRONMENT=your_pinecone_environment
 ```
 
 ## Server
 
-Start server:
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start server:
 
 ```bash
 nodemon server.js
@@ -114,6 +135,19 @@ npm run dev
   ![Create Post Page](readme_images/Iteration2/create-post-page.jpg)  
   ![Followed Posts Page](readme_images/Iteration2/followed-posts-page.jpg)
 
+### Iteration 3
+
+- **Login Home Page**:  
+  ![Login Home Page](readme_images/Iteration3/login-home-page.jpg)
+- **Logout Home Page**:  
+  ![Logout Home Page](readme_images/Iteration3/logout-home-page.jpg)
+- **Mobile Size Page**:  
+  ![Mobile Size Page](readme_images/Iteration3/mobile-size-page.jpg)
+- **Other Pages**:  
+  ![Journal Page](readme_images/Iteration3/journal-page.jpg)
+  ![Chat Page](readme_images/Iteration3/chat-page.jpg)  
+  ![MyPosts Page](readme_images/Iteration3/my-posts-page.jpg)
+
 ## Contributions
 
 ### Iteration 1
@@ -167,6 +201,57 @@ npm run dev
   - **Prompt Engineering**: Chose prompt engineering over fine-tuning. Instructed the LLM to provide responses better suited for a mental health companion.
   - **Chat CRUD Operations**: Defined methods for saving, deleting, and querying for chats for a specific user.
   - **Authentication**: Debugged `auth.js`.
+
+### Iteration 3
+
+- **Minchao Cong**:
+
+  - **Styles Design of Website**:
+
+    - The homepage, including the landing page when not logged in, and the version after login with highlighted features
+    - The journals page and the posts page, both with uniform and consistent styles
+    - The chatbot page, with a clear chat UI and a friendly, home-like window
+
+  - **Responsive Design**:
+
+    - Implemented a hamburger menu for smaller screens
+    - Implemented responsive layouts for various components
+    - Optimized display across different screen sizes and devices
+
+  - **User Authentication Enhancement**:
+
+    - Enabled first-time login without registration requirement
+    - Automatically saved new user information to the database
+
+  - **My Posts Feature**: Added a dedicated "My Posts" page accessible from the user dropdown menu
+
+  - **Cloud Storage Integration**:
+
+    - Configured cloud-based storage solution for image assets
+    - Implemented secure upload functionality for posting images
+
+  - **Post Detail Page UI Fix**: Resolved inconsistency issue with the follow/unfollow button state
+
+- **Fang Liu**:
+  - Integrated Auth0 with existing JWT login system with minimal changes.
+  - Enabled login & registration via Auth0, removed need for a separate signup page.
+  - Synced Auth0 state with local app state to fix UI inconsistency.
+  - Improved profile update system using custom events; no refresh needed to see changes.
+  - Standardized avatar upload/removal button styles.
+  - Enhanced username generation to ensure uniqueness and minimum length.
+  - Implemented bidirectional upvoting for posts/comments with toast notifications.
+- **Shurui Liu**:
+  - Improved the layout of Navbar, merging "profile dropdown" and "Me" to achieve minialistic UI.
+  - Improved Chatbot page layout.
+  - Integrated auth0 register/login management, switching from JWT. 
+  - Refactored `getAIResponse` so that the model first tells whether user message contains any cognitive distortion. If yes, adopt an RAG enhanced model; otherwise, adopt the turbo-3.5 model. 
+  - Added SeedData to PineCone, a vector database to enable similarity search using embeddings.
+  - Added `embedService.js `, `retrievalService.js`, and `vectorService.js` to enable Retrieval-Augmented Generation.
+
+## Accessibility report
+- [Mobile Accessibility Report](readme_images/Accessibility_report/mobile.pdf)
+- [Desktop Accessibility Report](readme_images/Accessibility_report/desktop.pdf)
+
 
 ## License
 

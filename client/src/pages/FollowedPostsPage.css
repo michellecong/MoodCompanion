@@ -5,6 +5,25 @@
   width: 100%;
 }
 
+.followed-page-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+
+  background: linear-gradient(
+    to right,
+
+    #ff9900,
+    #33cc33,
+    #3366ff,
+    #9900cc
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .post-card {
   background-color: white;
   border-radius: 8px;
@@ -28,6 +47,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
@@ -60,32 +80,36 @@
 .view-button,
 .unfollow-button {
   flex: 1; /* Allow buttons to grow */
-  padding: 8px 15px;
+
   border-radius: 20px;
   text-decoration: none;
   font-size: 0.9rem;
   transition: background-color 0.2s ease;
+  /* Allow buttons to shrink */
+  min-width: 5rem; /* Minimum width for buttons */
+  padding: 10px 20px;
+  text-align: center;
 }
 
 .view-button {
-  background-color: #4a90e2;
+  background-color: var(--primary-dark);
   color: white;
 }
 
 .unfollow-button {
-  background-color: #e63ae66e;
+  background-color: #8a188af5;
   color: white;
   border: none;
   cursor: pointer;
 }
 
 .view-button:hover {
-  background-color: #3a80d2;
+  background-color: var(--primary-color);
   color: rgb(218, 214, 202);
 }
 
 .unfollow-button:hover {
-  background-color: #c02b7a;
+  background-color: #e62e90;
 }
 
 .post-date {
