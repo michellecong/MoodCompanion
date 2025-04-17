@@ -19,6 +19,7 @@ MoodCompanion is a personal AI-powered application that helps users track their 
   - [Contributions](#contributions)
     - [Iteration 1](#iteration-1-1)
     - [Iteration 2](#iteration-2-1)
+    - [Iteration 3](#iteration-3)
   - [License](#license)
 
 ## Features
@@ -167,6 +168,40 @@ npm run dev
   - **Prompt Engineering**: Chose prompt engineering over fine-tuning. Instructed the LLM to provide responses better suited for a mental health companion.
   - **Chat CRUD Operations**: Defined methods for saving, deleting, and querying for chats for a specific user.
   - **Authentication**: Debugged `auth.js`.
+
+### Iteration 3
+
+- **Minchao Cong**:
+
+  - **Styles Design of Website**:
+
+    - The homepage, including the landing page when not logged in, and the version after login with highlighted features
+    - The journals page and the posts page, both with uniform and consistent styles
+    - The chatbot page, with a clear chat UI and a friendly, home-like window
+
+  - **Responsive Design**:
+
+    - Implemented a hamburger menu for smaller screens
+    - Implemented responsive layouts for various components
+    - Optimized display across different screen sizes and devices
+
+  - **User Authentication Enhancement**:
+
+    - Enabled first-time login without registration requirement
+    - Automatically saved new user information to the database
+
+  - **My Posts Feature**: Added a dedicated "My Posts" page accessible from the user dropdown menu
+
+  - **Cloud Storage Integration**:
+
+    - Configured cloud-based storage solution for image assets
+    - Implemented secure upload functionality for posting images
+
+  - **Post Detail Page UI Fix**: Resolved inconsistency issue with the follow/unfollow button state
+
+- **Fang Liu**:
+
+- **Shurui Liu**:
 
 ## License
 
