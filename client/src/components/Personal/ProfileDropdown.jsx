@@ -80,6 +80,7 @@ function ProfileDropdown({ user: initialUser }) {
                 My Posts
               </Link>
             </li>
+            
           </ul>
         </div>
       )}
