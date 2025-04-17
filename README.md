@@ -16,10 +16,11 @@ MoodCompanion is a personal AI-powered application that helps users track their 
   - [Current State](#current-state)
     - [Iteration 1](#iteration-1)
     - [Iteration 2](#iteration-2)
+    - [Iteration 3](#iteration-3)
   - [Contributions](#contributions)
     - [Iteration 1](#iteration-1-1)
     - [Iteration 2](#iteration-2-1)
-    - [Iteration 3](#iteration-3)
+    - [Iteration 3](#iteration-3-1)
   - [License](#license)
 
 ## Features
@@ -114,6 +115,19 @@ npm run dev
   ![Post Detail Page](readme_images/Iteration2/post-detail-page.jpg)  
   ![Create Post Page](readme_images/Iteration2/create-post-page.jpg)  
   ![Followed Posts Page](readme_images/Iteration2/followed-posts-page.jpg)
+
+### Iteration 3
+
+- **Login Home Page**:  
+  ![Login Home Page](readme_images/Iteration3/login-home-page.jpg)
+- **Logout Home Page**:  
+  ![Logout Home Page](readme_images/Iteration3/logout-home-page.jpg)
+- **Mobile Size Page**:  
+  ![Mobile Size Page](readme_images/Iteration3/mobile-size-page.jpg)
+- **Other Pages**:  
+  ![Journal Page](readme_images/Iteration3/journal-page.jpg)
+  ![Chat Page](readme_images/Iteration3/chat-page.jpg)  
+  ![MyPosts Page](readme_images/Iteration3/my-posts-page.jpg)
 
 ## Contributions
 
