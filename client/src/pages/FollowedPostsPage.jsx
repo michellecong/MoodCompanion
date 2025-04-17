@@ -187,7 +187,7 @@ const FollowedPostsPage = ({ isAuthenticated }) => {
                       to={`/post/${post._id}?from=followed`}
                       className="view-button"
                     >
-                      View Details
+                      View
                     </Link>
                     <button
                       className="unfollow-button"
