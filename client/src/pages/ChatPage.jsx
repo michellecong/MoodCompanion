@@ -79,6 +79,7 @@ function ChatPage() {
           </button>
         </div>
       </div>
+      <ChatSidebar chats={savedChats} onSelectChat={loadChat} />
     </div>
   );
 }
