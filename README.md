@@ -25,7 +25,7 @@ MoodCompanion is a personal AI-powered application that helps users track their 
   - [License](#license)
 
 ## Features
-
+Demo: https://youtu.be/1ixQzjxl7-k
 - **Mood Tracker**: Record and visualize your daily emotional states
 - **Digital Journal**: AI-powered journaling with emotion analysis
 - **AI Companion**: Get emotional support and personalized advice
