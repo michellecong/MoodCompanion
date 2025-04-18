@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const auth0 = require("auth0");
-
+const Journal = require("../models/journalModel");
 // create an Auth0 Management client
 const auth0ManagementClient = new auth0.ManagementClient({
   domain: process.env.AUTH0_DOMAIN,
@@ -392,6 +392,7 @@ const userController = {
           message: "Friend request already sent",
           code: "REQUEST_ALREADY_SENT",
         });
+        ƒ;
       }
 
       // Add friend request
@@ -498,10 +499,12 @@ const userController = {
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    */
+  // 更新现有的 getFriends 方法来包含朋友的最近日志情绪
   async getFriends(req, res) {
     try {
       const userId = req.user.id;
 
+      // 首先获取用户的朋友列表
       const user = await User.findById(userId)
         .populate("friends", "username email avatar avatarColor")
         .select("friends");
@@ -513,10 +516,32 @@ const userController = {
         });
       }
 
+      // 获取每个朋友的最近日志及其情绪数据
+      const friendsWithEmotions = await Promise.all(
+        user.friends.map(async (friend) => {
+          // 查找朋友最近的日志
+          const recentJournal = await Journal.findOne({ userId: friend._id })
+            .sort({ createdAt: -1 })
+            .select("emotionsDetected createdAt")
+            .lean();
+
+          // 将日志情绪数据添加到朋友数据中
+          return {
+            ...friend.toObject(),
+            recentEmotion: recentJournal
+              ? {
+                  emotions: recentJournal.emotionsDetected,
+                  date: recentJournal.createdAt,
+                }
+              : null,
+          };
+        })
+      );
+
       res.status(200).json({
         success: true,
-        count: user.friends.length,
-        data: user.friends,
+        count: friendsWithEmotions.length,
+        data: friendsWithEmotions,
       });
     } catch (error) {
       console.error("Error fetching friends:", error);

@@ -62,29 +62,69 @@ const FindFriendsPage = ({ isAuthenticated }) => {
 
   // Fetch friend requests and friends on component mount
   useEffect(() => {
+    // 只更新 fetchFriendData 函数的部分
+    // 用此代码替换 FindFriendsPage.jsx 中的 fetchFriendData 函数
+
     const fetchFriendData = async () => {
       try {
         setIsLoading(true);
-        // Fetch pending friend requests
-        const requestsResponse = await api
-          .get("/users/friend-requests")
-          .catch((err) => {
-            console.error("Error fetching friend requests:", err);
-            return { data: { data: [] } };
-          });
+        console.log("Fetching friend data...");
 
-        // Fetch friends list
-        const friendsResponse = await api.get("/users/friends").catch((err) => {
-          console.error("Error fetching friends:", err);
-          return { data: { data: [] } };
-        });
+        // 添加请求超时和重试逻辑
+        const requestOptions = {
+          timeout: 8000, // 8秒超时
+          headers: {
+            "Cache-Control": "no-cache", // 防止缓存过期数据
+          },
+        };
 
-        setFriendRequests(requestsResponse.data.data || []);
-        setFriends(friendsResponse.data.data || []);
+        // 并行获取请求但添加错误处理
+        const [requestsResponse, friendsResponse] = await Promise.allSettled([
+          api.get("/users/friend-requests", requestOptions),
+          api.get("/users/friends", requestOptions),
+        ]);
+
+        // 处理朋友请求响应
+        if (
+          requestsResponse.status === "fulfilled" &&
+          requestsResponse.value?.data?.data
+        ) {
+          console.log(
+            "Successfully fetched friend requests:",
+            requestsResponse.value.data.data.length
+          );
+          setFriendRequests(requestsResponse.value.data.data || []);
+        } else {
+          console.warn(
+            "Could not fetch friend requests:",
+            requestsResponse.reason || "Unknown error"
+          );
+          setFriendRequests([]);
+        }
+
+        // 处理朋友列表响应
+        if (
+          friendsResponse.status === "fulfilled" &&
+          friendsResponse.value?.data?.data
+        ) {
+          console.log(
+            "Successfully fetched friends:",
+            friendsResponse.value.data.data.length
+          );
+          setFriends(friendsResponse.value.data.data || []);
+        } else {
+          console.warn(
+            "Could not fetch friends:",
+            friendsResponse.reason || "Unknown error"
+          );
+          setFriends([]);
+        }
       } catch (err) {
         console.error("Error fetching friend data:", err);
-        setError("Failed to load friend data. Please try again later.");
-        toast.error("Failed to load friend data");
+        setError(
+          "There was a problem loading your friends data. Please try again later."
+        );
+        // 不要触发 toast 弹窗，以避免多次请求时多次显示错误提示
       } finally {
         setIsLoading(false);
       }
