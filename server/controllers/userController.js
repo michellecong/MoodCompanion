@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const auth0 = require("auth0");
-
+const Journal = require("../models/journalModel");
 // create an Auth0 Management client
 const auth0ManagementClient = new auth0.ManagementClient({
   domain: process.env.AUTH0_DOMAIN,
@@ -44,13 +44,13 @@ const userController = {
 
       // create new user
       let username = nickname || email.split("@")[0];
-      
+
       // if username length is less than 3, add random number or character to ensure length
       if (username.length < 3) {
         // add random number to ensure length is at least 3
         username = `${username}${Math.floor(Math.random() * 1000)}`;
       }
-      
+
       // ensure username is unique
       const existingUsername = await User.findOne({ username });
       if (existingUsername) {
@@ -374,9 +374,10 @@ const userController = {
 
       // Check if already friends
       if (toUser.friends.includes(fromUserId)) {
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
           message: "Already friends with this user",
+          code: "ALREADY_FRIENDS",
         });
       }
 
@@ -386,10 +387,12 @@ const userController = {
       );
 
       if (existingRequest) {
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
           message: "Friend request already sent",
+          code: "REQUEST_ALREADY_SENT",
         });
+        ƒ;
       }
 
       // Add friend request
@@ -496,6 +499,7 @@ const userController = {
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    */
+
   async getFriends(req, res) {
     try {
       const userId = req.user.id;
@@ -511,10 +515,29 @@ const userController = {
         });
       }
 
+      const friendsWithEmotions = await Promise.all(
+        user.friends.map(async (friend) => {
+          const recentJournal = await Journal.findOne({ userId: friend._id })
+            .sort({ createdAt: -1 })
+            .select("emotionsDetected createdAt")
+            .lean();
+
+          return {
+            ...friend.toObject(),
+            recentEmotion: recentJournal
+              ? {
+                  emotions: recentJournal.emotionsDetected,
+                  date: recentJournal.createdAt,
+                }
+              : null,
+          };
+        })
+      );
+
       res.status(200).json({
         success: true,
-        count: user.friends.length,
-        data: user.friends,
+        count: friendsWithEmotions.length,
+        data: friendsWithEmotions,
       });
     } catch (error) {
       console.error("Error fetching friends:", error);
@@ -546,6 +569,87 @@ const userController = {
       res.status(500).json({
         success: false,
         message: "Failed to remove friend",
+        error: error.message,
+      });
+    }
+  },
+  /**
+   * Search for users
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async searchUsers(req, res) {
+    try {
+      const { query } = req.query;
+      const currentUserId = req.user.id;
+
+      if (!query) {
+        return res.status(400).json({
+          success: false,
+          message: "Search query is required",
+        });
+      }
+
+      // Search for users by username or email
+      const users = await User.find({
+        $and: [
+          { _id: { $ne: currentUserId } }, // Exclude current user
+          {
+            $or: [
+              { username: { $regex: query, $options: "i" } },
+              { email: { $regex: query, $options: "i" } },
+            ],
+          },
+        ],
+      })
+        .select("username email avatar avatarColor")
+        .limit(10);
+
+      res.status(200).json({
+        success: true,
+        count: users.length,
+        data: users,
+      });
+    } catch (error) {
+      console.error("Error searching users:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to search users",
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * Get pending friend requests
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getFriendRequests(req, res) {
+    try {
+      const userId = req.user.id;
+
+      const user = await User.findById(userId)
+        .populate("friendRequests.from", "username email avatar avatarColor")
+        .select("friendRequests");
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        count: user.friendRequests.length,
+        data: user.friendRequests,
+      });
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch friend requests",
         error: error.message,
       });
     }
