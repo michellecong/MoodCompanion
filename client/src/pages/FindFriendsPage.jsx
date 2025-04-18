@@ -62,29 +62,23 @@ const FindFriendsPage = ({ isAuthenticated }) => {
 
   // Fetch friend requests and friends on component mount
   useEffect(() => {
-    // 只更新 fetchFriendData 函数的部分
-    // 用此代码替换 FindFriendsPage.jsx 中的 fetchFriendData 函数
-
     const fetchFriendData = async () => {
       try {
         setIsLoading(true);
         console.log("Fetching friend data...");
 
-        // 添加请求超时和重试逻辑
         const requestOptions = {
-          timeout: 8000, // 8秒超时
+          timeout: 8000,
           headers: {
-            "Cache-Control": "no-cache", // 防止缓存过期数据
+            "Cache-Control": "no-cache",
           },
         };
 
-        // 并行获取请求但添加错误处理
         const [requestsResponse, friendsResponse] = await Promise.allSettled([
           api.get("/users/friend-requests", requestOptions),
           api.get("/users/friends", requestOptions),
         ]);
 
-        // 处理朋友请求响应
         if (
           requestsResponse.status === "fulfilled" &&
           requestsResponse.value?.data?.data
@@ -102,7 +96,6 @@ const FindFriendsPage = ({ isAuthenticated }) => {
           setFriendRequests([]);
         }
 
-        // 处理朋友列表响应
         if (
           friendsResponse.status === "fulfilled" &&
           friendsResponse.value?.data?.data
@@ -124,7 +117,6 @@ const FindFriendsPage = ({ isAuthenticated }) => {
         setError(
           "There was a problem loading your friends data. Please try again later."
         );
-        // 不要触发 toast 弹窗，以避免多次请求时多次显示错误提示
       } finally {
         setIsLoading(false);
       }
@@ -369,45 +361,18 @@ const FindFriendsPage = ({ isAuthenticated }) => {
                       console.log("Native input change:", e.target.value);
                       setSearchInputValue(e.target.value);
                     }}
-                    style={{
-                      color: "black",
-                      backgroundColor: "white",
-                      fontSize: "16px",
-                      padding: "12px 16px",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "6px",
-                      width: "100%",
-                    }}
+                    className="friend-search-input"
                   />
-                  <button
-                    type="submit"
-                    style={{
-                      padding: "12px 24px",
-                      backgroundColor: "#4299e1",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                    }}
-                  >
+                  <button type="submit" className="friend-search-button">
                     Search
                   </button>
                 </div>
-                <p
-                  style={{
-                    marginTop: "8px",
-                    color: "#718096",
-                    fontSize: "14px",
-                  }}
-                >
+                <p className="search-helper-text">
                   Find friends by entering their username or email address
                 </p>
 
                 {/* Debug section */}
-                <div
-                  style={{ marginTop: "8px", fontSize: "12px", color: "#666" }}
-                >
+                <div className="friend-debug-info">
                   Current input value: {searchInputValue}
                 </div>
               </form>

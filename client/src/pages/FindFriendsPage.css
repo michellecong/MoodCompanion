@@ -6,7 +6,7 @@
 }
 
 .find-friends-container h1 {
-  color: #4299e1;
+  color: #068c90;
   margin-bottom: 24px;
   font-size: 2rem;
 }
@@ -30,11 +30,12 @@
 }
 
 .tab-btn:hover {
-  color: #4299e1;
+  color: greenyellow;
+  background-color: rgb(120, 204, 207);
 }
 
 .tab-btn.active {
-  color: #4299e1;
+  color: #0c8974ef;
   font-weight: 600;
 }
 
@@ -45,7 +46,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background-color: #4299e1;
+  background-color: #1edc9d71;
 }
 
 .badge {
@@ -137,6 +138,9 @@
   align-items: center;
   padding: 16px;
   border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  gap: 16px;
 }
 
 .user-card:last-child,
@@ -216,16 +220,18 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
+  width: fit-content;
+  background-color: var(--primary-color);
 }
 
 .send-request-btn {
-  background-color: #4299e1;
+  background-color: purple;
   color: white;
   border: none;
 }
 
 .send-request-btn:hover {
-  background-color: #3182ce;
+  background-color: #ab22ea;
 }
 
 .accept-btn {
@@ -249,6 +255,49 @@
 .remove-friend-btn:hover {
   background-color: #f7fafc;
   color: #f56565;
+}
+.cancel-btn {
+  background-color: white;
+  color: #718096;
+  border: 1px solid #e2e8f0;
+  width: auto;
+}
+.cancel-btn:hover {
+  background-color: #f7fafc;
+  color: #f56565;
+}
+.submit-btn {
+  background-color: #e18242;
+  color: white;
+  border: none;
+  width: auto;
+}
+.submit-btn:hover {
+  background-color: #efb83f;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 20px;
+  width: auto;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding: 20px;
+}
+.request-sent-btn {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: not-allowed;
+  width: auto;
+}
+.request-sent-btn:hover {
+  background-color: #edf2f7;
+  color: #4a5568;
 }
 
 /* Friends Grid */
@@ -317,7 +366,7 @@
     grid-template-columns: 1fr;
   }
 }
-/* 朋友情绪标签样式 */
+/* friends mood styles */
 .friend-emotion {
   display: flex;
   align-items: center;
@@ -330,7 +379,7 @@
   display: inline-block;
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 1.2rem;
   font-weight: bold;
   color: white;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -349,7 +398,6 @@
   font-style: italic;
 }
 
-/* 更新朋友卡片样式以更好地显示情绪 */
 .friend-card {
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -366,9 +414,55 @@
   text-align: center;
 }
 
-/* 优化移动响应式 */
 @media (max-width: 768px) {
   .friend-emotion {
     justify-content: center;
   }
+}
+
+.friend-search-input {
+  color: black;
+  background-color: white;
+  font-size: 16px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  width: 100%;
+}
+.friend-search-input::placeholder {
+  color: #a0aec0;
+}
+.friend-search-input:focus {
+  outline: none;
+  border-color: #4299e1;
+}
+
+.friend-search-button {
+  background-color: var(--primary-dark);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 12px 24px;
+  transition: background-color 0.2s;
+  width: auto;
+}
+.friend-search-button:hover {
+  background-color: var(--primary-color);
+}
+.search-helper-text {
+  margin-top: 8px;
+  color: #718096;
+  font-size: 14px;
+}
+.friend-debug-info {
+  margin-top: 8px;
+  color: #718096;
+  font-size: 14px;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 30px;
 }

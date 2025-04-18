@@ -499,12 +499,11 @@ const userController = {
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    */
-  // 更新现有的 getFriends 方法来包含朋友的最近日志情绪
+
   async getFriends(req, res) {
     try {
       const userId = req.user.id;
 
-      // 首先获取用户的朋友列表
       const user = await User.findById(userId)
         .populate("friends", "username email avatar avatarColor")
         .select("friends");
@@ -516,16 +515,13 @@ const userController = {
         });
       }
 
-      // 获取每个朋友的最近日志及其情绪数据
       const friendsWithEmotions = await Promise.all(
         user.friends.map(async (friend) => {
-          // 查找朋友最近的日志
           const recentJournal = await Journal.findOne({ userId: friend._id })
             .sort({ createdAt: -1 })
             .select("emotionsDetected createdAt")
             .lean();
 
-          // 将日志情绪数据添加到朋友数据中
           return {
             ...friend.toObject(),
             recentEmotion: recentJournal

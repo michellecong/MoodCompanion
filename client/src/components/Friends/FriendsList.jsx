@@ -14,10 +14,8 @@ const FriendsList = ({ friends, onRemoveFriend, isLoading }) => {
     );
   }
 
-  // 安全地获取情绪
   const getPrimaryEmotion = (friend) => {
     try {
-      // 检查是否有最近情绪数据
       if (
         !friend.recentEmotion ||
         !friend.recentEmotion.emotions ||
@@ -27,7 +25,6 @@ const FriendsList = ({ friends, onRemoveFriend, isLoading }) => {
         return null;
       }
 
-      // 按分数排序，获取得分最高的情绪
       const sortedEmotions = [...friend.recentEmotion.emotions].sort(
         (a, b) => (b.score || 0) - (a.score || 0)
       );
@@ -39,24 +36,22 @@ const FriendsList = ({ friends, onRemoveFriend, isLoading }) => {
     }
   };
 
-  // 获取显示情绪标签的颜色
   const getEmotionColor = (emotionName) => {
-    if (!emotionName) return "#A9A9A9"; // 默认灰色
+    if (!emotionName) return "#32CD32"; //
 
     const emotionColors = {
-      joy: "#FFD700", // 金色
-      sadness: "#6495ED", // 蓝色
-      anger: "#FF4500", // 红橙色
-      fear: "#9370DB", // 紫色
-      surprise: "#32CD32", // 绿色
-      love: "#FF69B4", // 粉色
-      disgust: "#8B8B00", // 暗黄色
-      neutral: "#A9A9A9", // 灰色
+      joy: "#FFD700", //
+      sadness: "#6495ED", //
+      anger: "#FF4500", //
+      fear: "#9370DB", //
+      surprise: "#32CD32", //
+      love: "#FF69B4", //
+      disgust: "#8B8B00", //
+      neutral: "#A9A9A9", //
     };
-    return emotionColors[emotionName.toLowerCase()] || "#A9A9A9";
+    return emotionColors[emotionName.toLowerCase()] || "#32CD32";
   };
 
-  // 安全地格式化日期
   const formatEmotionDate = (dateString) => {
     if (!dateString) return "";
     try {
@@ -88,7 +83,6 @@ const FriendsList = ({ friends, onRemoveFriend, isLoading }) => {
 
       <div className="friends-grid">
         {friends.map((friend) => {
-          // 安全地获取主要情绪
           const primaryEmotion = getPrimaryEmotion(friend);
           const hasEmotion = !!primaryEmotion;
 
@@ -111,7 +105,7 @@ const FriendsList = ({ friends, onRemoveFriend, isLoading }) => {
                 <h3>{friend.username || "Friend"}</h3>
                 <p>{friend.email || ""}</p>
 
-                {/* 显示朋友的情绪状态 */}
+                {/*  */}
                 {hasEmotion ? (
                   <div className="friend-emotion">
                     <span
