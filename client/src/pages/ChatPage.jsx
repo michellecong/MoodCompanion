@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import ChatSidebar from "../components/chat/ChatSidebar";
+import ChatSidebar from "../components/chat/ChatSidebar";
 import "./ChatPage.css";
 import api from "../api/axios";
 
@@ -77,9 +77,14 @@ function ChatPage() {
           <button onClick={sendMessage} disabled={loading}>
             {loading ? "Sending..." : "Send"}
           </button>
+          <button onClick={saveChat} disabled={loading}>
+            Save Chat
+          </button>
         </div>
       </div>
-      
+    <div className="chat-sidebar-container">
+      <ChatSidebar chats={savedChats} onSelectChat={loadChat} />
+      </div>
     </div>
   );
 }
