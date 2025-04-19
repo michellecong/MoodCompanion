@@ -7,6 +7,7 @@ MoodCompanion is a personal AI-powered application that helps users track their 
 - [AI Mood Companion: A Web-Based Emotional Support Platform](#ai-mood-companion-a-web-based-emotional-support-platform)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
+  - [Project Demo](#project-demo)
   - [Tech Stack](#tech-stack)
   - [Environment Configuration](#environment-configuration)
   - [Server](#server)
@@ -30,6 +31,10 @@ Demo: https://youtu.be/1ixQzjxl7-k
 - **Digital Journal**: AI-powered journaling with emotion analysis
 - **AI Companion**: Get emotional support and personalized advice
 - **Community Support**: Share thoughts anonymously with others
+
+## Project Demo
+
+- [Demo Link](https://www.youtube.com/watch?v=1ixQzjxl7-k)
 
 ## Tech Stack
 
@@ -245,15 +250,15 @@ npm run dev
 - **Shurui Liu**:
   - Improved the layout of Navbar, merging "profile dropdown" and "Me" to achieve minialistic UI.
   - Improved Chatbot page layout.
-  - Integrated auth0 register/login management, switching from JWT. 
-  - Refactored `getAIResponse` so that the model first tells whether user message contains any cognitive distortion. If yes, adopt an RAG enhanced model; otherwise, adopt the turbo-3.5 model. 
+  - Integrated auth0 register/login management, switching from JWT.
+  - Refactored `getAIResponse` so that the model first tells whether user message contains any cognitive distortion. If yes, adopt an RAG enhanced model; otherwise, adopt the turbo-3.5 model.
   - Added SeedData to PineCone, a vector database to enable similarity search using embeddings.
   - Added `embedService.js `, `retrievalService.js`, and `vectorService.js` to enable Retrieval-Augmented Generation.
 
 ## Accessibility report
+
 - [Mobile Accessibility Report](readme_images/Accessibility_report/mobile.pdf)
 - [Desktop Accessibility Report](readme_images/Accessibility_report/desktop.pdf)
-
 >>>>>>> 199944f5561249c7f40e9e535187d08249c0a793
 
 - **Shurui Liu**:

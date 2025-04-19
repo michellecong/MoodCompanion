@@ -18,6 +18,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import Profile from "./components/Personal/Profile";
 import MyPostsPage from "./pages/MyPostsPage";
+import FindFriendsPage from "./pages/FindFriendsPage";
 import "./App.css";
 
 function App() {
@@ -127,13 +128,17 @@ function App() {
                 element={<MyPostsPage isAuthenticated={localAuth} />}
               />
               <Route path="/chat" element={<ChatPage />} />
-              <Route path="*" element={<NotFoundPage />} />
+              <Route
+                path="/friends"
+                element={<FindFriendsPage isAuthenticated={localAuth} />}
+              />
               <Route
                 path="/profile"
                 element={
                   <Profile user={localUser} isAuthenticated={localAuth} />
                 }
               />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </ErrorBoundary>
         </main>
