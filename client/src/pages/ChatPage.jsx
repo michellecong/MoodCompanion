@@ -31,19 +31,23 @@ function ChatPage() {
     setLoading(false);
   };
 
-  const saveChat = () => {
+  const saveChat = async () => {
     if (unsavedMessages.length === 0) return;
-
-    const now = new Date();
-    const title = now.toLocaleString(); // e.g., "4/5/2025, 11:30:12 AM"
-    const newChat = {
-      id: Date.now(),
-      title,
-      messages: unsavedMessages,
-    };
-
-    setSavedChats([newChat, ...savedChats]);
-    setUnsavedMessages([]); // clear after save
+  
+    try {
+      const response = await api.post("/chats/save", {
+        messages: unsavedMessages,
+      });
+  
+      if (response.data.success) {
+        console.log("✅ Chat saved to DB:", response.data.data);
+        setUnsavedMessages([]); // clear messages after successful save
+      } else {
+        console.error("❌ Failed to save chat:", response.data.message);
+      }
+    } catch (error) {
+      console.error("🔥 Error saving chat:", error);
+    }
   };
 
   const loadChat = (chatId) => {
