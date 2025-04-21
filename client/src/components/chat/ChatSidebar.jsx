@@ -7,9 +7,9 @@ function ChatSidebar({ chats, onSelectChat }) {
         ) : (
           chats.map((chat) => (
             <div
-              key={chat.id}
+              key={chat._id} 
               className="chat-title"
-              onClick={() => onSelectChat(chat.id)}
+              onClick={() => onSelectChat(chat._id)} 
             >
               {chat.title}
             </div>

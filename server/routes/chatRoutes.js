@@ -6,6 +6,7 @@ const {
   chatMessage,
   saveChat,
   getChatById,
+  getUserChats,
 } = require("../controllers/chatController");
 
 const validateRequest = (req, res, next) => {
@@ -20,12 +21,23 @@ const validateRequest = (req, res, next) => {
 router.post("/", chatMessage);
 // Private functionality (requires authentication)
 /**
+ * * @route   GET api/chats
+ * * @desc    get all saved chats for the authenticated user
+ * * @access  Private
+ */
+router.get("/", auth, validateRequest, getUserChats);
+
+/**
  * @route   POST api/chats/save
  * @desc    save a chat
  * @access  Private
  */
 router.post("/save", auth, validateRequest, saveChat);
-router.post("/save", saveChat);
+/**
+ * * @route   GET api/chats/:id
+ * @desc    get a chat by ID
+ * * @access  Private
+ * */
 router.get("/:id", getChatById);
 
 module.exports = router;

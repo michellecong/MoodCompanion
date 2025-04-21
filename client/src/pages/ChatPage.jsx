@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatSidebar from "../components/chat/ChatSidebar";
 import { useNavigate } from "react-router-dom";
 import "./ChatPage.css";
@@ -11,6 +11,10 @@ function ChatPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    fetchSavedChats();
+  }, []);
+  
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -42,8 +46,6 @@ function ChatPage() {
       navigate("/login"); 
       return;
     }
-  
-    // ✅ Protected action logic here
     console.log("User is logged in. Proceeding...");
   };
 
@@ -67,12 +69,30 @@ function ChatPage() {
     }
   };
 
-  const loadChat = (chatId) => {
-    const chat = savedChats.find((c) => c.id === chatId);
-    if (chat) {
+  // Find chat by ID and load it into the chat window
+  const loadChat = async () => {
+    const chat = await api.get("/chat");
+    if (!chat) {
+      console.error("❌ Chat not found");
+      return;
+    } else {
       setUnsavedMessages(chat.messages);
     }
   };
+
+  // Fetch all saved chats for a given user
+  const fetchSavedChats = async () => {
+    try {
+      const response = await api.get("/chat");
+      if (response.data.success) {
+        setSavedChats(response.data.data);
+      } else {
+        console.error("❌ Failed to fetch saved chats:", response.data.message);
+      }
+    } catch (error) {
+      console.error("🔥 Error fetching saved chats:", error)
+    }
+    };
 
   return (
     <div className="chat-layout">
