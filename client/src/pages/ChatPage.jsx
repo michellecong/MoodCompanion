@@ -70,17 +70,17 @@ function ChatPage() {
   };
 
   // Find chat by ID and load it into the chat window
-  const loadChat = async () => {
+  const loadChat = async (chatId) => {
     try {
-      const response = await api.get("/chat");
-      const chatData = response.data?.data;
+      const response = await api.get("/chat/" + chatId); // returns chat by ID
+      const messagesData = response.data?.data;
   
-      if (!chatData || !Array.isArray(chatData.messages)) {
+      if (!messagesData || !Array.isArray(messagesData.messages)) {
         console.error("Invalid chat data.");
         return;
       }
   
-      setUnsavedMessages(chatData.messages); 
+      setUnsavedMessages(messagesData.messages); 
     } catch (err) {
       console.error("🔥 Failed to load chat:", err);
     }
@@ -103,7 +103,6 @@ function ChatPage() {
       console.error("🔥 Failed to load chat:", err);
     }
   };
-  
 
   return (
     <div className="chat-layout">
