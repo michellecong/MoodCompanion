@@ -7,6 +7,7 @@ import api from "../api/axios";
 function ChatPage() {
   const [savedChats, setSavedChats] = useState([]); // Only saved chats go here
   const [unsavedMessages, setUnsavedMessages] = useState([]); // Current chat
+  const [savedMessages, setSavedMessages] = useState([]); // Saved messages for existing chat
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -54,6 +55,9 @@ function ChatPage() {
     console.log("User is logged in. Proceeding...");
   };
 
+  // For new and existing chats, save the chat to the database
+  // If chatId is present, update the existing chat; 
+  // otherwise, create a new one.
   const saveChat = async () => {
     if (unsavedMessages.length === 0) return;
   
@@ -74,6 +78,26 @@ function ChatPage() {
     }
   };
 
+  const updateChat = async (chatId) => {
+    if (unsavedMessages.length === 0) return;
+  
+    handleProtectedAction(); // Check if user is logged in before saving
+    try {
+      const response = await api.put("/chat/update/" + chatId, {
+        messages: unsavedMessages,
+      });
+  
+      if (response.data.success) {
+        console.log("✅ Chat updated in DB:", response.data.data);
+        setUnsavedMessages([]); // clear messages after successful save
+      } else {
+        console.error("❌ Failed to update chat:", response.data.message);
+      }
+    } catch (error) {
+      console.error("🔥 Error updating chat:", error);
+    }
+  }
+
   // Find chat by ID and load it into the chat window
   const loadChat = async (chatId) => {
     try {
@@ -85,7 +109,7 @@ function ChatPage() {
         return;
       }
   
-      setUnsavedMessages(messagesData.messages); 
+      setSavedMessages(messagesData.messages); 
     } catch (err) {
       console.error("🔥 Failed to load chat:", err);
     }
@@ -114,7 +138,7 @@ function ChatPage() {
 
       <div className="chat-container">
         <div className="chat-messages">
-          {unsavedMessages.map((msg, index) => (
+          {savedMessages.map((msg, index) => (
             <div key={index} className={`message ${msg.sender}`}>
               {msg.sender === "ai" ? "🤖 " : "🧑 "} {msg.text}
             </div>
