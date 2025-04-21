@@ -7,6 +7,7 @@ const {
   saveChat,
   getChatById,
   getUserChats,
+  updateChat,
 } = require("../controllers/chatController");
 
 const validateRequest = (req, res, next) => {
@@ -33,6 +34,23 @@ router.get("/", auth, validateRequest, getUserChats);
  * @access  Private
  */
 router.post("/save", auth, validateRequest, saveChat);
+
+/**
+ * * @route   PUT api/chats/update/:id
+ * * @desc    update a chat by ID
+ * * @access  Private
+ */
+router.put(
+  "/update/:id",
+  auth,
+  validateRequest,
+  [
+    check("messages", "Messages are required").not().isEmpty(),
+    check("messages", "Messages must be an array").isArray(),
+  ],
+  updateChat
+);
+
 /**
  * * @route   GET api/chats/:id
  * @desc    get a chat by ID

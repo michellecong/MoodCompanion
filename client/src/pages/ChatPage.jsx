@@ -27,6 +27,7 @@ function ChatPage() {
     const userMessage = { sender: "user", text: input };
     const newMessages = [...unsavedMessages, userMessage];
     setUnsavedMessages(newMessages);
+    console.log("unsavedMessages", unsavedMessages);
     setInput("");
     setLoading(true);
 
@@ -58,7 +59,7 @@ function ChatPage() {
   // For new and existing chats, save the chat to the database
   // If chatId is present, update the existing chat; 
   // otherwise, create a new one.
-  const saveChat = async () => {
+  const createChat = async () => {
     if (unsavedMessages.length === 0) return;
   
     handleProtectedAction(); // Check if user is logged in before saving
@@ -95,6 +96,14 @@ function ChatPage() {
       }
     } catch (error) {
       console.error("🔥 Error updating chat:", error);
+    }
+  }
+
+  const saveChat = async () => {
+    if (chatId) {
+      await updateChat(chatId); // Update existing chat
+    } else {
+      await createChat(); // Create new chat
     }
   }
 
@@ -138,11 +147,11 @@ function ChatPage() {
 
       <div className="chat-container">
         <div className="chat-messages">
-          {savedMessages.map((msg, index) => (
-            <div key={index} className={`message ${msg.sender}`}>
-              {msg.sender === "ai" ? "🤖 " : "🧑 "} {msg.text}
-            </div>
-          ))}
+        {[...savedMessages, ...unsavedMessages].map((msg, index) => (
+          <div key={index} className={`message ${msg.sender}`}>
+            {msg.sender === "ai" ? "🤖 " : "🧑 "} {msg.text}
+          </div>
+        ))}
           {loading && <div className="message ai">🤖 Typing...</div>}
         </div>
 
