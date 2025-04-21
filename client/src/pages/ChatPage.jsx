@@ -71,15 +71,21 @@ function ChatPage() {
 
   // Find chat by ID and load it into the chat window
   const loadChat = async () => {
-    const chat = await api.get("/chat");
-    if (!chat) {
-      console.error("❌ Chat not found");
-      return;
-    } else {
-      setUnsavedMessages(chat.messages);
+    try {
+      const response = await api.get("/chat");
+      const chatData = response.data?.data;
+  
+      if (!chatData || !Array.isArray(chatData.messages)) {
+        console.error("Invalid chat data.");
+        return;
+      }
+  
+      setUnsavedMessages(chatData.messages); 
+    } catch (err) {
+      console.error("🔥 Failed to load chat:", err);
     }
   };
-
+  
   // Fetch all saved chats for a given user
   const fetchSavedChats = async () => {
     try {
