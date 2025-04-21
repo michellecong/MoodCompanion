@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ChatSidebar from "../components/chat/ChatSidebar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./ChatPage.css";
 import api from "../api/axios";
 
@@ -10,11 +10,16 @@ function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { chatId } = useParams();
 
   useEffect(() => {
-    fetchSavedChats();
-  }, []);
-  
+    if (chatId) {// If existing chat, update chat history. 
+      loadChat(chatId);
+    } else {
+      fetchSavedChats(); // if new chat, initial landing page with no chat selected
+    }
+  }, [chatId]);
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 

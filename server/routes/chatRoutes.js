@@ -38,6 +38,6 @@ router.post("/save", auth, validateRequest, saveChat);
  * @desc    get a chat by ID
  * * @access  Private
  * */
-router.get("/:id", getChatById);
+router.get("/:id", auth, validateRequest, getChatById);
 
 module.exports = router;
