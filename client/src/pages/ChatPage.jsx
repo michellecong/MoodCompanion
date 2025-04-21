@@ -86,19 +86,24 @@ function ChatPage() {
     }
   };
   
-  // Fetch all saved chats for a given user
+  // Fetch all saved chats from the server
   const fetchSavedChats = async () => {
     try {
-      const response = await api.get("/chat");
-      if (response.data.success) {
-        setSavedChats(response.data.data);
-      } else {
-        console.error("❌ Failed to fetch saved chats:", response.data.message);
+      const response = await api.get("/chat"); // returns list of chats
+      const chatData = response.data?.data;
+      console.log("Fetched saved chats:", chatData);
+  
+      if (!chatData || !Array.isArray(chatData)) {
+        console.error("Invalid chat data.");
+        return;
       }
-    } catch (error) {
-      console.error("🔥 Error fetching saved chats:", error)
+  
+      setSavedChats(chatData); // ✅ set the full list of saved chats
+    } catch (err) {
+      console.error("🔥 Failed to load chat:", err);
     }
-    };
+  };
+  
 
   return (
     <div className="chat-layout">
