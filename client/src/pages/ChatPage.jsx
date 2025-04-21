@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ChatSidebar from "../components/chat/ChatSidebar";
+import { useNavigate } from "react-router-dom";
 import "./ChatPage.css";
 import api from "../api/axios";
 
@@ -8,6 +9,7 @@ function ChatPage() {
   const [unsavedMessages, setUnsavedMessages] = useState([]); // Current chat
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -31,11 +33,26 @@ function ChatPage() {
     setLoading(false);
   };
 
+  const handleProtectedAction = () => {
+    const isLoggedIn = !!localStorage.getItem("token");
+  
+    if (!isLoggedIn) {
+      alert("⚠️ Please log in to perform this action.");
+      // Redirection
+      navigate("/login"); 
+      return;
+    }
+  
+    // ✅ Protected action logic here
+    console.log("User is logged in. Proceeding...");
+  };
+
   const saveChat = async () => {
     if (unsavedMessages.length === 0) return;
   
+    handleProtectedAction(); // Check if user is logged in before saving
     try {
-      const response = await api.post("/chats/save", {
+      const response = await api.post("/chat/save", {
         messages: unsavedMessages,
       });
   
