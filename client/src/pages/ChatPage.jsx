@@ -164,19 +164,17 @@ function ChatPage() {
   };
 
   // Make a journal entry from the chat
-  const makeJournal = async () => {
+  const makeJournal = async (chatId) => {
     handleProtectedAction(); // Check if user is logged in before making a journal entry
-    // REQUEST: chatID to where? 
-    // Backend:
-    // 1. Retrieve all chat messages (similar as clicking on the chat)
-    // 2. Convert all user messages to journal using gpt API
-    // 3. Create a journal entry using the chat messages
-    // 4. Save the journal entry to the database
-
-    // RESPONSE: done or not done
-    // Notify the user that the journal entry has been created successfully.
-
-    // 
+    try {
+      const response = await api.post("/journals/from-chat/" + chatId); // returns chat by ID
+      console.log("Created journal entry:", response.data);
+      alert("✅ Journal entry created successfully!");
+    }
+    catch (err) {
+      console.error("🔥 Failed to create journal entry:", err);
+      alert("❌ Failed to create journal entry.");
+    }
   };
 
   return (

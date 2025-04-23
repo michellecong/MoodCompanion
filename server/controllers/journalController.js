@@ -2,7 +2,6 @@ const Journal = require("../models/journalModel");
 const User = require("../models/userModel");
 const emotionService = require("../services/emotionService");
 const Chat = require('../models/chatModel');
-const Journal = require('../models/journalModel');
 const { generateJournalFromMessages } = require('../services/chatToJournalService');
 
 /**
@@ -258,9 +257,9 @@ const journalController = {
         error: error.message,
       });
     }
-  }
-};
-async function chatToJournal(req, res) {
+  },
+  
+  async chatToJournal(req, res) {
   try {
     const chat = await Chat.findById(req.params.chatId);
     if (!chat) return res.status(404).json({ error: "Chat not found" });
@@ -291,5 +290,6 @@ async function chatToJournal(req, res) {
     res.status(500).json({ error: "Failed to create journal entry" });
   }
 }
+};
 
 module.exports = journalController;

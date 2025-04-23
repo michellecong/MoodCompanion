@@ -22,7 +22,11 @@ function ChatSidebar({ chats, onDeleteChat, onMakeJournal }) {
             >
               ❌
             </button>
-            <button onClick={onMakeJournal} className="make-journal-btn">
+            <button
+              onClick={() => onMakeJournal(chat._id)}
+              className="make-journal-btn"
+              title="Convert to journal"
+            >
               📝 Make a Journal
             </button>
           </div>

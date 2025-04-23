@@ -6,6 +6,7 @@ const {
   deleteJournal,
   getJournalById,
   updateJournal,
+  chatToJournal,
 } = require("../controllers/journalController");
 const { check, validationResult } = require("express-validator");
 const auth = require("../middleware/auth");
@@ -66,6 +67,11 @@ router.put(
   updateJournal
 );
 
+/**
+ * @route   POST api/journals/from-chat/:chatId
+ * @desc    Create a journal entry from chat messages
+ * @access  Private
+ */
 router.post('/from-chat/:chatId', auth, chatToJournal);
 
 module.exports = router;
