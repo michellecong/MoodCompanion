@@ -8,6 +8,7 @@ const {
   getChatById,
   getUserChats,
   updateChat,
+  deleteChat
 } = require("../controllers/chatController");
 
 const validateRequest = (req, res, next) => {
@@ -50,6 +51,13 @@ router.put(
   ],
   updateChat
 );
+
+/**
+ * * @route   DELETE api/chats/:id
+ * * @desc    delete a chat by ID
+ * * @access  Private
+ * */
+router.delete("/:id", auth, validateRequest, deleteChat);
 
 /**
  * * @route   GET api/chats/:id

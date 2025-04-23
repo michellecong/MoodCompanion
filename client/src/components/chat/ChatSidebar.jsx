@@ -1,21 +1,30 @@
 import { Link } from "react-router-dom";
+import "./ChatSidebar.css";
 
-function ChatSidebar({ chats, onSelectChat }) {
-    return (
-      <div className="chat-sidebar">
-        <h3>📚 Saved Chats</h3>
-        {chats.length === 0 ? (
-          <p style={{ fontStyle: "italic", padding: "8px" }}>No saved chats yet</p>
-        ) : (
-          chats.map((chat) => (
-            <Link key={chat._id} to={`/chat/${chat._id}`} className="chat-link">
-            <div className="chat-title">{chat.title}</div>
-          </Link>
-          ))
-        )}
-      </div>
-    );
-  }
-  
-  export default ChatSidebar;
-  
+function ChatSidebar({ chats, onDeleteChat }) {
+  return (
+    <div className="chat-sidebar">
+      <h3>📚 Saved Chats</h3>
+      {chats.length === 0 ? (
+        <p className="no-chats">No saved chats yet</p>
+      ) : (
+        chats.map((chat) => (
+          <div key={chat._id} className="chat-item">
+            <Link to={`/chat/${chat._id}`} className="chat-title">
+              {chat.title}
+            </Link>
+            <button
+              className="delete-btn"
+              onClick={() => onDeleteChat(chat._id)}
+              title="Delete chat"
+            >
+              ❌
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+export default ChatSidebar;

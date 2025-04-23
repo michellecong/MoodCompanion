@@ -1,0 +1,21 @@
+.chat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .chat-title {
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+  }
+  
+  .delete-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 0.5rem;
+  }
+  

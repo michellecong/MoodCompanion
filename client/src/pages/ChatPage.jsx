@@ -14,6 +14,9 @@ function ChatPage() {
   const { chatId } = useParams();
 
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      return;
+    }
     if (chatId) {// If existing chat, update chat history. 
       loadChat(chatId);
     } else {
@@ -56,13 +59,10 @@ function ChatPage() {
     console.log("User is logged in. Proceeding...");
   };
 
-  // For new and existing chats, save the chat to the database
-  // If chatId is present, update the existing chat; 
-  // otherwise, create a new one.
+  // For new chats.
   const createChat = async () => {
     if (unsavedMessages.length === 0) return;
-  
-    handleProtectedAction(); // Check if user is logged in before saving
+
     try {
       const response = await api.post("/chat/save", {
         messages: unsavedMessages,
@@ -105,6 +105,8 @@ function ChatPage() {
     } else {
       await createChat(); // Create new chat
     }
+    // reload the chat list after saving
+    fetchSavedChats(); // Refresh the list of saved chats after saving
   }
 
   // Find chat by ID and load it into the chat window
@@ -124,6 +126,17 @@ function ChatPage() {
     }
   };
   
+  const deleteChat = async (chatId) => {
+    handleProtectedAction(); // Check if user is logged in before deleting
+    try {
+      const response = await api.delete("/chat/" + chatId); // returns chat by ID
+      console.log("Deleted chat:", response.data);
+      fetchSavedChats(); // Refresh the list of saved chats after deletion
+    } catch (err) {
+      console.error("🔥 Failed to delete chat:", err);
+    }
+  }
+
   // Fetch all saved chats from the server
   const fetchSavedChats = async () => {
     try {
@@ -172,7 +185,7 @@ function ChatPage() {
         </div>
       </div>
     <div className="chat-sidebar-container">
-      <ChatSidebar chats={savedChats} onSelectChat={loadChat} />
+      <ChatSidebar chats={savedChats} onSelectChat={loadChat} onDeleteChat={deleteChat}/>
       </div>
     </div>
   );
