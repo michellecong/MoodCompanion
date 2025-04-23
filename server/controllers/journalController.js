@@ -1,6 +1,9 @@
 const Journal = require("../models/journalModel");
 const User = require("../models/userModel");
 const emotionService = require("../services/emotionService");
+const Chat = require('../models/chatModel');
+const Journal = require('../models/journalModel');
+const { generateJournalFromMessages } = require('../services/chatToJournalService');
 
 /**
  * Journal controller for handling journal-related operations
@@ -256,8 +259,37 @@ const journalController = {
       });
     }
   }
+};
+async function chatToJournal(req, res) {
+  try {
+    const chat = await Chat.findById(req.params.chatId);
+    if (!chat) return res.status(404).json({ error: "Chat not found" });
 
-  async chatToJournal(req, res) {
+    const userMessages = chat.messages
+      .filter(msg => msg.sender === 'user')
+      .map(msg => msg.text)
+      .join('\n');
+
+    if (!userMessages) {
+      return res.status(400).json({ error: "No user messages to summarize" });
+    }
+
+    const journalContent = await generateJournalFromMessages(userMessages);
+
+    const journal = new Journal({
+      title: `Journal from Chat - ${new Date().toLocaleString()}`,
+      content: journalContent,
+      createdFromChat: req.params.chatId,
+      userId: req.user.id,
+    });
+
+    await journal.save();
+    res.status(201).json({ success: true, journal });
+
+  } catch (err) {
+    console.error('Error creating journal:', err);
+    res.status(500).json({ error: "Failed to create journal entry" });
+  }
 }
 
 module.exports = journalController;
