@@ -14,16 +14,18 @@ function ChatPage() {
   const { chatId } = useParams();
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      return;
-    }
-    if (chatId) {// If existing chat, update chat history. 
+    if (!localStorage.getItem("token")) return;
+  
+    if (chatId) {
       loadChat(chatId);
     } else {
-      fetchSavedChats(); // if new chat, initial landing page with no chat selected
+      fetchSavedChats();
+      // Clear out the old chat state
+      setSavedMessages([]);
+      setUnsavedMessages([]);
     }
   }, [chatId]);
-
+  
   const sendMessage = async () => {
     if (!input.trim()) return;
 

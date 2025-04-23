@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./ChatSidebar.css";
 
 function ChatSidebar({ chats, onDeleteChat }) {
+  const navigate = useNavigate();
   return (
     <div className="chat-sidebar">
       <h3>📚 Saved Chats</h3>
@@ -23,6 +25,13 @@ function ChatSidebar({ chats, onDeleteChat }) {
           </div>
         ))
       )}
+      <button
+      className="new-chat-btn"
+      onClick={() => navigate("/chat")}
+      title="Start a new chat"
+    >
+      ➕ New Chat
+    </button>
     </div>
   );
 }
