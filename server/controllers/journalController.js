@@ -260,36 +260,60 @@ const journalController = {
   },
   
   async chatToJournal(req, res) {
-  try {
-    const chat = await Chat.findById(req.params.chatId);
-    if (!chat) return res.status(404).json({ error: "Chat not found" });
-
-    const userMessages = chat.messages
-      .filter(msg => msg.sender === 'user')
-      .map(msg => msg.text)
-      .join('\n');
-
-    if (!userMessages) {
-      return res.status(400).json({ error: "No user messages to summarize" });
+    try {
+      const chatId = req.params.chatId;
+      const userId = req.user.id;
+  
+      const chat = await Chat.findById(chatId);
+      if (!chat) {
+        return res.status(404).json({
+          success: false,
+          message: "Chat not found",
+        });
+      }
+  
+      const userMessages = chat.messages
+        .filter((msg) => msg.sender === 'user')
+        .map((msg) => msg.text)
+        .join('\n');
+  
+      if (!userMessages) {
+        return res.status(400).json({
+          success: false,
+          message: "No user messages to summarize",
+        });
+      }
+  
+      const journalContent = await generateJournalFromMessages(userMessages);
+  
+      // Analyze emotions & generate feedback (optional)
+      const emotionsDetected = await emotionService.detectEmotions(journalContent);
+      const feedback = emotionService.generateFeedback(emotionsDetected);
+  
+      const journal = new Journal({
+        title: `Journal from Chat - ${new Date().toLocaleString()}`,
+        content: journalContent,
+        userId,
+        emotionsDetected,
+        feedback,
+      });
+  
+      await journal.save();
+  
+      res.status(201).json({
+        success: true,
+        data: journal,
+      });
+  
+    } catch (error) {
+      console.error('Error creating journal:', error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to create journal entry",
+        error: error.message,
+      });
     }
-
-    const journalContent = await generateJournalFromMessages(userMessages);
-
-    const journal = new Journal({
-      title: `Journal from Chat - ${new Date().toLocaleString()}`,
-      content: journalContent,
-      createdFromChat: req.params.chatId,
-      userId: req.user.id,
-    });
-
-    await journal.save();
-    res.status(201).json({ success: true, journal });
-
-  } catch (err) {
-    console.error('Error creating journal:', err);
-    res.status(500).json({ error: "Failed to create journal entry" });
   }
-}
 };
 
 module.exports = journalController;
