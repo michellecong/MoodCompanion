@@ -284,7 +284,9 @@ const journalController = {
         });
       }
   
+      console.log('User messages send to GPT for summarising:', userMessages); // Log user messages for debugging
       const journalContent = await generateJournalFromMessages(userMessages);
+      console.log('Generated journal content:', journalContent); // Log generated journal content for debugging
   
       // Analyze emotions & generate feedback (optional)
       const emotionsDetected = await emotionService.detectEmotions(journalContent);
