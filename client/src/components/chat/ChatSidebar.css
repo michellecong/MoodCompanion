@@ -27,7 +27,6 @@
   padding: 8px;
 }
 
-/* Chat item container */
 .chat-item {
   display: flex;
   justify-content: space-between;
@@ -36,37 +35,33 @@
   padding: 8px 10px;
   border-radius: var(--border-radius);
   transition: background-color var(--transition-speed);
+  gap: 8px; /* Optional: adds a bit of spacing between title and button */
 }
 
-.chat-item:hover {
-  background-color: var(--primary-light);
-}
-
-/* Chat title link */
 .chat-title {
-  text-decoration: none;
-  color: var(--text-primary);
-  font-weight: 500;
   flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
-/* Delete button */
 .delete-btn {
-  background: transparent;
+  background: none;
   border: none;
+  color: var(--secondary-dark);
   cursor: pointer;
   font-size: 1rem;
-  color: var(--secondary-dark);
+  width: auto; /* allow natural width */
+  min-width: 20px; /* prevent too small */
+  height: 20px;
   padding: 0;
-  width: 24px;
-  height: 24px;
-  transition: color var(--transition-speed);
+  margin-left: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color var(--transition-speed);
 }
 
 .delete-btn:hover {
