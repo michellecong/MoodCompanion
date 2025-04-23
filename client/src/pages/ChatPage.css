@@ -24,9 +24,10 @@
 }
 
 .chat-container {
-  flex: 3;
+  flex: 4;
   width: 100%;
   max-width: 1000px;
+  margin-left: 40px;
   margin: auto;
   display: flex;
   flex-direction: column;
