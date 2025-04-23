@@ -66,4 +66,6 @@ router.put(
   updateJournal
 );
 
+router.post('/from-chat/:chatId', auth, chatToJournal);
+
 module.exports = router;

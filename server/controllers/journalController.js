@@ -256,6 +256,8 @@ const journalController = {
       });
     }
   }
+
+  async chatToJournal(req, res) {
 }
 
 module.exports = journalController;
