@@ -1,21 +1,91 @@
+.chat-sidebar {
+  width: 250px;
+  background-color: var(--background-white);
+  border-right: 1px solid var(--primary-light);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: width var(--transition-speed);
+}
+
+/* Heading */
+.chat-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--primary-dark);
+  font-size: 1.2rem;
+}
+
+/* Empty chat list message */
+.no-chats {
+  font-style: italic;
+  color: var(--text-secondary);
+  padding: 8px;
+}
+
+/* Chat item container */
 .chat-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-  
-  .chat-title {
-    text-decoration: none;
-    color: inherit;
-    flex: 1;
-  }
-  
-  .delete-btn {
-    background: none;
-    border: none;
-    color: red;
-    cursor: pointer;
-    font-size: 0.5rem;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--background-light);
+  padding: 8px 10px;
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-speed);
+}
+
+.chat-item:hover {
+  background-color: var(--primary-light);
+}
+
+/* Chat title link */
+.chat-title {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 500;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Delete button */
+.delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--secondary-dark);
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  transition: color var(--transition-speed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  color: var(--secondary-color);
+}
+
+/* New Chat Button */
+.new-chat-btn {
+  margin-top: auto;
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color var(--transition-speed);
+}
+
+.new-chat-btn:hover {
+  background-color: var(--primary-dark);
+}
