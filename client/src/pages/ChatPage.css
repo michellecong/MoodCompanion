@@ -13,7 +13,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("../assets/images/fruits.jpg");
+  background-image: url("../assets/images/well.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -21,6 +21,7 @@
   opacity: 0.5;
   z-index: -1;
 }
+
 .chat-container {
   width: 100%;
   max-width: 600px;

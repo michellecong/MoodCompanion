@@ -8,8 +8,10 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  border-radius: 8px;
   gap: 12px;
   transition: width var(--transition-speed);
+  background-color: #ffffff92;
 }
 
 /* Heading */
@@ -36,6 +38,7 @@
   border-radius: var(--border-radius);
   transition: background-color var(--transition-speed);
   gap: 8px; /* Optional: adds a bit of spacing between title and button */
+  background-color: #ffffff92;
 }
 
 .chat-title {
@@ -93,7 +96,7 @@
 .new-chat-btn {
   margin-top: auto;
   padding: 10px;
-  background-color: var(--primary-color);
+  background-color: var(--primary-dark);
   color: var(--text-light);
   border: none;
   border-radius: var(--border-radius);
@@ -103,5 +106,5 @@
 }
 
 .new-chat-btn:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-light);
 }

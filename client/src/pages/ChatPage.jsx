@@ -179,6 +179,7 @@ function ChatPage() {
 
   return (
     <div className="chat-layout">
+      <h2 className="chat-title"> Hey, I’m the Well. I’m listening—what’s on your mind?</h2>
 
       <div className="chat-container">
         <div className="chat-messages">
