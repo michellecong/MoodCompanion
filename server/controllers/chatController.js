@@ -147,6 +147,55 @@ const chatController = {
   },
 
   /**
+   * Update a chat by ID
+   */
+  async updateChat(req, res) {
+    try {
+      const chatId = req.params.id;
+      const userId = req.user.id;
+      const { messages } = req.body;
+
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Chat messages are required",
+        });
+      }
+
+      const chat = await Chat.findById(chatId);
+      if (!chat) {
+        return res.status(404).json({
+          success: false,
+          message: "Chat not found",
+        });
+      }
+
+      if (chat.userId.toString() !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: "Not authorized to update this chat",
+        });
+      }
+
+      chat.messages.push(...messages);
+      await chat.save();
+
+      res.status(200).json({
+        success: true,
+        data: chat,
+      });
+    } catch (error) {
+      console.error("Error updating chat:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to update chat",
+        error: error.message,
+      });
+    }
+  }
+,
+
+  /**
    * Delete a chat
    */
   async deleteChat(req, res) {
