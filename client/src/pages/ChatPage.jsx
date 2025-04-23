@@ -79,6 +79,7 @@ function ChatPage() {
     }
   };
 
+  // Update existing chat: adding new messages to the existing chat
   const updateChat = async (chatId) => {
     if (unsavedMessages.length === 0) return;
   
@@ -97,8 +98,11 @@ function ChatPage() {
     } catch (error) {
       console.error("🔥 Error updating chat:", error);
     }
+    // refresh the list of messages after saving
   }
 
+  // Save chat: either create a new chat or update an existing one
+  // If chatId is present, update the existing chat; otherwise, create a new one.
   const saveChat = async () => {
     if (chatId) {
       await updateChat(chatId); // Update existing chat
@@ -107,6 +111,8 @@ function ChatPage() {
     }
     // reload the chat list after saving
     fetchSavedChats(); // Refresh the list of saved chats after saving
+    // update saved messages to include the new chat
+    setSavedMessages((prevMessages) => [...prevMessages, ...unsavedMessages]);
   }
 
   // Find chat by ID and load it into the chat window
