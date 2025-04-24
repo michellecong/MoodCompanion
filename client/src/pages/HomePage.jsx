@@ -1,4 +1,3 @@
-// src/pages/HomePage.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DailyAffirmation from "../components/home/DailyAffirmation";
@@ -14,72 +13,94 @@ function HomePage({ isAuthenticated, user }) {
     useUserData(isAuthenticated);
 
   return (
-    <div className="home-page">
+    <main className="home-page" role="main">
       {/* Hero section - visible to all users */}
-      <section className="hero-section">
+      <section className="hero-section" role="region" aria-labelledby="hero-title">
         <div className="hero-content">
-          <h1>Your Personal AI Mood Companion</h1>
-          <p>
+          <h1 id="hero-title">Your Personal AI Mood Companion</h1>
+          <p className="sr-only">
             Track your emotions, journal your thoughts, and find support in our
             community
           </p>
 
           {!isAuthenticated ? (
             <div className="cta-buttons">
-              <Link to="/login" className="cta-secondary">
+              <Link
+                to="/login"
+                className="cta-secondary"
+                aria-label="Log in or get started"
+              >
                 Get Started
               </Link>
             </div>
           ) : (
-            <div className="feature-nav-buttons">
-              <Link to="/journals" className="feature-button">
-                <div className="feature-icon">
+            <nav
+              className="feature-nav-buttons"
+              aria-label="Feature navigation buttons"
+            >
+              <Link
+                to="/journals"
+                className="feature-button"
+                aria-label="Go to Journals section"
+              >
+                <div className="feature-icon" aria-hidden="true">
                   <FaBook />
                 </div>
                 <span>Journal</span>
               </Link>
-              <Link to="/mood-tracking" className="feature-button">
-                <div className="feature-icon">
+              <Link
+                to="/mood-tracking"
+                className="feature-button"
+                aria-label="Go to Mood Tracking section"
+              >
+                <div className="feature-icon" aria-hidden="true">
                   <FaChartLine />
                 </div>
                 <span>MoodTrack</span>
               </Link>
-              <Link to="/chat" className="feature-button">
-                <div className="feature-icon">
+              <Link
+                to="/chat"
+                className="feature-button"
+                aria-label="Go to AI Companion chat"
+              >
+                <div className="feature-icon" aria-hidden="true">
                   <FaRobot />
                 </div>
                 <span>AI Companion</span>
               </Link>
-              <Link to="/posts" className="feature-button">
-                <div className="feature-icon">
+              <Link
+                to="/posts"
+                className="feature-button"
+                aria-label="Go to Community posts"
+              >
+                <div className="feature-icon" aria-hidden="true">
                   <FaUsers />
                 </div>
                 <span>Community</span>
               </Link>
-            </div>
+            </nav>
           )}
         </div>
       </section>
 
-      {/* Daily affirmation - visible to all users */}
-      <div className="split-content">
+      {/* Daily affirmation and quick actions */}
+      <section className="split-content" aria-labelledby="affirmation-title">
         <div className="split-main">
-          {/* Daily affirmation - visible to all users */}
+          <h2 id="affirmation-title" className="sr-only">Daily Affirmation</h2>
           <DailyAffirmation />
         </div>
         <div className="split-sidebar">
-          {/* Quick actions component */}
           <Weather />
         </div>
-      </div>
+      </section>
 
-      {/* Render different content based on authentication status */}
+      {/* Render based on authentication status */}
       {isAuthenticated ? (
         <Dashboard isLoading={isLoading} recentJournals={recentJournals} />
       ) : (
         <LandingPage />
       )}
-    </div>
+    </main>
   );
 }
 

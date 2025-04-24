@@ -262,14 +262,16 @@ function DailyAffirmation() {
 
         <div className="carousel-indicators">
           {affirmationData.map((_, index) => (
-            <div
+            <button
               key={index}
-              className={`indicator-dot ${
-                index === currentIndex ? "active" : ""
-              }`}
+              type="button"
+              className={`indicator-dot ${index === currentIndex ? "active" : ""}`}
               onClick={() => goToIndex(index)}
               aria-label={`Go to affirmation ${index + 1}`}
-            />
+              aria-current={index === currentIndex ? "true" : undefined}
+            >
+              <span className="sr-only">Affirmation {index + 1}</span>
+            </button>
           ))}
         </div>
       </div>
