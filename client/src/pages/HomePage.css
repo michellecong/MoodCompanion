@@ -167,16 +167,21 @@
   margin-bottom: 16px;
 }
 
+.card-header h2 {
+  font-size: 1.5rem;
+  color: var(--primary-dark);
+}
+
 .view-all {
-  color: var(--primary-color);
-  background-color: whitesmoke;
+  color: var(--primary-dark);
+  background-color: white;
   font-size: 0.9rem;
   font-weight: 800;
   padding: 4px 8px;
   border-radius: var(--border-radius);
 }
 .view-all:hover {
-  background-color: var(--primary-color);
+  background-color: var(--primary-dark);
   color: white;
 }
 
@@ -195,7 +200,7 @@
 .new-entry-btn {
   display: inline-block;
   background-color: var(--background-white);
-  color: var(--primary-color);
+  color: var(--primary-dark);
   font-weight: bold;
   padding: 10px 16px;
   border-radius: var(--border-radius);
@@ -210,7 +215,7 @@
 .view-trends-btn {
   display: inline-block;
   background-color: var(--background-white);
-  color: var(--primary-color);
+  color: var(--primary-dark);
   font-weight: bold;
   padding: 10px 16px;
   border-radius: var(--border-radius);

@@ -44,7 +44,7 @@ function JournalPreview({ journals, onDelete }) {
         <div key={journal._id} className="journal-card-container">
           <Link to={`/journal/${journal._id}`} className="journal-card">
             <div className="journal-header">
-              <h3>{journal.title}</h3>
+              <h2>{journal.title}</h2>
               <span className="journal-date">{formatDate(journal.createdAt)}</span>
             </div>
             <p className="journal-excerpt">{journal.content.slice(0, 100)}...</p>

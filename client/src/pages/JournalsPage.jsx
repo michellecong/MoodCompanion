@@ -49,11 +49,8 @@ function JournalsPage() {
 
       if (response.data.success) {
         const newJournalData = response.data.data;
-        // update journals state
         setJournals((prevJournals) => [newJournalData, ...prevJournals]);
-        // update filteredJournals state
         setFilteredJournals((prevFiltered) => {
-          // if no filter is applied, add the new journal to the top
           if (
             !tempFilter.emotion &&
             !tempFilter.startDate &&
@@ -61,7 +58,6 @@ function JournalsPage() {
           ) {
             return [newJournalData, ...prevFiltered];
           }
-          // if filter is applied, check if the new journal matches the filter
           let matchesFilter = true;
           if (tempFilter.emotion) {
             const topEmotion = newJournalData.emotionsDetected?.reduce(
@@ -98,7 +94,6 @@ function JournalsPage() {
   const handleDelete = async (journalId) => {
     try {
       const response = await api.delete(`/journals/${journalId}`);
-
       if (response.data.success) {
         setJournals(journals.filter((journal) => journal._id !== journalId));
         setFilteredJournals(
@@ -148,19 +143,15 @@ function JournalsPage() {
     if (tempFilter.startDate || tempFilter.endDate) {
       filtered = filtered.filter((journal) => {
         const journalDate = new Date(journal.createdAt);
-        // ensure journalDate is a valid date
         if (isNaN(journalDate.getTime())) return false;
 
-        // convert journalDate to YYYY-MM-DD format
         const journalDateStr = journalDate.toISOString().split("T")[0];
 
-        // if there is startDate, compare if greater than or equal
         let afterStart = true;
         if (tempFilter.startDate) {
           afterStart = journalDateStr >= tempFilter.startDate;
         }
 
-        // if there is endDate, compare if less than or equal
         let beforeEnd = true;
         if (tempFilter.endDate) {
           beforeEnd = journalDateStr <= tempFilter.endDate;
@@ -188,7 +179,9 @@ function JournalsPage() {
 
       <form onSubmit={handleSubmit} className="create-journal">
         <div className="form-group">
+          <label htmlFor="journalTitle">Title:</label>
           <input
+            id="journalTitle"
             type="text"
             placeholder="Title"
             value={newJournal.title}
@@ -198,7 +191,9 @@ function JournalsPage() {
           />
         </div>
         <div className="form-group">
+          <label htmlFor="journalContent">Journal Entry:</label>
           <textarea
+            id="journalContent"
             placeholder="Write your journal entry..."
             value={newJournal.content}
             onChange={(e) =>
@@ -214,8 +209,9 @@ function JournalsPage() {
 
       <div className="filter-section">
         <div className="filter-group">
-          <label>Emotion:</label>
+          <label htmlFor="emotionFilter">Emotion:</label>
           <select
+            id="emotionFilter"
             name="emotion"
             value={tempFilter.emotion}
             onChange={handleTempFilterChange}
@@ -234,8 +230,9 @@ function JournalsPage() {
           </select>
         </div>
         <div className="filter-group">
-          <label>Start:</label>
+          <label htmlFor="startDateFilter">Start:</label>
           <input
+            id="startDateFilter"
             type="date"
             name="startDate"
             value={tempFilter.startDate}
@@ -243,8 +240,9 @@ function JournalsPage() {
           />
         </div>
         <div className="filter-group">
-          <label>End:</label>
+          <label htmlFor="endDateFilter">End:</label>
           <input
+            id="endDateFilter"
             type="date"
             name="endDate"
             value={tempFilter.endDate}
