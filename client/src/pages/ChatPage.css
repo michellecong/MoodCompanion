@@ -4,6 +4,7 @@
   min-height: 80vh;
   position: relative;
   z-index: 0;
+  gap: 120px;
 }
 
 .chat-layout::before {
@@ -13,7 +14,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("../assets/images/fruits.jpg");
+  background-image: url("../assets/images/well.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -21,9 +22,12 @@
   opacity: 0.5;
   z-index: -1;
 }
+
 .chat-container {
+  flex: 4;
   width: 100%;
-  max-width: 600px;
+  max-width: 1000px;
+  margin-left: 40px;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -94,4 +98,8 @@
 
 .chat-input button:hover {
   background-color: var(--primary-light);
+}
+
+.chat-sidebar-container {
+  flex: 2;
 }

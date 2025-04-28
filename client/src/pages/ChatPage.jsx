@@ -163,9 +163,22 @@ function ChatPage() {
     }
   };
 
+  // Make a journal entry from the chat
+  const makeJournal = async (chatId) => {
+    handleProtectedAction(); // Check if user is logged in before making a journal entry
+    try {
+      const response = await api.post("/journals/from-chat/" + chatId); // returns chat by ID
+      console.log("Created journal entry:", response.data);
+      alert("✅ Journal entry created successfully!");
+    }
+    catch (err) {
+      console.error("🔥 Failed to create journal entry:", err);
+      alert("❌ Failed to create journal entry.");
+    }
+  };
+
   return (
     <div className="chat-layout">
-
       <div className="chat-container">
         <div className="chat-messages">
         {[...savedMessages, ...unsavedMessages].map((msg, index) => (
@@ -193,7 +206,7 @@ function ChatPage() {
         </div>
       </div>
     <div className="chat-sidebar-container">
-      <ChatSidebar chats={savedChats} onSelectChat={loadChat} onDeleteChat={deleteChat}/>
+      <ChatSidebar chats={savedChats} onSelectChat={loadChat} onDeleteChat={deleteChat} onMakeJournal={makeJournal}/>
       </div>
     </div>
   );

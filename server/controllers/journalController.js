@@ -1,6 +1,8 @@
 const Journal = require("../models/journalModel");
 const User = require("../models/userModel");
 const emotionService = require("../services/emotionService");
+const Chat = require('../models/chatModel');
+const { generateJournalFromMessages } = require('../services/chatToJournalService');
 
 /**
  * Journal controller for handling journal-related operations
@@ -255,7 +257,65 @@ const journalController = {
         error: error.message,
       });
     }
+  },
+  
+  async chatToJournal(req, res) {
+    try {
+      const chatId = req.params.chatId;
+      const userId = req.user.id;
+  
+      const chat = await Chat.findById(chatId);
+      if (!chat) {
+        return res.status(404).json({
+          success: false,
+          message: "Chat not found",
+        });
+      }
+  
+      const userMessages = chat.messages
+        .filter((msg) => msg.sender === 'user')
+        .map((msg) => msg.text)
+        .join('\n');
+  
+      if (!userMessages) {
+        return res.status(400).json({
+          success: false,
+          message: "No user messages to summarize",
+        });
+      }
+  
+      console.log('User messages send to GPT for summarising:', userMessages); // Log user messages for debugging
+      const journalContent = await generateJournalFromMessages(userMessages);
+      console.log('Generated journal content:', journalContent); // Log generated journal content for debugging
+  
+      // Analyze emotions & generate feedback (optional)
+      const emotionsDetected = await emotionService.detectEmotions(journalContent);
+      const feedback = emotionService.generateFeedback(emotionsDetected);
+  
+      const journal = new Journal({
+        title: `Journal from Chat - ${new Date().toLocaleString()}`,
+        content: journalContent,
+        userId,
+        emotionsDetected,
+        feedback,
+      });
+  
+      await journal.save();
+  
+      res.status(201).json({
+        success: true,
+        data: journal,
+      });
+  
+    } catch (error) {
+      console.error('Error creating journal:', error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to create journal entry",
+        error: error.message,
+      });
+    }
   }
-}
+};
 
 module.exports = journalController;

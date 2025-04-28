@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./ChatSidebar.css";
 
-function ChatSidebar({ chats, onDeleteChat }) {
+function ChatSidebar({ chats, onDeleteChat, onMakeJournal }) {
   const navigate = useNavigate();
   return (
     <div className="chat-sidebar">
@@ -21,6 +21,13 @@ function ChatSidebar({ chats, onDeleteChat }) {
               title="Delete chat"
             >
               ❌
+            </button>
+            <button
+              onClick={() => onMakeJournal(chat._id)}
+              className="make-journal-btn"
+              title="Convert to journal"
+            >
+              📝
             </button>
           </div>
         ))
